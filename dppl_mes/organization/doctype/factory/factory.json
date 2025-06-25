@@ -1,0 +1,77 @@
+{
+ "actions": [],
+ "allow_copy": 1,
+ "allow_rename": 1,
+ "autoname": "field:factory_name",
+ "creation": "2025-06-25 16:18:05.344287",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "factory_name",
+  "is_active",
+  "shift_information_section",
+  "shift_timings",
+  "connections_tab"
+ ],
+ "fields": [
+  {
+   "fieldname": "factory_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Factory Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Is Active?"
+  },
+  {
+   "fieldname": "shift_information_section",
+   "fieldtype": "Section Break",
+   "label": "Shift Information"
+  },
+  {
+   "fieldname": "shift_timings",
+   "fieldtype": "Table",
+   "label": "Shift Timings",
+   "options": "Factory Timing",
+   "reqd": 1
+  },
+  {
+   "fieldname": "connections_tab",
+   "fieldtype": "Tab Break",
+   "label": "Connections",
+   "show_dashboard": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "hide_toolbar": 1,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-06-25 16:22:02.369743",
+ "modified_by": "Administrator",
+ "module": "Organization",
+ "name": "Factory",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

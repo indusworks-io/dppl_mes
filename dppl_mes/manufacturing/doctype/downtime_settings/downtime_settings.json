@@ -1,0 +1,62 @@
+{
+ "actions": [],
+ "allow_copy": 1,
+ "allow_rename": 1,
+ "creation": "2025-06-25 17:46:55.004134",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "enable_automatic_reason_update_for_minor_stops",
+  "minor_stop_downtime_reason",
+  "minor_stop_threshold"
+ ],
+ "fields": [
+  {
+   "default": "0",
+   "fieldname": "enable_automatic_reason_update_for_minor_stops",
+   "fieldtype": "Check",
+   "label": "Enable Automatic Reason Update For Minor Stops?"
+  },
+  {
+   "depends_on": "eval: doc.enable_automatic_reason_update_for_minor_stops == '1';",
+   "fieldname": "minor_stop_downtime_reason",
+   "fieldtype": "Link",
+   "label": "Minor Stop Downtime Reason",
+   "mandatory_depends_on": "eval: doc.enable_automatic_reason_update_for_minor_stops == '1';",
+   "options": "Downtime Reason"
+  },
+  {
+   "depends_on": "eval: doc.enable_automatic_reason_update_for_minor_stops == '1';",
+   "fieldname": "minor_stop_threshold",
+   "fieldtype": "Duration",
+   "hide_days": 1,
+   "label": "Minor Stop Threshold",
+   "mandatory_depends_on": "eval: doc.enable_automatic_reason_update_for_minor_stops == '1';"
+  }
+ ],
+ "grid_page_length": 50,
+ "hide_toolbar": 1,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-06-25 17:48:58.898581",
+ "modified_by": "Administrator",
+ "module": "Manufacturing",
+ "name": "Downtime Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

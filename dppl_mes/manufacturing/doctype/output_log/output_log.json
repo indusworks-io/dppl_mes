@@ -1,0 +1,73 @@
+{
+ "actions": [],
+ "allow_copy": 1,
+ "allow_rename": 1,
+ "autoname": "format:OL-{YY}{MM}{DD}-{####}",
+ "creation": "2025-06-25 18:20:51.738183",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "timestamp",
+  "job_card",
+  "output",
+  "output_type"
+ ],
+ "fields": [
+  {
+   "fieldname": "timestamp",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Timestamp"
+  },
+  {
+   "fieldname": "job_card",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Job Card",
+   "options": "Job Card",
+   "reqd": 1
+  },
+  {
+   "fieldname": "output",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Output",
+   "reqd": 1
+  },
+  {
+   "fieldname": "output_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Output Type",
+   "options": "\nAbsolute Value\nIncremental Value",
+   "reqd": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "hide_toolbar": 1,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-06-25 18:24:48.776448",
+ "modified_by": "Administrator",
+ "module": "Manufacturing",
+ "name": "Output Log",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

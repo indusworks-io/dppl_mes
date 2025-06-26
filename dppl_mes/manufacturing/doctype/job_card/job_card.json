@@ -14,6 +14,8 @@
   "operator",
   "job_number",
   "job_name",
+  "target_quantity",
+  "completed_quantity",
   "status",
   "job_sequence_number"
  ],
@@ -82,13 +84,24 @@
    "label": "Job Sequence Number",
    "non_negative": 1,
    "reqd": 1
+  },
+  {
+   "fieldname": "target_quantity",
+   "fieldtype": "Int",
+   "label": "Target Quantity",
+   "reqd": 1
+  },
+  {
+   "fieldname": "completed_quantity",
+   "fieldtype": "Int",
+   "label": "Completed Quantity"
   }
  ],
  "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-25 18:19:22.913372",
+ "modified": "2025-06-26 17:58:55.454070",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Job Card",

@@ -7,13 +7,13 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "factory",
   "date",
+  "factory",
   "shift",
   "column_break_fihy",
   "status",
   "section_break_dquk",
-  "table_uanc"
+  "job_plan_details"
  ],
  "fields": [
   {
@@ -46,13 +46,6 @@
    "fieldtype": "Section Break"
   },
   {
-   "allow_bulk_edit": 1,
-   "columns": 11,
-   "fieldname": "table_uanc",
-   "fieldtype": "Table",
-   "options": "Job Plan Details"
-  },
-  {
    "fieldname": "column_break_fihy",
    "fieldtype": "Column Break"
   },
@@ -62,16 +55,22 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Status",
-   "options": "Draft\nConfirmed",
-   "read_only": 1,
+   "options": "Draft\nConfirmed\nCancelled",
    "reqd": 1
+  },
+  {
+   "allow_bulk_edit": 1,
+   "columns": 11,
+   "fieldname": "job_plan_details",
+   "fieldtype": "Table",
+   "options": "Job Plan Details"
   }
  ],
  "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-26 15:41:50.675731",
+ "modified": "2025-06-26 17:16:06.636697",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Job Plan",

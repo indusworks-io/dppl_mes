@@ -13,7 +13,7 @@
   "job_one_number",
   "job_one_quantity",
   "job_two_name",
-  "job_2_number",
+  "job_two_number",
   "job_two_quantity"
  ],
  "fields": [
@@ -74,25 +74,25 @@
   },
   {
    "columns": 1,
-   "fieldname": "job_2_number",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Job 2 Number"
-  },
-  {
-   "columns": 1,
    "fieldname": "job_two_quantity",
    "fieldtype": "Int",
    "in_list_view": 1,
    "label": "Job 2 Quantity",
    "non_negative": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "job_two_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Job 2 Number"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-06-26 11:57:07.034809",
+ "modified": "2025-06-26 17:55:19.571637",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Job Plan Details",

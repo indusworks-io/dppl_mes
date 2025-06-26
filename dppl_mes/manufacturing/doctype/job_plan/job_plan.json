@@ -10,6 +10,8 @@
   "factory",
   "date",
   "shift",
+  "column_break_fihy",
+  "status",
   "section_break_dquk",
   "table_uanc"
  ],
@@ -45,16 +47,31 @@
   },
   {
    "allow_bulk_edit": 1,
+   "columns": 11,
    "fieldname": "table_uanc",
    "fieldtype": "Table",
    "options": "Job Plan Details"
+  },
+  {
+   "fieldname": "column_break_fihy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Draft",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Draft\nConfirmed",
+   "read_only": 1,
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-25 18:40:28.628184",
+ "modified": "2025-06-26 15:41:50.675731",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Job Plan",

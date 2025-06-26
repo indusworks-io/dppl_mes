@@ -1,0 +1,44 @@
+{
+ "actions": [],
+ "allow_copy": 1,
+ "allow_rename": 1,
+ "creation": "2025-06-26 15:37:18.334076",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "default_factory"
+ ],
+ "fields": [
+  {
+   "fieldname": "default_factory",
+   "fieldtype": "Link",
+   "label": "Default Factory",
+   "options": "Factory"
+  }
+ ],
+ "grid_page_length": 50,
+ "hide_toolbar": 1,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-06-26 15:39:12.755001",
+ "modified_by": "Administrator",
+ "module": "Organization",
+ "name": "Organization Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

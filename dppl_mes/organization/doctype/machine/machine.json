@@ -12,6 +12,8 @@
   "machine_name",
   "factory",
   "area",
+  "enable_output_logging",
+  "output_type",
   "connections_tab"
  ],
  "fields": [
@@ -55,13 +57,29 @@
    "fieldtype": "Tab Break",
    "label": "Connections",
    "show_dashboard": 1
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "depends_on": "eval: doc.enable_output_logging == '1'",
+   "fieldname": "output_type",
+   "fieldtype": "Select",
+   "label": "Output Type",
+   "mandatory_depends_on": "eval: doc.enable_output_logging == '1'",
+   "options": "\nAbsolute Values\nRelative Values"
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "default": "1",
+   "fieldname": "enable_output_logging",
+   "fieldtype": "Check",
+   "label": "Enable Output Logging?"
   }
  ],
  "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-26 14:45:05.232525",
+ "modified": "2025-06-30 13:26:13.333079",
  "modified_by": "Administrator",
  "module": "Organization",
  "name": "Machine",

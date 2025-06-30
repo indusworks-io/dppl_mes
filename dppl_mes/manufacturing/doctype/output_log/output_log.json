@@ -9,15 +9,15 @@
  "field_order": [
   "timestamp",
   "job_card",
-  "output",
-  "output_type"
+  "output"
  ],
  "fields": [
   {
    "fieldname": "timestamp",
    "fieldtype": "Datetime",
    "in_list_view": 1,
-   "label": "Timestamp"
+   "label": "Timestamp",
+   "reqd": 1
   },
   {
    "fieldname": "job_card",
@@ -33,21 +33,13 @@
    "in_list_view": 1,
    "label": "Output",
    "reqd": 1
-  },
-  {
-   "fieldname": "output_type",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "label": "Output Type",
-   "options": "\nAbsolute Value\nIncremental Value",
-   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-25 18:24:48.776448",
+ "modified": "2025-06-30 11:40:22.644950",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Output Log",

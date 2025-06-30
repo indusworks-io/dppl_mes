@@ -76,24 +76,31 @@ class Telemetry(Document):
 		"""
 		try:
 			active_job = self.get_active_job(machine)
-			print(active_job)
+			print(f'Active Job: {active_job}')
 			if active_job:
 				print('Active Job Found')
 				machine_output_type = frappe.db.get_value("Machine", machine, "output_type")
 				if machine_output_type == 'Absolute Values':
 					print('Entered Absolute Value Checker Block')
-					if active_job.completed_quantity >= output_value:
-						print('Output Value Reached, Updating Job Status')
-						active_job.status = "Completed"
-						active_job.save()
-						active_job = self.start_job(machine)
-						return active_job
+					active_job_doc = frappe.get_doc("Job Card", active_job)
+					
+					job_completed_qty = active_job_doc.completed_quantity
+					
+					print(f'Job Completed Quantity: {job_completed_qty}')
+					
+					if job_completed_qty > 0 and output_value < job_completed_qty:
+						print('Output Value Reset Detected, Updating Job Status to Completed')
+						active_job_doc.status = "Completed"
+						active_job_doc.save()
+						frappe.db.commit()
+						new_job = self.start_job(machine)
+						return new_job
 					else:
 						return active_job
 			else:
 				print('Active Job Not Found, Starting New Job')
-				active_job = self.start_job(machine)
-				return active_job
+				new_job = self.start_job(machine)
+				return new_job
 		except Exception as e:
 			frappe.log_error(frappe.get_traceback(), "Get Job Details Error")
 
@@ -178,7 +185,7 @@ class Telemetry(Document):
 			else:
 				# Check for job with sequence number 2
 				job_seq_2 = next((job for job in scheduled_jobs if job.job_sequence_number == 2), None)
-				if job_seq_2:
+				if job_seq_2 and job_seq_2.status == "Not Started":
 					job_card = frappe.get_doc("Job Card", job_seq_2.name)
 					job_card.status = "In Progress"
 					job_card.save()

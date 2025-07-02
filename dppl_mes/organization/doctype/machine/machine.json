@@ -14,6 +14,7 @@
   "area",
   "enable_output_logging",
   "output_type",
+  "sequence_number",
   "connections_tab"
  ],
  "fields": [
@@ -22,6 +23,7 @@
    "default": "1",
    "fieldname": "is_active",
    "fieldtype": "Check",
+   "in_list_view": 1,
    "label": "Is Active?"
   },
   {
@@ -73,13 +75,22 @@
    "fieldname": "enable_output_logging",
    "fieldtype": "Check",
    "label": "Enable Output Logging?"
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "fieldname": "sequence_number",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Sequence Number",
+   "non_negative": 1,
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-30 13:26:13.333079",
+ "modified": "2025-07-02 16:06:44.862456",
  "modified_by": "Administrator",
  "module": "Organization",
  "name": "Machine",

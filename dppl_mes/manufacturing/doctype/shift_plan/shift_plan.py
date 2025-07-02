@@ -5,13 +5,13 @@ import frappe
 from frappe.model.document import Document
 
 
-class JobPlan(Document):
+class ShiftPlan(Document):
 	pass
 
 
 @frappe.whitelist()
 def create_job_cards(docname):
-    doc = frappe.get_doc("Job Plan", docname)
+    doc = frappe.get_doc("Shift Plan", docname)
 
     if doc.docstatus != 0:
         frappe.throw(_("Only Draft Job Plans can be processed."))

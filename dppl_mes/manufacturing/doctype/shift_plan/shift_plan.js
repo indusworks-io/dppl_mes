@@ -14,7 +14,7 @@ When the form is not new:
 1. If the frm.doc.status === 'Draft' show Button called 'Confirm'
 */
 
-frappe.ui.form.on("Job Plan", {
+frappe.ui.form.on("Shift Plan", {
     refresh(frm) {
         if (frm.is_new()) {
             console.log("New form loaded");
@@ -32,12 +32,12 @@ frappe.ui.form.on("Job Plan", {
         } else {
             // If document is in Draft status, show Confirm button
             if (frm.doc.status === "Draft") {
-                frm.add_custom_button(__('Confirm Job Plan'), () => {
+                frm.add_custom_button(__('Confirm Shift Plan'), () => {
                     frappe.confirm(
                         "On submission, Job Cards will be created.",
                         () => {
                             frappe.call({
-                                method: "dppl_mes.manufacturing.doctype.job_plan.job_plan.create_job_cards",
+                                method: "dppl_mes.manufacturing.doctype.shift_plan.shift_plan.create_job_cards",
                                 args: {
                                     docname: frm.doc.name
                                 },
@@ -55,7 +55,7 @@ frappe.ui.form.on("Job Plan", {
                         }
                     );
                 });
-                frm.add_custom_button(__('Cancel Job Plan'), () => {
+                frm.add_custom_button(__('Cancel Shift Plan'), () => {
                     frm.set_value("status", "Cancelled");
                     frm.save();
                 })
@@ -64,34 +64,40 @@ frappe.ui.form.on("Job Plan", {
     },
 
     factory(frm) {
-        if (frm.doc.factory) {
-            // Clear existing table entries
-            frm.clear_table("job_plan_details");
+    if (frm.doc.factory) {
+        // Clear existing table entries
+        frm.clear_table("job_plan_details");
 
-            // Fetch active machines linked to selected factory
-            frappe.db.get_list("Machine", {
-                filters: {
-                    factory: frm.doc.factory,
-                    is_active: 1
-                },
-                fields: ["machine_name"],
-                limit: 1000
-            }).then(machines => {
-                if (machines.length) {
-                    machines.forEach(machine => {
-                        let row = frm.add_child("job_plan_details", {
-                            machine_name: machine.machine_name
-                        });
+        // Fetch active machines linked to selected factory
+        frappe.db.get_list("Machine", {
+            filters: {
+                factory: frm.doc.factory,
+                is_active: 1
+            },
+            fields: ["machine_name", "sequence_number"],
+            limit: 1000
+        }).then(machines => {
+            if (machines.length) {
+                // Sort machines by ascending sequence_number
+                machines.sort((a, b) => (a.sequence_number || 0) - (b.sequence_number || 0));
+
+                machines.forEach(machine => {
+                    frm.add_child("job_plan_details", {
+                        machine_name: machine.machine_name
                     });
-                    frm.refresh_field("job_plan_details");
-                } else {
-                    frappe.msgprint("No active machines found for the selected factory.");
-                }
-            });
-        } else {
-            // If factory field is cleared manually, also clear table
-            frm.clear_table("job_plan_details");
-            frm.refresh_field("job_plan_details");
+                });
+
+                frm.refresh_field("job_plan_details");
+            } else {
+                frappe.msgprint("No active machines found for the selected factory.");
+            }
+        });
+    } else {
+        // If factory field is cleared manually, also clear table
+        frm.clear_table("job_plan_details");
+        frm.refresh_field("job_plan_details");
         }
+    
     }
+
 });

@@ -12,6 +12,7 @@
   "area_name",
   "factory",
   "description",
+  "sequence_number",
   "connections_tab"
  ],
  "fields": [
@@ -51,13 +52,21 @@
    "fieldtype": "Tab Break",
    "label": "Connections",
    "show_dashboard": 1
+  },
+  {
+   "fieldname": "sequence_number",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Sequence Number",
+   "non_negative": 1,
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-26 14:30:31.033358",
+ "modified": "2025-07-02 15:09:10.185195",
  "modified_by": "Administrator",
  "module": "Organization",
  "name": "Area",

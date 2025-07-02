@@ -1,0 +1,62 @@
+{
+ "actions": [],
+ "allow_copy": 1,
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "field:job_name",
+ "creation": "2025-07-02 15:34:39.536423",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "job_name",
+  "job_number"
+ ],
+ "fields": [
+  {
+   "allow_in_quick_entry": 1,
+   "fieldname": "job_name",
+   "fieldtype": "Data",
+   "label": "Job Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "fieldname": "job_number",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Job Number",
+   "non_negative": 1,
+   "reqd": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "hide_toolbar": 1,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-07-02 15:36:48.418344",
+ "modified_by": "Administrator",
+ "module": "Manufacturing",
+ "name": "Job",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "quick_entry": 1,
+ "search_fields": "job_number",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

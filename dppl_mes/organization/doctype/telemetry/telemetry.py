@@ -29,20 +29,26 @@ class Telemetry(Document):
 		timestamp = self.timestamp
 		machine = self.machine
 		data_str = self.data
-		# Parse string into dictionary
 		
 		try:
 			data = json.loads(data_str)
 		except json.JSONDecodeError as e:
-			frappe.throw(f"Invalid JSON in 'data': {e}")
+			frappe.log_error(frappe.get_traceback(), "JSON Decoding Error")
 
 		if "output" in data:
 			print('output key exists')
 			try:
 				output_value = int(data["output"])
 				self.create_output_log(output_value, timestamp, machine)
-			except ValueError:
-				frappe.throw("Output value must be an integer.")
+			except Exception as e:
+				frappe.log_error(frappe.get_traceback(), "Output Parsing Error")
+		
+		if "status" in data:
+			print('Machine Status Exisits')
+			try:
+				machine_status = data["status"]
+			except Exception as e:
+				frappe.log_error(frappe.get_traceback(), "Status Parsing Error")
 
 	def create_output_log(self, output_value, timestamp, machine):
 		try:
@@ -197,17 +203,12 @@ class Telemetry(Document):
 			frappe.log_error(frappe.get_traceback(), "Start Job Error")
 				
 
-
-				
-	
-
-
 	def downtime_record_checker(self):
 		"""Check for existing open downtime logs."""
 		print("Downtime Record Checker Called")
 		downtime_logs = frappe.get_all(
 			"Downtime Log",
-			filters={"workstation": self.workstation, "status": "Open"},
+			filters={"machine": self.machine, "status": "Open"},
 			fields=["name"],
 		)
 		return downtime_logs[0].name if downtime_logs else None
@@ -216,7 +217,7 @@ class Telemetry(Document):
 		"""Create a new downtime log entry."""
 		try:
 			downtime_log = frappe.new_doc("Downtime Log")
-			downtime_log.workstation = self.workstation
+			downtime_log.machine = self.machine
 			downtime_log.created_date = nowdate()
 			downtime_log.start_date_time = self.timestamp
 			downtime_log.status = "Open"

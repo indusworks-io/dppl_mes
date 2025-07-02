@@ -12,8 +12,8 @@
   "date",
   "shift",
   "operator",
-  "job_number",
   "job_name",
+  "job_number",
   "target_quantity",
   "completed_quantity",
   "status",
@@ -21,6 +21,7 @@
  ],
  "fields": [
   {
+   "fetch_from": "job_name.job_number",
    "fieldname": "job_number",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -29,9 +30,10 @@
   },
   {
    "fieldname": "job_name",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Job Name",
+   "options": "Job",
    "reqd": 1
   },
   {
@@ -101,7 +103,7 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-26 17:58:55.454070",
+ "modified": "2025-07-02 15:41:15.596236",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Job Card",

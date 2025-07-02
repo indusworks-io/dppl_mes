@@ -38,6 +38,8 @@
   {
    "fieldname": "machine",
    "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Machine",
    "options": "Machine",
    "reqd": 1
@@ -45,6 +47,7 @@
   {
    "fieldname": "start_date_time",
    "fieldtype": "Datetime",
+   "in_list_view": 1,
    "label": "Start Date Time",
    "reqd": 1
   },
@@ -65,6 +68,8 @@
   {
    "fieldname": "reaon",
    "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Reason",
    "options": "Downtime Reason"
   },
@@ -87,7 +92,7 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-25 17:42:05.301280",
+ "modified": "2025-07-02 16:39:49.794964",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Downtime Log",

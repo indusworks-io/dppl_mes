@@ -39,7 +39,8 @@ class Telemetry(Document):
 			print('output key exists')
 			try:
 				output_value = int(data["output"])
-				self.create_output_log(output_value, timestamp, machine)
+				run_rate_value = float(data["run_rate"])
+				self.create_output_log(output_value,run_rate_value, timestamp, machine)
 			except Exception as e:
 				frappe.log_error(frappe.get_traceback(), "Output Parsing Error")
 		
@@ -47,16 +48,18 @@ class Telemetry(Document):
 			print('Machine Status Exisits')
 			try:
 				machine_status = data["status"]
+				self.downtime_checker(machine_status)
 			except Exception as e:
 				frappe.log_error(frappe.get_traceback(), "Status Parsing Error")
 
-	def create_output_log(self, output_value, timestamp, machine):
+	def create_output_log(self, output_value,run_rate_value, timestamp, machine):
 		try:
 			job_card = self.get_job_details(machine, output_value)
 			if job_card:
 				output_log = frappe.new_doc("Output Log")
 				output_log.job_card = job_card
 				output_log.output = output_value
+				output_log.run_rate = run_rate_value
 				output_log.timestamp = timestamp
 				output_log.save()
 				print('Output Log Created')
@@ -203,6 +206,24 @@ class Telemetry(Document):
 			frappe.log_error(frappe.get_traceback(), "Start Job Error")
 				
 
+	def downtime_checker(self, machine_status):
+		try:
+			existing_downtime_log = self.downtime_record_checker()
+			if machine_status == 'running':
+				if existing_downtime_log:
+					print('Existing Downtime Log Found, Closing Downtime Log')
+					self.close_downtime_log(existing_downtime_log)
+					print('Downtime Log Closed')
+				else:
+					print('No Existing Downtime Log Found, No Action Needed')
+			elif machine_status == 'stopped':
+				if not existing_downtime_log:
+					print('No Existing Downtime Log Found, Creating New Downtime Log')
+					self.create_downtime_log()
+					print('Downtime Log Created')
+		except Exception as e:
+			frappe.log_error(frappe.get_traceback(), "Downtime Checker Error")
+	
 	def downtime_record_checker(self):
 		"""Check for existing open downtime logs."""
 		print("Downtime Record Checker Called")

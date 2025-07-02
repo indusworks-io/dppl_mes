@@ -9,7 +9,8 @@
  "field_order": [
   "timestamp",
   "job_card",
-  "output"
+  "output",
+  "run_rate"
  ],
  "fields": [
   {
@@ -33,13 +34,22 @@
    "in_list_view": 1,
    "label": "Output",
    "reqd": 1
+  },
+  {
+   "description": "Output in 1 minute",
+   "fieldname": "run_rate",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Run Rate",
+   "non_negative": 1,
+   "precision": "2"
   }
  ],
  "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-30 11:40:22.644950",
+ "modified": "2025-07-02 16:17:12.825298",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Output Log",

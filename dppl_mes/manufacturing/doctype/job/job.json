@@ -9,7 +9,8 @@
  "engine": "InnoDB",
  "field_order": [
   "job_name",
-  "job_number"
+  "job_number",
+  "complexity_level"
  ],
  "fields": [
   {
@@ -28,13 +29,22 @@
    "label": "Job Number",
    "non_negative": 1,
    "reqd": 1
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "fieldname": "complexity_level",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Complexity Level",
+   "options": "\nHigh\nMedium\nLow",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-02 15:36:48.418344",
+ "modified": "2025-07-08 15:48:50.232857",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Job",

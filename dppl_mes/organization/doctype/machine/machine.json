@@ -8,13 +8,15 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "is_active",
   "machine_name",
   "factory",
   "area",
+  "oem_code",
+  "is_active",
   "enable_output_logging",
   "output_type",
   "sequence_number",
+  "ip_address",
   "connections_tab"
  ],
  "fields": [
@@ -84,13 +86,25 @@
    "label": "Sequence Number",
    "non_negative": 1,
    "reqd": 1
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "fieldname": "oem_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "OEM Code"
+  },
+  {
+   "fieldname": "ip_address",
+   "fieldtype": "Data",
+   "label": "IP Address"
   }
  ],
  "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-02 16:06:44.862456",
+ "modified": "2025-07-08 16:27:12.928483",
  "modified_by": "Administrator",
  "module": "Organization",
  "name": "Machine",

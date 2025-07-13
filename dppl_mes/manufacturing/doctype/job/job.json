@@ -32,11 +32,12 @@
   },
   {
    "allow_in_quick_entry": 1,
+   "description": "1 = Lowest Level of complexity & 5 = Highest Level  of complexity.",
    "fieldname": "complexity_level",
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Complexity Level",
-   "options": "\nHigh\nMedium\nLow",
+   "options": "\n1\n2\n3\n4\n5",
    "reqd": 1
   }
  ],
@@ -44,7 +45,7 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-08 15:48:50.232857",
+ "modified": "2025-07-10 15:02:47.882349",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Job",

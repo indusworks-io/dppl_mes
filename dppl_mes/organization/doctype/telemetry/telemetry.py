@@ -7,22 +7,6 @@ from frappe.utils import now, nowdate, nowtime
 from datetime import datetime, timedelta, time
 import json
 
-"""
-Everytime a new Telemetery is saved we need to do the folloing:
-1. if data Json has output key then extract output value
-2. run create_output_log function
-
-create_output_log function will do the following:
-1. run get_job_details function
-2. 
-
-
-from machine get enable_output_logging && output_type
-if enable_output_logging == 1 then 
-
-
-"""
-
 class Telemetry(Document):
 	def before_save(self):
 		print('Running Before Save Function')
@@ -38,8 +22,14 @@ class Telemetry(Document):
 		if "output" in data:
 			print('output key exists')
 			try:
-				output_value = int(data["output"])
+				output_raw = data["output"]
+				print(f'Raw output value: "{output_raw}"')
+				if output_raw is None or output_raw == '' or str(output_raw).strip() == '':
+					print('Empty or invalid output value detected, skipping output processing')
+					return
+				output_value = int(output_raw)
 				run_rate_value = float(data["run_rate"])
+				
 				self.create_output_log(output_value,run_rate_value, timestamp, machine)
 			except Exception as e:
 				frappe.log_error(frappe.get_traceback(), "Output Parsing Error")
@@ -57,6 +47,7 @@ class Telemetry(Document):
 			job_card = self.get_job_details(machine, output_value)
 			if job_card:
 				output_log = frappe.new_doc("Output Log")
+				output_log.machine = machine
 				output_log.job_card = job_card
 				output_log.output = output_value
 				output_log.run_rate = run_rate_value
@@ -97,7 +88,7 @@ class Telemetry(Document):
 					
 					print(f'Job Completed Quantity: {job_completed_qty}')
 					
-					if job_completed_qty > 0 and output_value < job_completed_qty:
+					if job_completed_qty > 0 and output_value == 0:
 						print('Output Value Reset Detected, Updating Job Status to Completed')
 						active_job_doc.status = "Completed"
 						active_job_doc.save()

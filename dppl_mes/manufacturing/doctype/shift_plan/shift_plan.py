@@ -28,6 +28,7 @@ def create_job_cards(docname):
             "date": doc.date,
             "shift": doc.shift,
             "operator": row.operator_name,
+            "shift_plan": docname,
         }
 
         # Job 1

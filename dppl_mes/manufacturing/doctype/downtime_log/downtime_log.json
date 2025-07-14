@@ -32,6 +32,7 @@
    "fieldname": "created_date",
    "fieldtype": "Date",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Created Date",
    "reqd": 1
   },
@@ -79,7 +80,6 @@
    "fieldname": "category",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "in_standard_filter": 1,
    "label": "Category",
    "read_only": 1
   },
@@ -93,7 +93,7 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-10 15:01:22.817329",
+ "modified": "2025-07-14 18:39:30.726023",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Downtime Log",

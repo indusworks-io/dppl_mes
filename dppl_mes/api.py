@@ -3,7 +3,7 @@ import json
 from frappe import _
 from datetime import datetime
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def create_telemetry():
     """
     POST API endpoint to create Telemetry documents

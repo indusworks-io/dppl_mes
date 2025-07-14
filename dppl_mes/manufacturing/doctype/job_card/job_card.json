@@ -16,15 +16,17 @@
   "job_number",
   "target_quantity",
   "completed_quantity",
+  "column_break_bhfg",
   "status",
-  "job_sequence_number"
+  "job_sequence_number",
+  "shift_plan",
+  "connections_tab"
  ],
  "fields": [
   {
    "fetch_from": "job_name.job_number",
    "fieldname": "job_number",
    "fieldtype": "Data",
-   "in_list_view": 1,
    "label": "Job Number",
    "reqd": 1
   },
@@ -32,6 +34,7 @@
    "fieldname": "job_name",
    "fieldtype": "Link",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Job Name",
    "options": "Job",
    "reqd": 1
@@ -90,20 +93,45 @@
   {
    "fieldname": "target_quantity",
    "fieldtype": "Int",
+   "in_list_view": 1,
    "label": "Target Quantity",
    "reqd": 1
   },
   {
    "fieldname": "completed_quantity",
    "fieldtype": "Int",
+   "in_list_view": 1,
    "label": "Completed Quantity"
+  },
+  {
+   "fieldname": "shift_plan",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Shift Plan",
+   "options": "Shift Plan",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_bhfg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "connections_tab",
+   "fieldtype": "Tab Break",
+   "label": "Connections",
+   "show_dashboard": 1
   }
  ],
  "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2025-07-02 15:41:15.596236",
+ "links": [
+  {
+   "link_doctype": "Output Log",
+   "link_fieldname": "job_card"
+  }
+ ],
+ "modified": "2025-07-14 18:37:45.401434",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Job Card",

@@ -24,7 +24,7 @@
   {
    "allow_in_quick_entry": 1,
    "fieldname": "job_number",
-   "fieldtype": "Int",
+   "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Job Number",
    "non_negative": 1,
@@ -45,7 +45,7 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-10 15:02:47.882349",
+ "modified": "2025-07-14 18:33:31.859662",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Job",

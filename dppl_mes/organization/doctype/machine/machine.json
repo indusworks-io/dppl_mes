@@ -8,14 +8,17 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "is_active",
+  "oem_name",
+  "oem_code",
   "machine_name",
   "factory",
   "area",
-  "oem_code",
-  "is_active",
-  "enable_output_logging",
-  "output_type",
   "sequence_number",
+  "output_related_details_section",
+  "enable_output_logging",
+  "device",
+  "output_type",
   "ip_address",
   "connections_tab"
  ],
@@ -95,16 +98,52 @@
    "label": "OEM Code"
   },
   {
+   "depends_on": "eval: doc.enable_output_logging == '1'",
    "fieldname": "ip_address",
    "fieldtype": "Data",
    "label": "IP Address"
+  },
+  {
+   "fieldname": "oem_name",
+   "fieldtype": "Data",
+   "label": "OEM Name"
+  },
+  {
+   "fieldname": "output_related_details_section",
+   "fieldtype": "Section Break",
+   "label": "Output Related Details"
+  },
+  {
+   "depends_on": "eval: doc.enable_output_logging == '1'",
+   "fieldname": "device",
+   "fieldtype": "Link",
+   "label": "Device",
+   "options": "Device"
   }
  ],
  "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2025-07-08 16:27:12.928483",
+ "links": [
+  {
+   "link_doctype": "Job Card",
+   "link_fieldname": "machine",
+   "table_fieldname": "Job Cards"
+  },
+  {
+   "link_doctype": "Telemetry",
+   "link_fieldname": "machine"
+  },
+  {
+   "link_doctype": "Output Log",
+   "link_fieldname": "machine"
+  },
+  {
+   "link_doctype": "Downtime Log",
+   "link_fieldname": "machine"
+  }
+ ],
+ "modified": "2025-07-14 17:46:44.886107",
  "modified_by": "Administrator",
  "module": "Organization",
  "name": "Machine",
@@ -124,7 +163,6 @@
    "write": 1
   }
  ],
- "quick_entry": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

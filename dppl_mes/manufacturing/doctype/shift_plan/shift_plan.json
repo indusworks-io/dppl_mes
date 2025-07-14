@@ -13,7 +13,8 @@
   "column_break_fihy",
   "status",
   "section_break_dquk",
-  "job_plan_details"
+  "job_plan_details",
+  "connections_tab"
  ],
  "fields": [
   {
@@ -23,6 +24,7 @@
    "in_standard_filter": 1,
    "label": "Factory",
    "options": "Factory",
+   "read_only_depends_on": "eval: doc.status != 'Draft'",
    "reqd": 1
   },
   {
@@ -31,6 +33,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Date",
+   "read_only_depends_on": "eval: doc.status != 'Draft'",
    "reqd": 1
   },
   {
@@ -39,6 +42,7 @@
    "in_list_view": 1,
    "label": "Shift",
    "options": "Shift Type",
+   "read_only_depends_on": "eval: doc.status != 'Draft'",
    "reqd": 1
   },
   {
@@ -56,6 +60,7 @@
    "in_list_view": 1,
    "label": "Status",
    "options": "Draft\nConfirmed\nCancelled",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -63,14 +68,26 @@
    "columns": 11,
    "fieldname": "job_plan_details",
    "fieldtype": "Table",
-   "options": "Job Plan Details"
+   "options": "Job Plan Details",
+   "read_only_depends_on": "eval: doc.status != 'Draft'"
+  },
+  {
+   "fieldname": "connections_tab",
+   "fieldtype": "Tab Break",
+   "label": "Connections",
+   "show_dashboard": 1
   }
  ],
  "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2025-07-02 15:13:20.160249",
+ "links": [
+  {
+   "link_doctype": "Job Card",
+   "link_fieldname": "shift_plan"
+  }
+ ],
+ "modified": "2025-07-14 18:31:06.350412",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Shift Plan",

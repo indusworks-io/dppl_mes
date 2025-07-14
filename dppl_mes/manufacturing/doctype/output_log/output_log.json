@@ -9,6 +9,7 @@
  "field_order": [
   "timestamp",
   "job_card",
+  "machine",
   "output",
   "run_rate"
  ],
@@ -17,6 +18,7 @@
    "fieldname": "timestamp",
    "fieldtype": "Datetime",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Timestamp",
    "reqd": 1
   },
@@ -24,6 +26,7 @@
    "fieldname": "job_card",
    "fieldtype": "Link",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Job Card",
    "options": "Job Card",
    "reqd": 1
@@ -43,13 +46,23 @@
    "label": "Run Rate",
    "non_negative": 1,
    "precision": "2"
+  },
+  {
+   "fieldname": "machine",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Machine",
+   "options": "Machine",
+   "reqd": 1,
+   "search_index": 1
   }
  ],
  "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-02 16:17:12.825298",
+ "modified": "2025-07-14 18:37:53.139584",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Output Log",

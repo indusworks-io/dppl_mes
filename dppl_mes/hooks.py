@@ -5,7 +5,7 @@ app_description = "MES for DPPL"
 app_email = "navneet@indusworks.in"
 app_license = "mit"
 
-after_migrate = "dppl_mes.utils.after_migrate"
+#after_migrate = "dppl_mes.utils.after_migrate"
 before_migrate = "dppl_mes.utils.before_migrate"
 
 # Apps

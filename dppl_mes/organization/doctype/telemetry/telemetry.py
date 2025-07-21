@@ -88,7 +88,7 @@ class Telemetry(Document):
 					
 					print(f'Job Completed Quantity: {job_completed_qty}')
 					
-					if job_completed_qty > 0 and output_value == 0:
+					if job_completed_qty > 0 and output_value < job_completed_qty:
 						print('Output Value Reset Detected, Updating Job Status to Completed')
 						active_job_doc.status = "Completed"
 						active_job_doc.save()

@@ -102,6 +102,76 @@ def create_telemetry():
         }
 
 
+def get_job_metrics(machine):
+    """
+    Fetch latest 'In Progress' Job Card for a machine and return key metrics.
+    If no job is found, return default values (all zeros and empty strings).
+    """
+    try:
+        # Get latest job card directly
+        job_card = frappe.get_value(
+            "Job Card",
+            filters={"machine": machine, "status": "In Progress"},
+            fieldname=[
+                "job_name",
+                "job_number",
+                "target_quantity",
+                "completed_quantity",
+                "target_run_rate",
+                "actual_run_rate"
+            ],
+            order_by="creation desc",
+            as_dict=True
+        )
+
+        # Default values if no job card exists
+        if not job_card:
+            return {
+                "status": "success",
+                "message": f"No job in progress for machine {machine}, returning defaults",
+                "data": {
+                    "job_name": "",
+                    "job_number": "",
+                    "target_quantity": 0,
+                    "completed_quantity": 0,
+                    "run_rate_indicator": 0
+                }
+            }
+
+        # Compute run_rate_indicator safely
+        target_rate = job_card.target_run_rate or 0
+        actual_rate = job_card.actual_run_rate or 0
+        run_rate_indicator = 1 if actual_rate >= target_rate else 0
+
+        return {
+            "status": "success",
+            "message": "Job metrics retrieved successfully",
+            "data": {
+                "job_name": job_card.job_name or "",
+                "job_number": job_card.job_number or "",
+                "target_quantity": job_card.target_quantity or 0,
+                "completed_quantity": job_card.completed_quantity or 0,
+                "run_rate_indicator": run_rate_indicator
+            }
+        }
+
+    except Exception:
+        frappe.log_error(frappe.get_traceback(), f"Error in get_job_metrics for machine {machine}")
+        return {
+            "status": "error",
+            "message": "Internal server error occurred while fetching job metrics",
+            "data": {
+                "job_name": "",
+                "job_number": "",
+                "target_quantity": 0,
+                "completed_quantity": 0,
+                "run_rate_indicator": 0
+            }
+        }
+
+        
+    
+
 # Optional: Bulk create endpoint for multiple telemetry records
 @frappe.whitelist(allow_guest=True)
 def create_telemetry_bulk():

@@ -8,6 +8,7 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "overview_section",
   "machine",
   "date",
   "shift",
@@ -21,10 +22,12 @@
   "job_sequence_number",
   "shift_plan",
   "section_break_lcjb",
-  "target_run_rate",
   "start_date_time",
   "end_date_time",
   "duration",
+  "column_break_nvow",
+  "target_run_rate",
+  "actual_run_rate",
   "connections_tab"
  ],
  "fields": [
@@ -128,7 +131,8 @@
   },
   {
    "fieldname": "section_break_lcjb",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "label": "Metrics"
   },
   {
    "fetch_from": "job_name.ideal_run_rate",
@@ -152,6 +156,23 @@
    "fieldname": "start_date_time",
    "fieldtype": "Datetime",
    "label": "Start Date Time"
+  },
+  {
+   "fieldname": "column_break_nvow",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "job_name.ideal_run_rate",
+   "fetch_if_empty": 1,
+   "fieldname": "actual_run_rate",
+   "fieldtype": "Int",
+   "label": "Actual Run Rate",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "overview_section",
+   "fieldtype": "Section Break",
+   "label": "Overview"
   }
  ],
  "grid_page_length": 50,
@@ -163,7 +184,7 @@
    "link_fieldname": "job_card"
   }
  ],
- "modified": "2025-08-04 21:42:10.241678",
+ "modified": "2025-08-05 18:07:03.333335",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Job Card",

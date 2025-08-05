@@ -5,3 +5,5 @@
 tags
 node_modules
 __pycache__
+dppl_mes/public/frontend/
+dppl_mes/www/

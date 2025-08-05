@@ -39,7 +39,7 @@ const machines = ref([]);
 
 // Initialize createListResource for Machine DocType
 const machineResource = createListResource({
-  doctype: 'machine',
+  doctype: 'Machine',
   fields: ['name', 'machine_name', 'is_active', 'factory', 'area', 'oem_code'],
   orderBy: 'machine_name',
   auto: true, // We'll trigger fetch manually to handle filters

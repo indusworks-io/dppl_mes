@@ -40,10 +40,13 @@
 </template>
 
 <script setup>
+// import { session } from "../data/session"
 import { useRouter, useRoute } from 'vue-router';
 import { ref, watch } from 'vue';
 import { createListResource } from 'frappe-ui';
 import FilterDropdown from './components/FilterDropdown.vue';
+
+// console.log(session.user)
 
 const router = useRouter();
 const route = useRoute();
@@ -70,7 +73,7 @@ const goBackToDashboard = () => {
 
 // Fetch factory and area options
 const factoryResource = createListResource({
-  doctype: 'factory', // Ensure correct case
+  doctype: 'Factory', // Ensure correct case
   fields: ['factory_name'], // Use 'name' unless 'factory_name' is confirmed
   orderBy: 'factory_name',
   auto: true,
@@ -81,7 +84,7 @@ const factoryResource = createListResource({
 });
 
 const areaResource = createListResource({
-  doctype: 'area',
+  doctype: 'Area',
   fields: ['area_name'],
   orderBy: 'area_name ',
   auto: true,

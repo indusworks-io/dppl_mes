@@ -245,3 +245,5 @@ before_migrate = "dppl_mes.utils.before_migrate"
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
 
+
+website_route_rules = [{'from_route': '/application/<path:app_path>', 'to_route': 'application'}, {'from_route': '/frontend/<path:app_path>', 'to_route': 'frontend'},]

@@ -64,6 +64,8 @@ class Telemetry(Document):
 					job_card_doc.completed_quantity = job_card_doc.completed_quantity + output_value
 					job_card_doc.save()
 				print('Job Card Updated')
+			else:
+				print('No Job Card Found')
 		except Exception as e:
 			frappe.log_error(frappe.get_traceback(), "Create Output Log Error")
 
@@ -83,24 +85,28 @@ class Telemetry(Document):
 				if machine_output_type == 'Absolute Values':
 					print('Entered Absolute Value Checker Block')
 					active_job_doc = frappe.get_doc("Job Card", active_job)
-					
 					job_completed_qty = active_job_doc.completed_quantity
-					
 					print(f'Job Completed Quantity: {job_completed_qty}')
-					
+
 					if job_completed_qty > 0 and output_value < job_completed_qty:
 						print('Output Value Reset Detected, Updating Job Status to Completed')
 						active_job_doc.status = "Completed"
+						active_job_doc.end_date_time = now()
 						active_job_doc.save()
 						frappe.db.commit()
-						new_job = self.start_job(machine)
-						return new_job
+						if output_value > 0:
+							new_job = self.start_job(machine)
+							return new_job
 					else:
 						return active_job
 			else:
-				print('Active Job Not Found, Starting New Job')
-				new_job = self.start_job(machine)
-				return new_job
+				print('Active Job Not Found, Trying To Start New Job')
+				if output_value > 0:
+					new_job = self.start_job(machine)
+					return new_job
+				else:
+					return None
+				
 		except Exception as e:
 			frappe.log_error(frappe.get_traceback(), "Get Job Details Error")
 
@@ -180,6 +186,7 @@ class Telemetry(Document):
 			if job_seq_1 and job_seq_1.status == "Not Started":
 				job_card = frappe.get_doc("Job Card", job_seq_1.name)
 				job_card.status = "In Progress"
+				job_card.start_date_time = now()
 				job_card.save()
 				return job_card.name
 			else:
@@ -188,6 +195,7 @@ class Telemetry(Document):
 				if job_seq_2 and job_seq_2.status == "Not Started":
 					job_card = frappe.get_doc("Job Card", job_seq_2.name)
 					job_card.status = "In Progress"
+					job_card.start_date_time = now()
 					job_card.save()
 					return job_card.name
 				else:

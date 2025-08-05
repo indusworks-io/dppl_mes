@@ -20,6 +20,11 @@
   "status",
   "job_sequence_number",
   "shift_plan",
+  "section_break_lcjb",
+  "target_run_rate",
+  "start_date_time",
+  "end_date_time",
+  "duration",
   "connections_tab"
  ],
  "fields": [
@@ -120,6 +125,33 @@
    "fieldtype": "Tab Break",
    "label": "Connections",
    "show_dashboard": 1
+  },
+  {
+   "fieldname": "section_break_lcjb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fetch_from": "job_name.ideal_run_rate",
+   "fetch_if_empty": 1,
+   "fieldname": "target_run_rate",
+   "fieldtype": "Int",
+   "label": "Target Run Rate",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "duration",
+   "fieldtype": "Duration",
+   "label": "Duration"
+  },
+  {
+   "fieldname": "end_date_time",
+   "fieldtype": "Datetime",
+   "label": "End Date Time"
+  },
+  {
+   "fieldname": "start_date_time",
+   "fieldtype": "Datetime",
+   "label": "Start Date Time"
   }
  ],
  "grid_page_length": 50,
@@ -131,7 +163,7 @@
    "link_fieldname": "job_card"
   }
  ],
- "modified": "2025-07-14 18:37:45.401434",
+ "modified": "2025-08-04 21:42:10.241678",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Job Card",

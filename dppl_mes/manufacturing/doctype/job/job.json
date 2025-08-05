@@ -10,7 +10,8 @@
  "field_order": [
   "job_name",
   "job_number",
-  "complexity_level"
+  "complexity_level",
+  "ideal_run_rate"
  ],
  "fields": [
   {
@@ -39,13 +40,23 @@
    "label": "Complexity Level",
    "options": "\n1\n2\n3\n4\n5",
    "reqd": 1
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "description": "Output per minute",
+   "fieldname": "ideal_run_rate",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Ideal Run Rate",
+   "non_negative": 1,
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-14 18:33:31.859662",
+ "modified": "2025-08-04 21:23:26.431195",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Job",

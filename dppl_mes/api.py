@@ -59,6 +59,8 @@ def create_telemetry():
         # Insert with proper error handling
         telemetry.insert(ignore_permissions=True)
         frappe.db.commit()
+
+        # Add Logic To Provide Job Metrics In Return
         
         return {
             "status": "success",

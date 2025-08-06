@@ -101,12 +101,39 @@ def create_telemetry():
             "message": "Internal server error occurred"
         }
 
-
+@frappe.whitelist()
 def get_job_metrics(machine):
     """
     Fetch latest 'In Progress' Job Card for a machine and return key metrics.
     If no job is found, return default values (all zeros and empty strings).
     """
+    if frappe.request.method != "GET":
+        frappe.throw(_("Only GET requests are allowed"), frappe.PermissionError)
+    
+    try:
+        # Parse the JSON data from request body
+        if not frappe.request.data:
+            frappe.throw(_("Request body is empty"))
+        
+        data = json.loads(frappe.request.data)
+        
+        machine = data.get("machine")
+
+        # Check if machine exists
+        if not frappe.db.exists("Machine", machine):
+            return {
+                "status": "error",
+                "message": f"Machine '{machine}' does not exist",
+                "data": {
+                    "job_name": "",
+                    "job_number": "",
+                    "target_quantity": 0,
+                    "completed_quantity": 0,
+                    "run_rate_indicator": 0
+                }
+            }
+    except Exception:
+        frappe.log_error(frappe.get_traceback(), f"Error in get_job_metrics for machine {machine}")
     try:
         # Get latest job card directly
         job_card = frappe.get_value(

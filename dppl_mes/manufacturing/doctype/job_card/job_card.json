@@ -135,6 +135,7 @@
    "label": "Metrics"
   },
   {
+   "description": "Output per minute",
    "fetch_from": "job_name.ideal_run_rate",
    "fetch_if_empty": 1,
    "fieldname": "target_run_rate",
@@ -162,6 +163,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "description": "Output per minute",
    "fetch_from": "job_name.ideal_run_rate",
    "fetch_if_empty": 1,
    "fieldname": "actual_run_rate",
@@ -184,7 +186,7 @@
    "link_fieldname": "job_card"
   }
  ],
- "modified": "2025-08-05 18:07:03.333335",
+ "modified": "2025-08-06 12:05:29.256127",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Job Card",

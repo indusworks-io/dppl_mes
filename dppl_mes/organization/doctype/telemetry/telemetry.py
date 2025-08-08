@@ -276,10 +276,11 @@ def previous_job_counter_reset_function(machine, active_job, output_value):
 	2. Check if the previous job completed quantity is same as job_completed_qty
 	3. if yes then return true else return false
 	"""
+	print(f'Checking Previous Job for Machine: {machine}, Active Job: {active_job}, Output Value: {output_value}')
 	previous_job = frappe.get_all(
 		"Job Card",
 		filters={"machine": machine, "status": "Completed"},
-		order_by="end_date_time desc",
+		order_by="actual_end_date_time desc",
 		fields=["completed_quantity"],
 		limit=1
 	)

@@ -8,6 +8,9 @@ from frappe.utils import now, time_diff_in_seconds
 
 class JobCard(Document):
 	def before_save(self):
+		if self.actual_duration == "":
+			self.actual_duration = None
+
 		if self.actual_start_date_time:
 			self.actual_duration = 0
 

@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"_swq7_SQLT\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Shortcuts</b></span>\",\"col\":12}},{\"id\":\"K7DeRrUL--\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create New Shift Plan\",\"col\":6}},{\"id\":\"8v5IGcMRSh\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Update Downtime Log Reasons\",\"col\":6}},{\"id\":\"CXkzktyanN\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"WOT7C4XIUI\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Data</b></span>\",\"col\":12}},{\"id\":\"jlEAl5QRr5\",\"type\":\"card\",\"data\":{\"card_name\":\"Transactions\",\"col\":6}},{\"id\":\"vDRblxUFZy\",\"type\":\"card\",\"data\":{\"card_name\":\"Masters\",\"col\":6}},{\"id\":\"dk6JjK0YNq\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"gPDgOTaROf\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Analytics</span>\",\"col\":12}}]",
+ "content": "[{\"id\":\"_swq7_SQLT\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Shortcuts</b></span>\",\"col\":12}},{\"id\":\"K7DeRrUL--\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create New Shift Plan\",\"col\":6}},{\"id\":\"8v5IGcMRSh\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Update Downtime Log Reasons\",\"col\":6}},{\"id\":\"CXkzktyanN\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"WOT7C4XIUI\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Data</b></span>\",\"col\":12}},{\"id\":\"jlEAl5QRr5\",\"type\":\"card\",\"data\":{\"card_name\":\"Transactions\",\"col\":6}},{\"id\":\"vDRblxUFZy\",\"type\":\"card\",\"data\":{\"card_name\":\"Masters\",\"col\":6}},{\"id\":\"dk6JjK0YNq\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"gPDgOTaROf\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Analytics</span>\",\"col\":12}},{\"id\":\"ocC7-BOuzr\",\"type\":\"card\",\"data\":{\"card_name\":\"Job Reports\",\"col\":4}}]",
  "creation": "2025-06-25 17:50:55.611137",
  "custom_blocks": [],
  "docstatus": 0,
@@ -90,9 +90,28 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Job Reports",
+   "link_count": 1,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Side Sealing Job Report",
+   "link_count": 0,
+   "link_to": "Job Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2025-07-02 16:45:36.323843",
+ "modified": "2025-08-11 17:03:54.290354",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Manufacturing",

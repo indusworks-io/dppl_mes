@@ -102,6 +102,7 @@ def get_job_metrics_internal_function(machine=None):
             filters={"machine": machine, "status": "In Progress"},
             fieldname=[
                 "job_name",
+                "job_number",
                 "target_quantity",
                 "completed_quantity",
                 "planned_start_date_time",
@@ -116,6 +117,7 @@ def get_job_metrics_internal_function(machine=None):
                 "status": "failure",
                 "data": {
                     "job_name": "No Job Running",
+                    "job_number": "N/A",
                     "target_quantity": 0,
                     "completed_quantity": 0,
                     "balance_quantity": 0,
@@ -145,6 +147,7 @@ def get_job_metrics_internal_function(machine=None):
             "status": "success",
             "data": {
                 "job_name": job_card.job_name or "",
+                "job_number": job_card.job_number or "",
                 "target_quantity": job_card.target_quantity or 0,
                 "completed_quantity": job_card.completed_quantity or 0,
                 "balance_quantity": balance_quantity or 0,
@@ -159,6 +162,7 @@ def get_job_metrics_internal_function(machine=None):
             "status": "error",
             "data": {
                 "job_name": "",
+                "job_number": "",
                 "target_quantity": 0,
                 "completed_quantity": 0,
                 "run_rate_indicator": 0

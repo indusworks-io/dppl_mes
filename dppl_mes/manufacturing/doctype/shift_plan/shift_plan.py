@@ -8,7 +8,14 @@ import datetime
 
 
 class ShiftPlan(Document):
-	pass
+    def before_save(self):
+        """
+        Set the creation date and time to the current time if not already set.
+        """
+        for row in self.job_plan_details:
+            if row.job_one_duration == '':
+                print(f"Job One Duration is empty for machine {row.machine_name}. Setting it to 0.")
+                row.job_one_duration = 0
 
 
 @frappe.whitelist()
@@ -91,6 +98,10 @@ def create_job_cards(docname):
         if row.no_job:
             continue
 
+        if row.job_one_duration == '':
+            print(f"Job One Duration is empty for machine {row.machine_name}. Setting it to 0.")
+            row.job_one_duration = 0
+
         base_fields = {
             "date": doc.date,
             "shift": doc.shift,
@@ -139,3 +150,7 @@ def create_job_cards(docname):
             })
             job_card_2.save()
             created_count += 1
+        
+    doc.status = "Confirmed"
+    doc.save()
+    return {"status": "success", "created": created_count}

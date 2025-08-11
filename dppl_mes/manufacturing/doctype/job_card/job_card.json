@@ -17,6 +17,7 @@
   "job_number",
   "target_quantity",
   "completed_quantity",
+  "completed_quantity_checker",
   "column_break_bhfg",
   "status",
   "job_sequence_number",
@@ -203,6 +204,13 @@
    "fieldtype": "Int",
    "label": "Planned Run Rate",
    "non_negative": 1
+  },
+  {
+   "fieldname": "completed_quantity_checker",
+   "fieldtype": "Int",
+   "label": "Completed Quantity Checker",
+   "non_negative": 1,
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
@@ -214,7 +222,7 @@
    "link_fieldname": "job_card"
   }
  ],
- "modified": "2025-08-07 18:07:08.917426",
+ "modified": "2025-08-11 12:12:04.827911",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Job Card",

@@ -7,14 +7,14 @@ frappe.query_reports["Job Report"] = {
             "fieldname": "from_date",
             "label": __("From Date"),
             "fieldtype": "Date",
-            "default": frappe.datetime.add_days(frappe.datetime.get_today(), -30),
+            "default": frappe.datetime.add_days(frappe.datetime.get_today(), -31),
             "reqd": 1
         },
         {
             "fieldname": "to_date",
             "label": __("To Date"),
             "fieldtype": "Date",
-            "default": frappe.datetime.get_today(),
+            "default": frappe.datetime.add_days(frappe.datetime.get_today(), -1),
             "reqd": 1
         }
 	]

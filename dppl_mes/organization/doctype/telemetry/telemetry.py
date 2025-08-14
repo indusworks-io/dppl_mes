@@ -186,6 +186,109 @@ class Telemetry(Document):
 	
 	def start_job(self, machine):
 		"""
+		Simple approach: Get all jobs for current date and shift, then start by sequence priority
+		"""
+		try:
+			current_datetime = now()
+			current_time = datetime.strptime(nowtime(), "%H:%M:%S.%f").time()
+
+			machine_doc = frappe.get_doc("Machine", machine)
+			factory = machine_doc.factory
+			print(f"Factory: {factory}")
+
+			# Get current shift
+			current_shift = None
+			factory_doc = frappe.get_doc("Factory", factory)
+			for shift in factory_doc.get("shift_timings"):
+				shift_start_time = to_time(shift.start_time)
+				shift_end_time = to_time(shift.end_time)
+				print(f"Checking shift: {shift.shift_name}, Start: {shift_start_time}, End: {shift_end_time}")
+
+				# Handle overnight shifts
+				if shift_start_time <= shift_end_time:
+					# Regular shift (e.g., 8 AM to 8 PM)
+					if shift_start_time <= current_time <= shift_end_time:
+						current_shift = shift.shift_name
+						print(f"Current Shift: {current_shift}")
+						break
+				else:  
+					# Overnight shift (e.g., 8 PM to 8 AM)
+					if current_time >= shift_start_time or current_time <= shift_end_time:
+						current_shift = shift.shift_name
+						print(f"Current Shift: {current_shift}")
+						break
+			
+			if not current_shift:
+				print("No active shift found for the current time")
+				return None
+
+			# Determine which date to check for overnight shifts
+			# If we're in an overnight shift and current time is before shift end (morning hours),
+			# we need to check the previous date's jobs
+			search_date = nowdate()
+			
+			# For overnight shifts, if current time is in morning hours (before noon),
+			# check previous date as well
+			for shift in factory_doc.get("shift_timings"):
+				if shift.shift_name == current_shift:
+					shift_start_time = to_time(shift.start_time)
+					shift_end_time = to_time(shift.end_time)
+					
+					if shift_start_time > shift_end_time:  # Overnight shift
+						if current_time <= shift_end_time:  # We're in the morning part
+							search_date = frappe.utils.add_days(nowdate(), -1)
+							print(f"Overnight shift detected, searching for jobs from: {search_date}")
+					break
+
+			# Get all jobs for this machine, date, and shift
+			scheduled_jobs = frappe.get_all(
+				"Job Card",
+				filters={
+					"machine": machine,
+					"date": search_date,
+					"shift": current_shift,
+				},
+				order_by="job_sequence_number asc",
+				fields=["name", "status", "job_sequence_number"],
+			)
+
+			if not scheduled_jobs:
+				print(f"No jobs found for machine: {machine}, date: {search_date}, shift: {current_shift}")
+				return None
+
+			print(f"Found {len(scheduled_jobs)} jobs for date: {search_date}, shift: {current_shift}")
+
+			# Check job with sequence number 1
+			job_seq_1 = next((job for job in scheduled_jobs if job.job_sequence_number == 1), None)
+
+			if job_seq_1 and job_seq_1.status == "Not Started":
+				job_card = frappe.get_doc("Job Card", job_seq_1.name)
+				job_card.status = "In Progress"
+				job_card.actual_start_date_time = current_datetime
+				job_card.save()
+				print(f"Started job sequence 1: {job_card.name}")
+				return job_card.name
+			else:
+				# Check for job with sequence number 2
+				job_seq_2 = next((job for job in scheduled_jobs if job.job_sequence_number == 2), None)
+				if job_seq_2 and job_seq_2.status == "Not Started":
+					job_card = frappe.get_doc("Job Card", job_seq_2.name)
+					job_card.status = "In Progress"
+					job_card.actual_start_date_time = current_datetime
+					job_card.save()
+					print(f"Started job sequence 2: {job_card.name}")
+					return job_card.name
+				else:
+					print("No available jobs to start (sequence 1 and 2 either don't exist or are not 'Not Started')")
+					return None
+
+		except Exception as e:
+			frappe.log_error(frappe.get_traceback(), "Start Job Error")
+			return None
+	
+	
+	def start_job_old(self, machine):
+		"""
 		0. In a Try Block do the following
 		1. Get current_date
 		2. Get current_time

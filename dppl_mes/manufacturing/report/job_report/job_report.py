@@ -33,10 +33,14 @@ def get_columns():
         {'fieldname': 'operator', 'label': 'Operator', 'fieldtype': 'Data', 'width': 150},
         {'fieldname': 'job_name_one', 'label': 'Job Name', 'fieldtype': 'Link', 'options': 'Job', 'width': 200},
         {'fieldname': 'job_number_one', 'label': 'Job No.', 'fieldtype': 'Data', 'width': 150},
-        {'fieldname': 'completed_quantity_one', 'label': 'Qty', 'fieldtype': 'Int', 'width': 150},
+        {'fieldname': 'target_quantity_one', 'label': 'Target Quantity', 'fieldtype': 'Int', 'width': 150},
+        {'fieldname': 'completed_quantity_one', 'label': 'Completed Quantity', 'fieldtype': 'Int', 'width': 150},
+        {'fieldname': 'efficiency_one_percent', 'label': 'Efficiency (%)', 'fieldtype': 'Percent', 'width': 150},
         {'fieldname': 'job_name_two', 'label': 'Job Name', 'fieldtype': 'Link', 'options': 'Job', 'width': 200},
         {'fieldname': 'job_number_two', 'label': 'Job No.', 'fieldtype': 'Data', 'width': 150},
-        {'fieldname': 'completed_quantity_two', 'label': 'Qty', 'fieldtype': 'Int', 'width': 150},
+        {'fieldname': 'target_quantity_two', 'label': 'Target Quantity', 'fieldtype': 'Int', 'width': 150},
+        {'fieldname': 'completed_quantity_two', 'label': 'Completed Quantity', 'fieldtype': 'Int', 'width': 150},
+        {'fieldname': 'efficiency_two_percent', 'label': 'Efficiency (%)', 'fieldtype': 'Percent', 'width': 150},
     ]
 
 
@@ -60,13 +64,13 @@ def get_data(from_date, to_date):
     job_cards = frappe.get_all(
         "Job Card",
         filters=[
-            ["status", "=", "Completed"],
             ["date", ">=", from_date],
             ["date", "<=", to_date]
         ],
         fields=[
             "machine", "date", "shift", "operator",
-            "job_name", "job_number", "job_sequence_number", "completed_quantity"
+            "job_name", "job_number", "job_sequence_number",
+            "target_quantity", "completed_quantity"
         ]
     )
 
@@ -120,10 +124,18 @@ def get_data(from_date, to_date):
                     "operator": operator,
                     "job_name_one": job1.get("job_name") if job1 else "",
                     "job_number_one": job1.get("job_number") if job1 else "",
+                    "target_quantity_one": job1.get("target_quantity") if job1 and job1.get("target_quantity") is not None else "",
                     "completed_quantity_one": job1.get("completed_quantity") if job1 and job1.get("completed_quantity") is not None else "",
+                    "efficiency_one_percent": (
+                        (job1.get("completed_quantity") / job1.get("target_quantity") * 100) if job1 and job1.get("target_quantity") else 0
+                    ) if job1 else 0,
                     "job_name_two": job2.get("job_name") if job2 else "",
                     "job_number_two": job2.get("job_number") if job2 else "",
+                    "target_quantity_two": job2.get("target_quantity") if job2 and job2.get("target_quantity") is not None else "",
                     "completed_quantity_two": job2.get("completed_quantity") if job2 and job2.get("completed_quantity") is not None else "",
+                    "efficiency_two_percent": (
+                        (job2.get("completed_quantity") / job2.get("target_quantity") * 100) if job2 and job2.get("target_quantity") else 0
+                    ) if job2 else 0,
                 }
                 data.append(row)
 

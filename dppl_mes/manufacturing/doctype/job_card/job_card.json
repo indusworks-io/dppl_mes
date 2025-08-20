@@ -206,6 +206,7 @@
    "non_negative": 1
   },
   {
+   "description": "This Field Is For Testing Purpose Only.",
    "fieldname": "completed_quantity_checker",
    "fieldtype": "Int",
    "label": "Completed Quantity Checker",
@@ -222,7 +223,7 @@
    "link_fieldname": "job_card"
   }
  ],
- "modified": "2025-08-11 12:12:04.827911",
+ "modified": "2025-08-20 13:46:22.739760",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Job Card",

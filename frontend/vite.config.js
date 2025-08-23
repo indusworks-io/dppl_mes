@@ -14,8 +14,8 @@ export default defineConfig({
         type: "module",
       },
       manifest: {
-          "name": "IndusWorksMES",
-          "short_name": "Indus MES",
+          "name": "DPPL MES",
+          "short_name": "DPPL MES",
           "icons": [
             {
               "src": "img/icons/pwa-192x192.png",

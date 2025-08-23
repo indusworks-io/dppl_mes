@@ -6,7 +6,7 @@ app_email = "navneet@indusworks.in"
 app_license = "mit"
 
 #after_migrate = "dppl_mes.utils.after_migrate"
-before_migrate = "dppl_mes.utils.before_migrate"
+#before_migrate = "dppl_mes.utils.before_migrate"
 
 # Apps
 # ------------------
@@ -246,4 +246,4 @@ before_migrate = "dppl_mes.utils.before_migrate"
 # }
 
 
-website_route_rules = [{'from_route': '/application/<path:app_path>', 'to_route': 'application'}, {'from_route': '/frontend/<path:app_path>', 'to_route': 'frontend'},]
+website_route_rules = [{'from_route': '/frontend/<path:app_path>', 'to_route': 'frontend'}, {'from_route': '/application/<path:app_path>', 'to_route': 'application'}, {'from_route': '/frontend/<path:app_path>', 'to_route': 'frontend'},]

@@ -8,7 +8,16 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AreaGrid: typeof import('./src/components/AreaGrid.vue')['default']
+    DashboardComponent: typeof import('./src/components/DashboardComponent.vue')['default']
+    FactoryFloorMap: typeof import('./src/components/FactoryFloorMap.vue')['default']
+    FilterDropdown: typeof import('./src/components/FilterDropdown.vue')['default']
+    HomePageControls: typeof import('./src/components/HomePageControls.vue')['default']
+    MachineCard: typeof import('./src/components/MachineCard.vue')['default']
+    MachineDetails: typeof import('./src/components/MachineDetails.vue')['default']
+    NavBar: typeof import('./src/components/NavBar.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    UpdateReasonDialog: typeof import('./src/components/UpdateReasonDialog.vue')['default']
   }
 }

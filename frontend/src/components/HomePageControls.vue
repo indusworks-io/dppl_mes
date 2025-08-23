@@ -1,51 +1,29 @@
 <!-- src/components/HomePageControls.vue -->
 <template>
     <div class="controls-bar">
-            <button @click="$emit('toggle-view')" class="toggle-button">
-                Switch to {{ isFloorMapView ? 'Dashboard' : 'Floor Map' }}
-            </button>
-            <div class="filters">
-                <FilterDropdown
-                    id="factory-filter"
-                    label="Factory"
-                    :options="factoryOptions"
-                    @filter-selected="filterSelected('factory', $event)"
-                />
-                
-                <FilterDropdown
-                    id="area-filter"
-                    label="Area"
-                    :options="areaOptions"
-                    @filter-selected="filterSelected('area', $event)"
-                />
-                
-            </div>
+      <button @click="$emit('toggle-view')" class="toggle-button">
+        Switch to {{ isFloorMapView ? 'Dashboard View' : 'Map View' }}
+      </button>
     </div>
-
 </template>
 
 <script setup>
-import FilterDropdown from './FilterDropdown.vue';
 
 const props = defineProps({
   isFloorMapView: Boolean,
   isMachineDetailsView: Boolean,
-  factoryOptions: Array,
-  areaOptions: Array
 });
 
 const emit = defineEmits(['go-back', 'toggle-view', 'filter-selected']);
 
-const filterSelected = (filterName, value) => {
-  emit('filter-selected', { filterName, value });
-};
 </script>
 
 <style scoped>
+/* Primary Bar */
 .controls-bar {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   padding: 10px 20px;
   background: #f7f8fa;
@@ -57,27 +35,51 @@ const filterSelected = (filterName, value) => {
   gap: 10px;
 }
 
+/* Toggle Button Style */
 .toggle-button {
-  /* Ensure button doesn't shrink */
-  flex-shrink: 0;
+  flex-shrink: 1;
 }
 
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  align-items: center;
-  padding: 0;
+.controls-bar button {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.25px;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+  position: relative;
+  overflow: hidden;
 }
 
-.filters :deep(.filter-dropdown) {
-  min-width: 400px; /* Set consistent minimum width */
+.controls-bar button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.4s;
 }
 
-/* Alternative: Make filters equal width */
-.filters :deep(.filter-dropdown select) {
-  width: 400px;
-  box-sizing: border-box;
+.controls-bar button:hover::before {
+  left: 100%;
+}
+
+.controls-bar button:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+.controls-bar button:active {
+  transform: translateY(0px);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
 }
 
 /* Desktop: filters align to the right */
@@ -93,35 +95,7 @@ const filterSelected = (filterName, value) => {
   .controls-bar {
     flex-direction: column;
     align-items: stretch;
-    gap: 15px;
-  }
-  
-  .toggle-button {
-    align-self: flex-start;
-  }
-  
-  .filters {
-    justify-content: flex-start;
-    width: 100%;
-  }
-
-  .filters :deep(.filter-dropdown) {
-    max-width: 100%;
-    flex: 1;
-    }
-
-    .filters :deep(.filter-dropdown select) {
-    max-width: 100%;
-    box-sizing: border-box;
-    }
-}
-
-/* Alternative: Keep everything in rows but stack on very small screens */
-@media (max-width: 480px) {
-  .filters {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
   }
 }
+
 </style>

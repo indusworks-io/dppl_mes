@@ -13,7 +13,7 @@
 defineProps({
   title: {
     type: String,
-    default: 'Soundseal Factory Application'
+    default: 'SoundSeal Production Monitor'
   }
 });
 </script>

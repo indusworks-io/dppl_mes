@@ -11,7 +11,7 @@
 
 <script setup>
 import { defineProps, defineEmits } from 'vue';
-import machineImage from '../assets/image.png';
+// import machineImage from '../assets/image.png';
 
 const props = defineProps({
   machine: {

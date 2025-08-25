@@ -55,6 +55,8 @@ export default defineConfig({
         
       },
       workbox: {
+        maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
+
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/jsonplaceholder\.typicode\.com\/.*/i,
@@ -71,7 +73,7 @@ export default defineConfig({
 			jinjaBootData: true,
 			lucideIcons: true,
 			buildConfig: {
-				indexHtmlPath: "../<app-name>/www/frontend.html",
+				indexHtmlPath: "../dppl_mes/www/frontend.html",
 				emptyOutDir: true,
 				sourcemap: true,
 			},
@@ -80,7 +82,7 @@ export default defineConfig({
 	],
 	build: {
 		chunkSizeWarningLimit: 1500,
-		outDir: "../<app-name>/public/frontend",
+		outDir: "../dppl_mes/public/frontend",
 		emptyOutDir: true,
 		target: "es2015",
 		sourcemap: true,

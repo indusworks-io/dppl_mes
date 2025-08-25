@@ -2,7 +2,7 @@ import frappe
 import json
 from frappe import _
 from datetime import datetime
-from frappe.utils import now, nowdate, nowtime
+from frappe.utils import now, nowdate, nowtime, now_datetime, time_diff_in_seconds
 
 
 @frappe.whitelist()
@@ -88,14 +88,9 @@ def create_telemetry():
 
 
 
-
 @frappe.whitelist()
 def get_job_metrics_internal_function(machine=None):
     print(f"Fetching job metrics for machine: {machine}")
-    """
-    Fetch latest 'In Progress' Job Card for a machine and return key metrics.
-    Always returns metrics inside a 'data' key.
-    """
     try:
         job_card = frappe.get_value(
             "Job Card",
@@ -126,31 +121,34 @@ def get_job_metrics_internal_function(machine=None):
                 }
             }
 
-        # Calculate Time Spent as difference between now and planned start time
         planned_start_time = job_card.planned_start_date_time
-        current_time = datetime.now()
-        time_spent = current_time - planned_start_time
-        time_spent_in_seconds = time_spent.total_seconds()
-        total_time = job_card.planned_duration
-        ideal_quantity = (time_spent.total_seconds() / total_time) * job_card.target_quantity if total_time else 0
+        current_time = now_datetime()
+
+        if current_time < planned_start_time:
+            time_spent_in_seconds = 0
+        else:
+            time_spent_in_seconds = time_diff_in_seconds(current_time, planned_start_time)
+
+        total_time = job_card.planned_duration or 0
+        target_qty = job_card.target_quantity or 0
         actual_quantity = job_card.completed_quantity or 0
-        balance_quantity = job_card.target_quantity - actual_quantity
+        balance_quantity = max(target_qty - actual_quantity, 0)
+
+        ideal_quantity = (time_spent_in_seconds / total_time) * target_qty if total_time else 0
+        ideal_quantity = min(ideal_quantity, target_qty)
 
         print(f'Time Spent: {time_spent_in_seconds}, Total Time: {total_time}, Ideal Quantity: {ideal_quantity}, Actual Quantity: {actual_quantity}, Balance Quantity: {balance_quantity}')
 
-        if actual_quantity >= ideal_quantity:
-            run_rate_indicator = 1
-        else:
-            run_rate_indicator = 0
+        run_rate_indicator = 1 if actual_quantity >= ideal_quantity else 0
 
         return {
             "status": "success",
             "data": {
                 "job_name": job_card.job_name or "",
                 "job_number": job_card.job_number or "",
-                "target_quantity": job_card.target_quantity or 0,
-                "completed_quantity": job_card.completed_quantity or 0,
-                "balance_quantity": balance_quantity or 0,
+                "target_quantity": target_qty,
+                "completed_quantity": actual_quantity,
+                "balance_quantity": balance_quantity,
                 "run_rate_indicator": run_rate_indicator,
                 "current_time": now()
             }
@@ -168,5 +166,86 @@ def get_job_metrics_internal_function(machine=None):
                 "run_rate_indicator": 0
             }
         }
+
+
+
+# @frappe.whitelist()
+# def get_job_metrics_internal_function(machine=None):
+#     print(f"Fetching job metrics for machine: {machine}")
+#     """
+#     Fetch latest 'In Progress' Job Card for a machine and return key metrics.
+#     Always returns metrics inside a 'data' key.
+#     """
+#     try:
+#         job_card = frappe.get_value(
+#             "Job Card",
+#             filters={"machine": machine, "status": "In Progress"},
+#             fieldname=[
+#                 "job_name",
+#                 "job_number",
+#                 "target_quantity",
+#                 "completed_quantity",
+#                 "planned_start_date_time",
+#                 "planned_duration"
+#             ],
+#             order_by="creation desc",
+#             as_dict=True
+#         )
+
+#         if not job_card:
+#             return {
+#                 "status": "failure",
+#                 "data": {
+#                     "job_name": "No Job Running",
+#                     "job_number": "N/A",
+#                     "target_quantity": 0,
+#                     "completed_quantity": 0,
+#                     "balance_quantity": 0,
+#                     "run_rate_indicator": 0,
+#                     "current_time": now()
+#                 }
+#             }
+
+#         # Calculate Time Spent as difference between now and planned start time
+#         planned_start_time = job_card.planned_start_date_time
+#         current_time = now_datetime()
+#         time_spent_in_seconds = abs(time_diff_in_seconds(current_time, planned_start_time))
+#         total_time = job_card.planned_duration
+#         ideal_quantity = (time_spent_in_seconds / total_time) * job_card.target_quantity if total_time else 0
+#         actual_quantity = job_card.completed_quantity or 0
+#         balance_quantity = job_card.target_quantity - actual_quantity
+
+#         print(f'Time Spent: {time_spent_in_seconds}, Total Time: {total_time}, Ideal Quantity: {ideal_quantity}, Actual Quantity: {actual_quantity}, Balance Quantity: {balance_quantity}')
+
+#         if actual_quantity >= ideal_quantity:
+#             run_rate_indicator = 1
+#         else:
+#             run_rate_indicator = 0
+
+#         return {
+#             "status": "success",
+#             "data": {
+#                 "job_name": job_card.job_name or "",
+#                 "job_number": job_card.job_number or "",
+#                 "target_quantity": job_card.target_quantity or 0,
+#                 "completed_quantity": job_card.completed_quantity or 0,
+#                 "balance_quantity": balance_quantity or 0,
+#                 "run_rate_indicator": run_rate_indicator,
+#                 "current_time": now()
+#             }
+#         }
+
+#     except Exception:
+#         frappe.log_error(frappe.get_traceback(), f"Error in get_job_metrics for machine {machine}")
+#         return {
+#             "status": "error",
+#             "data": {
+#                 "job_name": "",
+#                 "job_number": "",
+#                 "target_quantity": 0,
+#                 "completed_quantity": 0,
+#                 "run_rate_indicator": 0
+#             }
+#         }
 
 

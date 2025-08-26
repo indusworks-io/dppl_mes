@@ -9,6 +9,7 @@
  "field_order": [
   "factory_name",
   "is_active",
+  "floor_plan",
   "shift_information_section",
   "shift_timings",
   "connections_tab"
@@ -45,13 +46,19 @@
    "fieldtype": "Tab Break",
    "label": "Connections",
    "show_dashboard": 1
+  },
+  {
+   "description": "File needs to be an SVG with each machine name as ID.",
+   "fieldname": "floor_plan",
+   "fieldtype": "Attach",
+   "label": "Floor Plan"
   }
  ],
  "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-05 15:24:55.858789",
+ "modified": "2025-08-26 15:12:11.279119",
  "modified_by": "Administrator",
  "module": "Organization",
  "name": "Factory",

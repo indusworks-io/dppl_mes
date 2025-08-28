@@ -40,9 +40,13 @@
     5. Build/Update Factory Floor Map:
         - In FactoryFloorMap.vue file render machine_image SVG
         - Make The SVG take 100% of the View Port Width while having some padding on all sides
-        - The SVG path of each machine where the id of the path is same as name of Machine.
-        - connect all machine path with their corrosponding machine using the id & name combination.
-        - If the machine is_active == 0 then update the color of the path to gray else green
+        - The SVG path of each machine where the id of the path is same as name of Machine. example:
+            In SVG: <path id="XL-D" d="M29 21V79H11V21H29Z" fill="#808080" stroke="black" stroke-width="2"/>
+            In Backend: Machine Name is XL-D
+        - Iterate through all the paths in the SVG and create a reactive object for each machine path
+        - Create a function that can be used to update the color of the machine object path to #FF0000 or #00FF00 or #FFFFFF
+        - If the Machine is_active is 0 then change color of the machine object path to #FFFFFF
+        
 
     6. Build/Update Dashboard Component
         - In DashboardComponent.vue

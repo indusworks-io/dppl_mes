@@ -2,15 +2,19 @@
   <div id="app">
     <NavBar />
     <HomePageControls
+      :factory-options="factoryOptions"
+      :selected-factory="selectedFactory"
       :is-floor-map-view="isFloorMapView"
-      :is-machine-details-view="isMachineDetailsView"
       @toggle-view="toggleView"
       @filter-selected="handleFactorySelection"
-      @factory-data-updated="handleFactoryDataUpdate"
     />
 
     <div id="HomePageView">
-      <DashboardComponent v-if="!isFloorMapView" :areas="areas" :machines="machines" />
+      <DashboardComponent
+        v-if="!isFloorMapView"
+        :areas="areas"
+        :machines="machines"
+      />
       <FactoryFloorMap
         v-else
         :selected-factory="selectedFactory"
@@ -22,63 +26,83 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue';
-import { createListResource } from 'frappe-ui';
+import { ref, onMounted, computed, onUnmounted } from 'vue';
+import { createListResource, createResource } from 'frappe-ui';
+import NavBar from '../components/NavBar.vue';
+import HomePageControls from '../components/HomePageControls.vue';
 import DashboardComponent from '../components/DashboardComponent.vue';
 import FactoryFloorMap from '../components/FactoryFloorMap.vue';
-import HomePageControls from '../components/HomePageControls.vue';
 
 const isFloorMapView = ref(false);
-const isMachineDetailsView = ref(false);
+const factoryOptions = ref([]);
 const selectedFactory = ref('');
 const selectedFactoryData = ref(null);
 const areas = ref([]);
 const machines = ref([]);
 
-// Resources
+// Toggle between views
+function toggleView() {
+  isFloorMapView.value = !isFloorMapView.value;
+}
+
+// Handle factory selection
+function handleFactorySelection(factoryName) {
+  selectedFactory.value = factoryName;
+  selectedFactoryData.value = factoryOptions.value.find(f => f.value === factoryName) || null;
+}
+
+// Fetch factories
+const factoryResource = createListResource({
+  doctype: 'Factory',
+  fields: ['name', 'factory_name', 'floor_plan'],
+  filters: { is_active: 1 },
+  auto: true,
+  onSuccess(data) {
+    factoryOptions.value = data.map(f => ({
+      value: f.name,
+      text: f.factory_name,
+      floor_plan: f.floor_plan
+    }));
+    fetchDefaultFactory();
+  }
+});
+
+// Fetch default factory
+function fetchDefaultFactory() {
+  createResource({
+    url: 'frappe.client.get',
+    params: { doctype: 'Organization Settings', name: 'Organization Settings' },
+    auto: true,
+    onSuccess(res) {
+      if (res && res.default_factory) {
+        selectedFactory.value = res.default_factory;
+        selectedFactoryData.value = factoryOptions.value.find(f => f.value === res.default_factory) || null;
+      }
+    }
+  });
+}
+
+// Fetch areas
 const areaResource = createListResource({
   doctype: 'Area',
   fields: ['name', 'area_name', 'factory', 'sequence_number'],
   auto: true,
+  onSuccess(data) {
+    areas.value = data;
+  }
 });
 
+// Fetch machines
 const machineResource = createListResource({
   doctype: 'Machine',
-  fields: ['name', 'machine_name', 'is_active', 'area', 'factory','sequence_number', 'machine_image'],
+  fields: ['name', 'machine_name', 'is_active', 'area', 'sequence_number', 'machine_image'],
   auto: true,
-});
-
-watch(() => areaResource.data, (newAreas) => {
-  if (newAreas) {
-    areas.value = newAreas;
+  pageLength: 2000,
+  onSuccess(data) {
+    machines.value = data;
   }
 });
 
-watch(() => machineResource.data, (newMachines) => {
-  if (newMachines) {
-    console.log('Fetched machines in Home.vue:', newMachines);
-    machines.value = newMachines;
-  }
-});
-
-// Toggle view
-const toggleView = () => {
-  isFloorMapView.value = !isFloorMapView.value;
-};
-
-// Handle factory selection
-const handleFactorySelection = (factoryName) => {
-  selectedFactory.value = factoryName;
-  console.log('Selected factory in Home.vue:', factoryName);
-};
-
-// Handle factory data update
-const handleFactoryDataUpdate = (data) => {
-  selectedFactoryData.value = data;
-  console.log('Factory data in Home.vue:', data);
-};
-
-// Initialize view based on device size
 const initializeView = () => {
   isFloorMapView.value = window.innerWidth > 1024;
 };
@@ -86,9 +110,13 @@ const initializeView = () => {
 onMounted(() => {
   initializeView();
   window.addEventListener('resize', initializeView);
+  factoryResource.reload();
+  areaResource.reload();
+  machineResource.reload();
 });
 
 onUnmounted(() => {
   window.removeEventListener('resize', initializeView);
 });
+
 </script>

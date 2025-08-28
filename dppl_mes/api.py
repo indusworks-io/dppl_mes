@@ -50,6 +50,14 @@ def create_telemetry():
         job_metrics = get_job_metrics_internal_function(machine=machine)
         metrics_data = job_metrics.get("data", {})
 
+        frappe.publish_realtime(
+            event='job_metrics_update',
+            message={
+                "machine": machine,
+                "job_metrics": metrics_data
+            },
+        )
+
         return {
             "status": "success",
             "message": "Telemetry record created successfully. Sharing job metrics.",

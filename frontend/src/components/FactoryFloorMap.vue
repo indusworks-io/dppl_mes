@@ -74,6 +74,7 @@ const isLoading = ref(false);
 const error = ref('');
 const svgContent = ref('');
 const floorPlanContainer = ref(null);
+const machineStates = ref({});
 
 // ✅ Zoom and Pan
 const zoomLevel = ref(1);
@@ -85,8 +86,6 @@ const lastMouseY = ref(0);
 
 // ✅ Computed
 const floorPlanUrl = computed(() => props.factoryData?.floor_plan || null);
-
-const machineElements = ref({});
 
 // ✅ Load Floor Plan
 const loadFloorPlan = async (floorPlanPath) => {
@@ -101,8 +100,6 @@ const loadFloorPlan = async (floorPlanPath) => {
       ? floorPlanPath
       : `${baseUrl}${floorPlanPath}`;
 
-    console.log('Loading floor plan from:', fullUrl);
-
     const response = await fetch(fullUrl);
     if (!response.ok) throw new Error(`Failed to load floor plan: ${response.statusText}`);
 
@@ -114,9 +111,7 @@ const loadFloorPlan = async (floorPlanPath) => {
     await nextTick();
     resetZoom();
     setupMachineElements();
-    setupMachineClickHandlers();
     
-    // Apply machine colors after SVG is loaded and elements are mapped
     updateMachineColors();
 
   } catch (err) {
@@ -135,81 +130,69 @@ const setupMachineElements = () => {
   const svgElement = floorPlanContainer.value.querySelector('svg');
   if (!svgElement) return;
 
-  const elementsWithIds = svgElement.querySelectorAll('[id]');
+  const paths = svgElement.querySelectorAll('path[id]');
   const machines = {};
   
-  elementsWithIds.forEach(element => {
-    machines[element.id] = {
-      element,
-      originalColor: element.style.fill || element.getAttribute('fill') || '#000000'
+  paths.forEach(path => {
+    const machineName = path.id;
+    console.log('Machine Name:', machineName);
+    machines[machineName] = {
+      element: path,
+      originalColor: path.style.fill || path.getAttribute('fill') || '#808080'
     };
+    path.style.fill = machineStates.value[machineName] || machines[machineName].originalColor;
+
+    // Add interactivity
+    path.style.cursor = 'pointer';
+    path.addEventListener('click', (event) => {
+      event.stopPropagation();
+      emit('machine-selected', machineName);
+      highlightMachine(path);
+    });
+    path.addEventListener('mouseenter', () => path.style.filter = 'brightness(1.2)');
+    path.addEventListener('mouseleave', () => path.style.filter = '');
   });
   
-  machineElements.value = machines;
-  console.log('Machine elements mapped:', Object.keys(machines));
-  console.log('Available machine IDs in SVG:', Object.keys(machines));
-  
-  // Log machine names from props for comparison
-  if (props.machines) {
-    console.log('Machine names from props:', props.machines.map(m => m.name));
-  }
+  machineStates.value = machines;
 };
 
 // ✅ Update machine color
 const updateMachineColor = (machineName, color) => {
-  if (machineElements.value[machineName]) {
-    const element = machineElements.value[machineName].element;
-    element.style.fill = color;
-    console.log(`Updated machine ${machineName} to color ${color}`);
-  } else {
-    console.warn(`Machine element not found: ${machineName}`);
+  if (machineStates.value[machineName]) {
+    const machine = machineStates.value[machineName];
+    machine.element.style.fill = color;
   }
 };
 
 // ✅ Update all machine colors based on current machine data
 const updateMachineColors = () => {
-  if (!props.machines || !props.machines.length) {
-    console.log('No machines data available');
+  if (!props.machines || !props.machines.length || !Object.keys(machineStates.value).length) {
     return;
   }
   
-  console.log('Updating machine colors...');
-  console.log('Available SVG elements:', Object.keys(machineElements.value));
-  console.log('Machine data:', props.machines.map(m => ({ name: m.name, is_active: m.is_active })));
-  
+  // Reset all to original color first
+  for (const machineName in machineStates.value) {
+    const machine = machineStates.value[machineName];
+    machine.element.style.fill = machine.originalColor;
+  }
+
   props.machines.forEach(machine => {
-    const color = machine.is_active === 1 ? '#22c55e' : '#6b7280'; // green if active, gray if not
-    
-    // Try exact match first
-    if (machineElements.value[machine.name]) {
-      updateMachineColor(machine.name, color);
+    let color;
+    if (machine.is_active === 0) {
+      color = '#FFFFFF'; // Inactive
     } else {
-      // Try to find a partial match or transformed name
-      const svgIds = Object.keys(machineElements.value);
-      const possibleMatch = svgIds.find(id => 
-        id.toLowerCase().includes(machine.name.toLowerCase()) ||
-        machine.name.toLowerCase().includes(id.toLowerCase()) ||
-        id.replace(/[-_\s]/g, '') === machine.name.replace(/[-_\s]/g, '')
-      );
-      
-      if (possibleMatch) {
-        console.log(`Found possible match: ${machine.name} -> ${possibleMatch}`);
-        updateMachineColor(possibleMatch, color);
-      } else {
-        console.warn(`No SVG element found for machine: "${machine.name}"`);
-      }
+      // Example logic for other states, assuming you have them
+      // For now, just green for active
+      color = '#00FF00'; // Active
     }
+    updateMachineColor(machine.name, color);
   });
 };
 
 // ✅ Watch for changes in machines prop
-watch(() => props.machines, (newMachines) => {
-  console.log('Machines updated:', newMachines);
-  if (newMachines && newMachines.length > 0) {
-    // Only update colors if SVG is loaded and elements are mapped
-    if (Object.keys(machineElements.value).length > 0) {
-      updateMachineColors();
-    }
+watch(() => props.machines, () => {
+  if (svgContent.value) {
+    updateMachineColors();
   }
 }, { deep: true, immediate: true });
 
@@ -220,41 +203,13 @@ watch(() => props.factoryData?.floor_plan, (newFloorPlan) => {
   }
 }, { immediate: true });
 
-// ✅ Setup machine click handlers
-const setupMachineClickHandlers = () => {
-  if (!floorPlanContainer.value) return;
-  const svgElement = floorPlanContainer.value.querySelector('svg');
-  if (!svgElement) return;
 
-  const machineElements = svgElement.querySelectorAll('[id]');
-  
-  machineElements.forEach(element => {
-    element.style.cursor = 'pointer';
-
-    element.addEventListener('click', (event) => {
-      event.stopPropagation();
-      const machineId = element.id;
-      console.log('Machine clicked:', machineId);
-      emit('machine-selected', machineId);
-      highlightMachine(element);
-    });
-
-    element.addEventListener('mouseenter', () => {
-      element.style.filter = 'brightness(1.2)';
-    });
-
-    element.addEventListener('mouseleave', () => {
-      element.style.filter = '';
-    });
-  });
-};
-
-// ✅ Highlight machine
-const highlightMachine = (element) => {
-  const prev = floorPlanContainer.value?.querySelectorAll('.machine-highlighted');
-  prev?.forEach(el => el.classList.remove('machine-highlighted'));
-  element.classList.add('machine-highlighted');
-};
+// // ✅ Highlight machine
+// const highlightMachine = (element) => {
+//   const prev = floorPlanContainer.value?.querySelectorAll('.machine-highlighted');
+//   prev?.forEach(el => el.classList.remove('machine-highlighted'));
+//   element.classList.add('machine-highlighted');
+// };
 
 // ✅ Zoom & Pan
 const zoomIn = () => zoomLevel.value = Math.min(zoomLevel.value * 1.2, 5);
@@ -303,7 +258,9 @@ const handleMouseUp = () => isDragging.value = false;
 const handleMachineClick = () => {};
 
 onMounted(() => {
-  // Component is ready
+  if (floorPlanUrl.value) {
+    loadFloorPlan(floorPlanUrl.value);
+  }
 });
 </script>
 
@@ -314,18 +271,19 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   background: #f8f9fa;
-  padding: 20px;
+  padding: 1rem;
   box-sizing: border-box;
 }
 
 /* Loading State */
-.loading-state {
+.loading-state, .error-state, .no-floor-plan {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100%;
   color: #6c757d;
+  text-align: center;
 }
 
 .loading-spinner {
@@ -343,53 +301,19 @@ onMounted(() => {
   100% { transform: rotate(360deg); }
 }
 
-/* Error State */
-.error-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: #dc3545;
-}
-
-.error-icon {
+.error-icon, .no-plan-icon {
   font-size: 48px;
   margin-bottom: 16px;
 }
 
-/* No Floor Plan State */
-.no-floor-plan {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: #6c757d;
-  text-align: center;
-  padding: 40px;
-}
-
-.no-plan-icon {
-  font-size: 64px;
-  margin-bottom: 20px;
-}
-
-.no-floor-plan h3 {
-  margin: 0 0 12px 0;
-  color: #495057;
-}
-
-.no-floor-plan p {
-  margin: 0;
-  font-size: 14px;
-}
-
 /* Floor Plan Display */
 .floor-plan-container {
-  height: calc(100vh - 40px);
+  height: 100%;
   display: flex;
   flex-direction: column;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 .floor-plan-header {
@@ -399,7 +323,6 @@ onMounted(() => {
   padding: 12px 20px;
   background: white;
   border-bottom: 1px solid #e9ecef;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   border-radius: 8px 8px 0 0;
 }
 
@@ -433,16 +356,12 @@ onMounted(() => {
   border-color: #adb5bd;
 }
 
-.control-btn:active {
-  background: #e9ecef;
-}
-
 /* Floor Plan Wrapper */
 .floor-plan-wrapper {
   flex: 1;
   overflow: hidden;
   position: relative;
-  background: white;
+  background: #fff;
   cursor: grab;
   border-radius: 0 0 8px 8px;
 }
@@ -458,61 +377,24 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   transition: transform 0.1s ease;
-  padding: 20px;
-  box-sizing: border-box;
 }
 
 .floor-map {
   width: 100%;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 1rem;
+  box-sizing: border-box;
 }
 
-/* SVG Styling - Make SVG take full width with padding */
 :deep(svg) {
   width: 100%;
-  height: auto;
-  max-height: 100%;
+  height: 100%;
   object-fit: contain;
 }
 
-/* Machine highlighting */
 :deep(.machine-highlighted) {
   filter: brightness(1.3) drop-shadow(0 0 8px #3b82f6) !important;
   stroke: #3b82f6 !important;
   stroke-width: 3 !important;
-}
-
-/* Machine hover effects */
-:deep([id]:hover) {
-  filter: brightness(1.2);
-  transition: filter 0.2s ease;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .map-container {
-    padding: 10px;
-  }
-  
-  .floor-plan-header {
-    padding: 8px 12px;
-  }
-
-  .floor-plan-header h3 {
-    font-size: 16px;
-  }
-
-  .control-btn {
-    width: 32px;
-    height: 32px;
-    font-size: 12px;
-  }
-  
-  .floor-plan-content {
-    padding: 10px;
-  }
 }
 </style>

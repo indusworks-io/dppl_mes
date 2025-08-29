@@ -71,56 +71,27 @@ def create_telemetry():
         job_metrics = get_job_metrics_internal_function(machine=machine)
         metrics_data = job_metrics.get("data", {})
 
-        # Enhanced debug: Print what we're publishing
+        # Publish realtime update to frontend
         publish_data = {
             "machine": machine,
             "job_metrics": metrics_data
         }
-        print(f"📡 PUBLISHING job_metrics_update event: {publish_data}")
-        print(f"📡 Current user: {frappe.session.user}")
-        print(f"📡 Current site: {frappe.local.site}")
-        print(f"📡 Socket.IO server should be running on: {frappe.local.site}:9000")
         
-        # Try multiple publishing strategies to ensure event reaches frontend
         try:
-            # Strategy 1: Publish to current user
-            result1 = frappe.publish_realtime(
+            # Publish to all users in the 'all' room (frontend auto-joins this room)
+            frappe.publish_realtime(
                 event='job_metrics_update',
-                message=publish_data,
-                user=frappe.session.user
+                message=publish_data
             )
-            print(f"✅ Strategy 1 - Published to user '{frappe.session.user}': {result1}")
-            
-            # Strategy 2: Publish to all users (global broadcast)
-            result2 = frappe.publish_realtime(
-                event='job_metrics_update',
-                message=publish_data,
-            )
-            print(f"✅ Strategy 2 - Published globally: {result2}")
-            
-            # Strategy 3: Publish with doctype context 
-            result3 = frappe.publish_realtime(
-                event='job_metrics_update',
-                message=publish_data,
-                doctype='Machine',
-                docname=machine
-            )
-            print(f"✅ Strategy 3 - Published with Machine doctype context for '{machine}': {result3}")
-            
-            # Strategy 4: Try different event name
-            result4 = frappe.publish_realtime(
-                event='realtime_update',
-                message=publish_data,
-            )
-            print(f"✅ Strategy 4 - Published as realtime_update: {result4}")
+            print(f"📡 Published job_metrics_update for machine '{machine}'")
             
         except Exception as e:
-            print(f"❌ Error publishing realtime events: {e}")
+            print(f"❌ Error publishing realtime event: {e}")
             frappe.log_error(frappe.get_traceback(), "Realtime Publishing Error")
 
         return {
             "status": "success",
-            "message": "Telemetry record created successfully. Sharing job metrics.",
+            "message": "Telemetry record created and realtime update published",
             "data": {
                 "machine": machine,
                 "job_metrics": metrics_data
@@ -158,7 +129,6 @@ def create_telemetry():
 
 @frappe.whitelist()
 def get_job_metrics_internal_function(machine=None):
-    print(f"Fetching job metrics for machine: {machine}")
     try:
         job_card = frappe.get_value(
             "Job Card",
@@ -205,9 +175,8 @@ def get_job_metrics_internal_function(machine=None):
         ideal_quantity = (time_spent_in_seconds / total_time) * target_qty if total_time else 0
         ideal_quantity = min(ideal_quantity, target_qty)
 
-        print(f'Time Spent: {time_spent_in_seconds}, Total Time: {total_time}, Ideal Quantity: {ideal_quantity}, Actual Quantity: {actual_quantity}, Balance Quantity: {balance_quantity}')
-
         run_rate_indicator = 1 if actual_quantity >= ideal_quantity else 0
+        print(f'Machine {machine}: Actual {actual_quantity}/{target_qty}, Run Rate: {run_rate_indicator}')
 
         return {
             "status": "success",

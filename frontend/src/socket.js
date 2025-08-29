@@ -4,6 +4,37 @@ import { getCachedResource } from 'frappe-ui/src/resources/resources'
 
 let socket = null
 
+// Function to dynamically detect Frappe sitename
+function getSitename() {
+  // Method 1: Try frappe.boot.sitename if available
+  if (typeof frappe !== 'undefined' && frappe.boot && frappe.boot.sitename) {
+    return frappe.boot.sitename
+  }
+  
+  // Method 2: Use hostname as sitename (common Frappe setup)
+  let sitename = window.location.hostname
+  
+  // Method 3: If hostname has port, use just the hostname part
+  if (sitename.includes(':')) {
+    sitename = sitename.split(':')[0]
+  }
+  
+  console.log('🏠 Detected sitename:', sitename)
+  return sitename
+}
+
+// Function to join appropriate Frappe rooms
+function joinFrappeRooms(socket) {
+  // Join 'all' room for global broadcasts
+  socket.emit('join', 'all')
+  
+  // Join doctype rooms for machine-related events
+  socket.emit('join', 'doctype:Machine')
+  socket.emit('join', 'doctype:Telemetry')
+  
+  console.log('🏠 Joined Frappe rooms: all, doctype:Machine, doctype:Telemetry')
+}
+
 export function initSocket() {
   // Return existing socket if already connected
   if (socket && socket.connected) {
@@ -13,8 +44,9 @@ export function initSocket() {
   let host = window.location.hostname
   let socketio_port = 9000  // Frappe socketio server port
   
-  // Connect to Frappe socketio server without namespace (default namespace)
-  let url = `http://${host}:${socketio_port}`
+  // Dynamically detect sitename for Frappe namespace
+  let sitename = getSitename()
+  let url = `http://${host}:${socketio_port}/${sitename}`
 
   console.log('🔌 Initializing socket connection to:', url)
   console.log('🏠 Host:', host, 'Port:', socketio_port)
@@ -26,6 +58,9 @@ export function initSocket() {
 
   socket.on('connect', () => {
     console.log('✅ Socket connected successfully! ID:', socket.id)
+    
+    // Join appropriate Frappe rooms for receiving events
+    joinFrappeRooms(socket)
   })
 
   socket.on('connect_error', (error) => {

@@ -5,6 +5,27 @@ from datetime import datetime
 from frappe.utils import now, nowdate, nowtime, now_datetime, time_diff_in_seconds
 
 
+@frappe.whitelist(methods=["POST"], allow_guest=True)
+def get_context_for_dev():
+	if not frappe.conf.developer_mode:
+		frappe.throw("This method is only meant for developer mode")
+	return get_boot()
+
+
+def get_boot():
+	return frappe._dict(
+		{
+			"frappe_version": frappe.__version__,
+			"default_route": get_default_route(),
+			"site_name": frappe.local.site,
+			"csrf_token": frappe.sessions.get_csrf_token(),
+		}
+	)
+
+
+def get_default_route():
+	return "/frontend"
+
 @frappe.whitelist()
 def create_telemetry():
     if frappe.request.method != "POST":
@@ -50,40 +71,52 @@ def create_telemetry():
         job_metrics = get_job_metrics_internal_function(machine=machine)
         metrics_data = job_metrics.get("data", {})
 
-        # Debug: Print what we're publishing
+        # Enhanced debug: Print what we're publishing
         publish_data = {
             "machine": machine,
             "job_metrics": metrics_data
         }
-        print(f"📡 Publishing job_metrics_update event: {publish_data}")
+        print(f"📡 PUBLISHING job_metrics_update event: {publish_data}")
         print(f"📡 Current user: {frappe.session.user}")
         print(f"📡 Current site: {frappe.local.site}")
+        print(f"📡 Socket.IO server should be running on: {frappe.local.site}:9000")
         
         # Try multiple publishing strategies to ensure event reaches frontend
-        
-        # Strategy 1: Publish to current user
-        frappe.publish_realtime(
-            event='job_metrics_update',
-            message=publish_data,
-            user=frappe.session.user
-        )
-        print(f"✅ Published to user: {frappe.session.user}")
-        
-        # Strategy 2: Publish to all users (global broadcast)
-        frappe.publish_realtime(
-            event='job_metrics_update',
-            message=publish_data,
-        )
-        print(f"✅ Published globally")
-        
-        # Strategy 3: Publish with doctype context 
-        frappe.publish_realtime(
-            event='job_metrics_update',
-            message=publish_data,
-            doctype='Machine',
-            docname=machine
-        )
-        print(f"✅ Published with Machine doctype context for: {machine}")
+        try:
+            # Strategy 1: Publish to current user
+            result1 = frappe.publish_realtime(
+                event='job_metrics_update',
+                message=publish_data,
+                user=frappe.session.user
+            )
+            print(f"✅ Strategy 1 - Published to user '{frappe.session.user}': {result1}")
+            
+            # Strategy 2: Publish to all users (global broadcast)
+            result2 = frappe.publish_realtime(
+                event='job_metrics_update',
+                message=publish_data,
+            )
+            print(f"✅ Strategy 2 - Published globally: {result2}")
+            
+            # Strategy 3: Publish with doctype context 
+            result3 = frappe.publish_realtime(
+                event='job_metrics_update',
+                message=publish_data,
+                doctype='Machine',
+                docname=machine
+            )
+            print(f"✅ Strategy 3 - Published with Machine doctype context for '{machine}': {result3}")
+            
+            # Strategy 4: Try different event name
+            result4 = frappe.publish_realtime(
+                event='realtime_update',
+                message=publish_data,
+            )
+            print(f"✅ Strategy 4 - Published as realtime_update: {result4}")
+            
+        except Exception as e:
+            print(f"❌ Error publishing realtime events: {e}")
+            frappe.log_error(frappe.get_traceback(), "Realtime Publishing Error")
 
         return {
             "status": "success",

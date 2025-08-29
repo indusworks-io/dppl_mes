@@ -129,7 +129,6 @@ const error = ref("")
 const svgContent = ref("")
 const floorPlanContainer = ref(null)
 const machineStates = ref({})
-const socket = ref(null)
 
 // Machine overlay state
 const selectedMachine = ref(null)
@@ -146,12 +145,25 @@ const lastMouseX = ref(0)
 const lastMouseY = ref(0)
 
 // ✅ Computed
-const floorPlanUrl = computed(() => props.factoryData?.floor_plan || null)
+const floorPlanUrl = computed(() => {
+	const url = props.factoryData?.floor_plan || null
+	console.log(`🔍 floorPlanUrl computed:`, url)
+	console.log(`🔍 props.factoryData:`, props.factoryData)
+	console.log(`🔍 props.selectedFactory:`, props.selectedFactory)
+	return url
+})
 
 // ✅ Load Floor Plan
 const loadFloorPlan = async (floorPlanPath) => {
-	if (!floorPlanPath) return
+	console.log(`🔄 loadFloorPlan called with path:`, floorPlanPath)
+	console.trace(`📍 loadFloorPlan call stack`)
+	
+	if (!floorPlanPath) {
+		console.log(`❌ No floor plan path provided`)
+		return
+	}
 
+	console.log(`🔄 Starting floor plan load process`)
 	isLoading.value = true
 	error.value = ""
 
@@ -170,11 +182,36 @@ const loadFloorPlan = async (floorPlanPath) => {
 
 		svgContent.value = svgText
 
+		// Wait for DOM to update with new SVG content
 		await nextTick()
+		
+		// Wait a bit more to ensure DOM is fully rendered
+		await new Promise(resolve => setTimeout(resolve, 100))
+		
 		resetZoom()
-		setupMachineElements()
-
-		updateMachineColors()
+		
+		// Only setup machines if container is actually available
+		// This will be called by nextTick after DOM renders
+		nextTick(() => {
+			console.log(`🔄 Checking if container exists after DOM update...`)
+			if (floorPlanContainer.value) {
+				console.log(`✅ Container found! Setting up machines.`)
+				setupMachineElements()
+				updateMachineColors()
+			} else {
+				console.log(`❌ Container still not found, will retry when DOM is ready`)
+				// Try once more after a short delay
+				setTimeout(() => {
+					if (floorPlanContainer.value) {
+						console.log(`✅ Container found on retry! Setting up machines.`)
+						setupMachineElements()
+						updateMachineColors()
+					} else {
+						console.error(`❌ Container never became available`)
+					}
+				}, 500)
+			}
+		})
 	} catch (err) {
 		console.error("Error loading floor plan:", err)
 		error.value = err.message || "Failed to load floor plan"
@@ -184,19 +221,35 @@ const loadFloorPlan = async (floorPlanPath) => {
 	}
 }
 
-// ✅ Setup machine elements mapping
-const setupMachineElements = () => {
-	if (!floorPlanContainer.value) return
+// ✅ Setup machine elements mapping  
+const setupMachineElements = async (retryCount = 0) => {
+	console.log(`🔍 setupMachineElements called (attempt ${retryCount + 1}). Container exists:`, !!floorPlanContainer.value)
+	
+	if (!floorPlanContainer.value) {
+		if (retryCount < 3) {
+			console.warn(`❌ No floorPlanContainer found. Retrying in 200ms... (attempt ${retryCount + 1}/3)`)
+			await new Promise(resolve => setTimeout(resolve, 200))
+			return setupMachineElements(retryCount + 1)
+		} else {
+			console.error(`❌ No floorPlanContainer found after 3 attempts. Skipping machine setup.`)
+			return
+		}
+	}
 
 	const svgElement = floorPlanContainer.value.querySelector("svg")
-	if (!svgElement) return
+	if (!svgElement) {
+		console.warn(`❌ No SVG element found in container. Skipping machine setup.`)
+		return
+	}
 
 	const paths = svgElement.querySelectorAll("path[id]")
+	console.log(`🔍 Found ${paths.length} paths with IDs in SVG`)
+	
 	const machines = {}
 
 	paths.forEach((path) => {
 		const machineName = path.id
-		console.log("Machine Name:", machineName)
+		console.log(`🏭 Setting up machine: ${machineName}`)
 		machines[machineName] = {
 			element: path,
 			originalColor: path.style.fill || path.getAttribute("fill") || "#808080",
@@ -215,15 +268,29 @@ const setupMachineElements = () => {
 		path.addEventListener("mouseleave", () => (path.style.filter = ""))
 	})
 
+	console.log(`🏗️ Setting machineStates with ${Object.keys(machines).length} machines:`, Object.keys(machines))
 	machineStates.value = machines
+	
+	console.log(`🏗️ Floor plan loaded! Found ${Object.keys(machines).length} machines:`, Object.keys(machines))
+	console.log(`💾 Stored job metrics for ${Object.keys(machineJobMetrics.value).length} machines:`, Object.keys(machineJobMetrics.value))
+	console.log(`🔍 Current machineStates after assignment:`, Object.keys(machineStates.value))
+	
+	// Apply any stored job metrics that arrived before floor plan was loaded
 	updateMachineColors()
 }
 
 // ✅ Update machine color
 const updateMachineColor = (machineName, color) => {
+	console.log(`🎨 updateMachineColor called for: ${machineName} with color: ${color}`)
+	console.log(`🔍 Available machine states:`, Object.keys(machineStates.value))
+	
 	if (machineStates.value[machineName]) {
 		const machine = machineStates.value[machineName]
+		console.log(`✅ Found machine ${machineName}, updating color from ${machine.element.style.fill} to ${color}`)
 		machine.element.style.fill = color
+		console.log(`✅ Machine ${machineName} color updated successfully`)
+	} else {
+		console.warn(`❌ Machine ${machineName} not found in machineStates. Available machines:`, Object.keys(machineStates.value))
 	}
 }
 
@@ -260,101 +327,95 @@ const updateMachineColors = () => {
 	}
 }
 
+// Function to handle job metrics update (moved to component scope)
+const handleJobMetricsUpdate = (data) => {
+	console.log(`📥 handleJobMetricsUpdate called with:`, data)
+	
+	// Handle different data structures that Frappe might send
+	let actualData = data
+	if (data && data.message) {
+		actualData = data.message // Frappe sometimes wraps data in 'message'
+	}
+	
+	if (actualData && actualData.machine && actualData.job_metrics) {
+		console.log(`🔧 Updating machine ${actualData.machine} with metrics:`, actualData.job_metrics)
+		
+		// Update machine job metrics (always store this even if floor plan isn't loaded yet)
+		machineJobMetrics.value[actualData.machine] = actualData.job_metrics
+
+		// Update the color for this specific machine
+		const machineMetrics = actualData.job_metrics
+		let color
+
+		if (machineMetrics.run_rate_indicator === 1) {
+			color = "#00FF00" // Green for running efficiently
+			console.log(`🟢 Setting machine ${actualData.machine} to GREEN (efficient)`)
+		} else {
+			color = "#FF0000" // Red for behind schedule
+			console.log(`🔴 Setting machine ${actualData.machine} to RED (behind schedule)`)
+		}
+
+		// Try to update color immediately
+		updateMachineColor(actualData.machine, color)
+		
+		// If floor plan isn't loaded yet, the above will fail but data is stored
+		// When floor plan loads, updateMachineColors() will apply all stored metrics
+		if (Object.keys(machineStates.value).length === 0) {
+			console.log(`⏰ Floor plan not loaded yet. Job metrics stored for later application.`)
+		}
+
+		// If this machine is currently selected, update the overlay
+		if (
+			selectedMachine.value &&
+			selectedMachine.value.name === actualData.machine
+		) {
+			selectedMachineMetrics.value = actualData.job_metrics
+			console.log(`📱 Updated overlay for selected machine ${actualData.machine}`)
+		}
+	} else {
+		console.warn(`❌ Invalid job_metrics_update data:`, actualData)
+	}
+}
+
 // ✅ Socket Integration
 const setupSocketListener = () => {
-	if (!socket.value) {
-		socket.value = initSocket()
-	}
+	const socketInstance = useSocket() || initSocket()
 
-	// Add debugging for ALL socket events to see what's actually being received
-	socket.value.onAny((eventName, ...args) => {
-		console.log(`🔥 Socket received event: ${eventName}`, args)
-		
-		// Check if this might be our job metrics update with a different name
-		if (eventName.includes('job_metrics') || eventName.includes('update') || eventName.includes('machine')) {
-			console.log(`🎯 Potential job_metrics event detected: ${eventName}`, args)
-		}
+	// 🔍 DEBUG: Listen for ALL socket events to see what's being received
+	socketInstance.onAny((eventName, ...args) => {
+		console.log(`🔥 Socket received ANY event: ${eventName}`, args)
 	})
 
-	// Function to handle job metrics update regardless of event name
-	const handleJobMetricsUpdate = (data, eventName = "job_metrics_update") => {
-		console.log(`✅ Processing ${eventName}:`, data)
-		
-		// Handle different data structures that Frappe might send
-		let actualData = data
-		if (data && data.message) {
-			actualData = data.message // Frappe sometimes wraps data in 'message'
-		}
-		
-		if (actualData && actualData.machine && actualData.job_metrics) {
-			console.log(`🔧 Updating machine ${actualData.machine} with metrics:`, actualData.job_metrics)
-			
-			// Update machine job metrics
-			machineJobMetrics.value[actualData.machine] = actualData.job_metrics
+	// Listen for job metrics updates
+	socketInstance.on('job_metrics_update', (data) => {
+		console.log('📊 Received job_metrics_update:', data)
+		handleJobMetricsUpdate(data)
+	})
 
-			// Update the color for this specific machine
-			const machineMetrics = actualData.job_metrics
-			let color
-
-			if (machineMetrics.run_rate_indicator === 1) {
-				color = "#00FF00" // Green for running efficiently
-				console.log(`🟢 Setting machine ${actualData.machine} to GREEN (efficient)`)
-			} else {
-				color = "#FF0000" // Red for behind schedule
-				console.log(`🔴 Setting machine ${actualData.machine} to RED (behind schedule)`)
+	// 🔍 DEBUG: Listen for other possible Frappe events
+	const possibleEvents = ['publish_realtime', 'frappe:job_metrics_update', 'realtime_update']
+	possibleEvents.forEach(eventName => {
+		socketInstance.on(eventName, (data) => {
+			console.log(`📡 Received ${eventName}:`, data)
+			// Try to handle it as job metrics if it looks like our data
+			if (data && (data.machine || (data.message && data.message.machine))) {
+				console.log(`🔄 Attempting to handle ${eventName} as job_metrics_update`)
+				handleJobMetricsUpdate(data)
 			}
-
-			updateMachineColor(actualData.machine, color)
-
-			// If this machine is currently selected, update the overlay
-			if (
-				selectedMachine.value &&
-				selectedMachine.value.name === actualData.machine
-			) {
-				selectedMachineMetrics.value = actualData.job_metrics
-				console.log(`📱 Updated overlay for selected machine ${actualData.machine}`)
-			}
-		} else {
-			console.warn(`❌ Invalid ${eventName} data:`, actualData)
-		}
-	}
-
-	// Listen for various possible event names/namespaces
-	const possibleEventNames = [
-		'job_metrics_update',
-		'frappe:job_metrics_update', 
-		'dppl.localhost:job_metrics_update',
-		'machine_update',
-		'realtime_update',
-		'publish_realtime'
-	]
-
-	possibleEventNames.forEach(eventName => {
-		socket.value.on(eventName, (data) => {
-			handleJobMetricsUpdate(data, eventName)
 		})
-	})
-
-	// Also listen for generic 'message' events that Frappe might use
-	socket.value.on('message', (data) => {
-		console.log('📨 Received generic message:', data)
-		if (data && (data.event === 'job_metrics_update' || data.type === 'job_metrics_update')) {
-			handleJobMetricsUpdate(data, 'message')
-		}
 	})
 
 	// Test that socket is actually connected and listening
 	console.log("🔧 Socket listeners setup completed. Testing connection...")
-	if (socket.value.connected) {
-		console.log("✅ Socket is connected, ID:", socket.value.id)
+	if (socketInstance.connected) {
+		console.log("✅ Socket is connected, ID:", socketInstance.id)
 	} else {
 		console.log("⚠️  Socket is not connected yet")
 	}
 
-	// Make socket and test function available globally for debugging
-	window.debugSocket = socket.value
+	// Make socket available globally for debugging
+	window.debugSocket = socketInstance
 	window.testSocketEvent = testSocketEvent
-	window.handleJobMetricsUpdate = handleJobMetricsUpdate
 }
 
 // Test function to manually emit events for debugging
@@ -372,10 +433,17 @@ const testSocketEvent = (machineName = "TEST_MACHINE") => {
 		}
 	}
 	
-	console.log("Testing socket event with:", testData)
+	console.log("🧪 Testing socket event with:", testData)
+	
+	// Method 1: Try to emit through socket (this won't work for receiving our own events)
 	if (window.debugSocket) {
+		console.log("📤 Emitting job_metrics_update event via socket")
 		window.debugSocket.emit("job_metrics_update", testData)
 	}
+	
+	// Method 2: Directly call our handler to test the color update logic
+	console.log("🔧 Directly testing handleJobMetricsUpdate function")
+	handleJobMetricsUpdate(testData)
 }
 
 // ✅ Machine Click Handlers
@@ -510,15 +578,28 @@ const handleMouseUp = () => (isDragging.value = false)
 const handleMachineClick = () => {}
 
 onMounted(() => {
-	if (floorPlanUrl.value) {
-		loadFloorPlan(floorPlanUrl.value)
-	}
+	console.log(`🚀 FactoryFloorMap mounted`)
+	console.log(`🔍 isLoading:`, isLoading.value)
+	console.log(`🔍 error:`, error.value)
+	console.log(`🔍 floorPlanUrl:`, floorPlanUrl.value)
+	console.log(`🔍 Template condition check - should show floor plan:`, !isLoading.value && !error.value && !!floorPlanUrl.value)
+	
+	// Always setup socket listeners first
 	setupSocketListener()
+	
+	// Then load floor plan if available
+	if (floorPlanUrl.value) {
+		console.log(`🔄 Loading floor plan:`, floorPlanUrl.value)
+		loadFloorPlan(floorPlanUrl.value)
+	} else {
+		console.log(`❌ No floor plan URL available`)
+	}
 })
 
 onUnmounted(() => {
-	if (socket.value) {
-		socket.value.off("job_metrics_update")
+	const socketInstance = useSocket()
+	if (socketInstance) {
+		socketInstance.off("job_metrics_update")
 	}
 })
 </script>

@@ -92,144 +92,145 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { createDocumentResource, createListResource } from 'frappe-ui';
-import machineImage from '../assets/image.png';
-import UpdateReasonDialog from './UpdateReasonDialog.vue';
-import { checkRunningStatus } from '../utils/machineStatus'; 
+import { createDocumentResource, createListResource } from "frappe-ui"
+import { computed, ref, watch } from "vue"
+import { useRoute, useRouter } from "vue-router"
+import machineImage from "../assets/image.png"
+import { checkRunningStatus } from "../utils/machineStatus"
+import UpdateReasonDialog from "./UpdateReasonDialog.vue"
 
 // Router setup
-const route = useRoute();
-const machineId = computed(() => route.params.id);
+const route = useRoute()
+const machineId = computed(() => route.params.id)
 
-const showUpdateDialog = ref(false);
-const selectedDowntime = ref(null);
-
+const showUpdateDialog = ref(false)
+const selectedDowntime = ref(null)
 
 // Reactive state
-const error = ref(null);
-const machine = ref(null); // ✅ Fixed: Uncommented this line
-const tableData = ref([]);
-const loading = ref(false);
+const error = ref(null)
+const machine = ref(null) // ✅ Fixed: Uncommented this line
+const tableData = ref([])
+const loading = ref(false)
 
-const visibleCount = ref(4);
+const visibleCount = ref(4)
 const visibleTableData = computed(() => {
-  return tableData.value.slice(0, visibleCount.value);
-});
+	return tableData.value.slice(0, visibleCount.value)
+})
 
 const loadMore = () => {
-  visibleCount.value += 4;
-};
+	visibleCount.value += 4
+}
 
 const openUpdateDialog = (entry) => {
-  selectedDowntime.value = entry;
-  showUpdateDialog.value = true;
-};
+	selectedDowntime.value = entry
+	showUpdateDialog.value = true
+}
 
 const closeUpdateDialog = () => {
-  showUpdateDialog.value = false;
-  selectedDowntime.value = null;
-};
+	showUpdateDialog.value = false
+	selectedDowntime.value = null
+}
 
 // ✅ Fixed: Proper resource initialization and data fetching
 watch(
-  () => machineId.value,
-  async (newId) => {
-    if (!newId) {
-      error.value = 'No machine ID provided in the URL.';
-      return;
-    }
-    // console.log('Fetching details for machine ID:', newId);
-    // Reset state
-    error.value = null;
-    machine.value = null; // ✅ Fixed: Uncommented this line
-    tableData.value = [];
-    loading.value = true;
+	() => machineId.value,
+	async (newId) => {
+		if (!newId) {
+			error.value = "No machine ID provided in the URL."
+			return
+		}
+		// console.log('Fetching details for machine ID:', newId);
+		// Reset state
+		error.value = null
+		machine.value = null // ✅ Fixed: Uncommented this line
+		tableData.value = []
+		loading.value = true
 
-    try {
-      // Create machine resource with the actual machine ID
-      const machineResource = createDocumentResource({
-        doctype: 'Machine',
-        name: newId, // Use the actual string value, not computed
-        auto: false,
-      });
+		try {
+			// Create machine resource with the actual machine ID
+			const machineResource = createDocumentResource({
+				doctype: "Machine",
+				name: newId, // Use the actual string value, not computed
+				auto: false,
+			})
 
-      // console.log('Machine resource created:', machineResource);
+			// console.log('Machine resource created:', machineResource);
 
-      // ✅ Fixed: Proper downtime resource configuration
-      const downtimeResource = createListResource({
-        doctype: 'Downtime Log',
-        //  machine: newId,
-        fields: ['name','created_date', 'start_date_time', 'end_date_time', 'duration', 'status', 'reaon'],
-        filters: {
-          machine: newId
-        },
-        // orderBy: 'created_date desc',
-        // Use the actual string value, not computed
-        auto: true,
-      });
+			// ✅ Fixed: Proper downtime resource configuration
+			const downtimeResource = createListResource({
+				doctype: "Downtime Log",
+				//  machine: newId,
+				fields: [
+					"name",
+					"created_date",
+					"start_date_time",
+					"end_date_time",
+					"duration",
+					"status",
+					"reaon",
+				],
+				filters: {
+					machine: newId,
+				},
+				// orderBy: 'created_date desc',
+				// Use the actual string value, not computed
+				auto: true,
+			})
 
-      // const downtimereason = createListResource({
-      //   doctype: 'Downtime Reason',
-      //   auto: true,
-      // });
+			// const downtimereason = createListResource({
+			//   doctype: 'Downtime Reason',
+			//   auto: true,
+			// });
 
+			// ✅ Fixed: Actually reload the machine resource
+			await machineResource.reload()
 
-      
-      // ✅ Fixed: Actually reload the machine resource
-      await machineResource.reload();
-      
-      if (machineResource.doc) {
-        // console.log('Machine doc found:', machineResource.doc);
-        
-        // ✅ Fixed: Assign to the reactive machine ref, not a local variable
-        machine.value = {
-          id: machineResource.doc.machine_name,
-          name: machineResource.doc.machine_name,
-          status: await checkRunningStatus(newId),
-          factory: machineResource.doc.factory,
-          area: machineResource.doc.area,
-          oem_code: machineResource.doc.oem_code,
-        };
+			if (machineResource.doc) {
+				// console.log('Machine doc found:', machineResource.doc);
 
-        // console.log('Machine value set:', machine.value);
+				// ✅ Fixed: Assign to the reactive machine ref, not a local variable
+				machine.value = {
+					id: machineResource.doc.machine_name,
+					name: machineResource.doc.machine_name,
+					status: await checkRunningStatus(newId),
+					factory: machineResource.doc.factory,
+					area: machineResource.doc.area,
+					oem_code: machineResource.doc.oem_code,
+				}
 
-        // console.log('Downtime reason resource created:', downtimereason);
+				// console.log('Machine value set:', machine.value);
 
+				// console.log('Downtime reason resource created:', downtimereason);
 
-        // Fetch downtime logs after machine is loaded
-        await downtimeResource.reload();
-        // console.log('Downtime resource created:', downtimeResource);
-        if (downtimeResource.data) {
-          tableData.value = downtimeResource.data;
-          console.log('Table data set:', tableData.value);
-        }
-      } else {
-        console.log('No machine doc found');
-        error.value = 'Machine not found.';
-      }
-    } catch (err) {
-      error.value = `Failed to fetch machine details: ${err.message}`;
-      console.error('Error fetching machine details:', err);
-    } finally {
-      loading.value = false;
-    }
-  },
-  { immediate: true }
-);
-
+				// Fetch downtime logs after machine is loaded
+				await downtimeResource.reload()
+				// console.log('Downtime resource created:', downtimeResource);
+				if (downtimeResource.data) {
+					tableData.value = downtimeResource.data
+					console.log("Table data set:", tableData.value)
+				}
+			} else {
+				console.log("No machine doc found")
+				error.value = "Machine not found."
+			}
+		} catch (err) {
+			error.value = `Failed to fetch machine details: ${err.message}`
+			console.error("Error fetching machine details:", err)
+		} finally {
+			loading.value = false
+		}
+	},
+	{ immediate: true },
+)
 
 const handleReasonUpdate = ({ downtimeId, reason }) => {
-  // Update local table data
-  const index = tableData.value.findIndex((entry) => entry.name === downtimeId);
-  if (index !== -1) {
-    tableData.value[index].reason = reason;
-  }
-  closeUpdateDialog();
-};
-
-
+	// Update local table data
+	const index = tableData.value.findIndex((entry) => entry.name === downtimeId)
+	if (index !== -1) {
+		tableData.value[index].reason = reason
+	}
+	closeUpdateDialog()
+}
 </script>
 
 <style scoped>

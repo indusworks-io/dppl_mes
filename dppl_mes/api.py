@@ -50,13 +50,40 @@ def create_telemetry():
         job_metrics = get_job_metrics_internal_function(machine=machine)
         metrics_data = job_metrics.get("data", {})
 
+        # Debug: Print what we're publishing
+        publish_data = {
+            "machine": machine,
+            "job_metrics": metrics_data
+        }
+        print(f"📡 Publishing job_metrics_update event: {publish_data}")
+        print(f"📡 Current user: {frappe.session.user}")
+        print(f"📡 Current site: {frappe.local.site}")
+        
+        # Try multiple publishing strategies to ensure event reaches frontend
+        
+        # Strategy 1: Publish to current user
         frappe.publish_realtime(
             event='job_metrics_update',
-            message={
-                "machine": machine,
-                "job_metrics": metrics_data
-            },
+            message=publish_data,
+            user=frappe.session.user
         )
+        print(f"✅ Published to user: {frappe.session.user}")
+        
+        # Strategy 2: Publish to all users (global broadcast)
+        frappe.publish_realtime(
+            event='job_metrics_update',
+            message=publish_data,
+        )
+        print(f"✅ Published globally")
+        
+        # Strategy 3: Publish with doctype context 
+        frappe.publish_realtime(
+            event='job_metrics_update',
+            message=publish_data,
+            doctype='Machine',
+            docname=machine
+        )
+        print(f"✅ Published with Machine doctype context for: {machine}")
 
         return {
             "status": "success",

@@ -13,19 +13,19 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
-import MachineCard from './MachineCard.vue';
+import { defineEmits, defineProps } from "vue"
+import MachineCard from "./MachineCard.vue"
 
 const props = defineProps({
-  areaName: String,
-  machines: Array
-});
+	areaName: String,
+	machines: Array,
+})
 
-const emit = defineEmits(['machine-card-clicked']);
+const emit = defineEmits(["machine-card-clicked"])
 
 const handleCardClick = (id) => {
-  emit('machine-card-clicked', id);
-};
+	emit("machine-card-clicked", id)
+}
 </script>
 
 

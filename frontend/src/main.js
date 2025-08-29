@@ -4,7 +4,7 @@ import App from "./App.vue"
 import router from "./router"
 import { initSocket } from "./socket"
 
-import "./serviceWorkerRegister";
+import "./serviceWorkerRegister"
 
 import {
 	Alert,

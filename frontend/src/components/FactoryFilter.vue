@@ -1,8 +1,8 @@
 <template>
-  <div class="filter-dropdown">
-    <label :for="id">{{ label }}</label>
+  <div class="factory-filter">
+    <label :for="filterId">{{ label }}</label>
     <div class="select-wrapper">
-      <select :id="id" :name="id" v-model="selectedValue">
+      <select :id="filterId" :name="filterId" v-model="selectedValue" @change="handleChange">
         <option v-if="placeholder" value="">{{ placeholder }}</option>
         <option v-for="option in options" :key="option.value" :value="option.value">
           {{ option.text }}
@@ -16,40 +16,49 @@
 import { defineEmits, defineProps, ref, watch } from "vue"
 
 const props = defineProps({
-	id: { type: String, required: true },
-	label: { type: String, required: true },
+	id: { type: String, default: "factory-filter" },
+	label: { type: String, default: "Factory" },
 	options: { type: Array, required: true },
-	placeholder: { type: String, default: "Select an option" },
+	placeholder: { type: String, default: "Select Factory" },
 	modelValue: { type: String, default: "" },
 })
 
-const emit = defineEmits(["update:modelValue", "filter-selected"])
+const emit = defineEmits(["update:modelValue", "factory-selected"])
 
+const filterId = ref(props.id)
 const selectedValue = ref(props.modelValue)
 
-watch(selectedValue, (newValue) => {
-	emit("update:modelValue", newValue)
-	emit("filter-selected", newValue)
-})
+watch(
+	() => props.modelValue,
+	(newValue) => {
+		selectedValue.value = newValue
+	},
+)
+
+const handleChange = () => {
+	emit("update:modelValue", selectedValue.value)
+	emit("factory-selected", selectedValue.value)
+}
 </script>
 
 <style scoped>
-.filter-dropdown {
+.factory-filter {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
-.filter-dropdown label {
+.factory-filter label {
   font-weight: 600;
   font-size: 1rem;
   color: #343a40;
+  white-space: nowrap;
 }
 
 .select-wrapper {
   position: relative;
   display: inline-block;
-  width: 200px;
+  min-width: 200px;
 }
 
 .select-wrapper select {

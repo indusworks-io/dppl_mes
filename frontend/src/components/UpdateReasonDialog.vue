@@ -20,130 +20,133 @@
 </template>
 
 <script setup>
-import { ref, watch, defineProps, defineEmits } from 'vue';
-import { createListResource, createDocumentResource } from 'frappe-ui';
+import { createDocumentResource, createListResource } from "frappe-ui"
+import { defineEmits, defineProps, ref, watch } from "vue"
 
 const props = defineProps({
-  visible: Boolean,
-  downtimeId: String,
-});
+	visible: Boolean,
+	downtimeId: String,
+})
 
-const emit = defineEmits(['update', 'cancel']);
+const emit = defineEmits(["update", "cancel"])
 
-const selectedReason = ref('');
-const reasonOptions = ref([]);
-const updateMessage = ref('');
-const updateSuccess = ref(false);
-const loading = ref(false);
-const fetchingReason = ref(false);
+const selectedReason = ref("")
+const reasonOptions = ref([])
+const updateMessage = ref("")
+const updateSuccess = ref(false)
+const loading = ref(false)
+const fetchingReason = ref(false)
 
 // Fetch downtime reasons
 const downtimereason = createListResource({
-  doctype: 'Downtime Reason',
-  fields: ['name'], // Adjust if your doctype uses a different field (e.g., reason_name)
-  auto: true,
-  onSuccess: (data) => {
-    reasonOptions.value = data; // Assuming data is an array of { name: string }
-    console.log('Downtime reasons fetched successfully:', reasonOptions.value);
-  },
-  onError: (error) => {
-    console.error('Failed to fetch downtime reasons:', error);
-    updateMessage.value = 'Failed to load downtime reasons.';
-    updateSuccess.value = false;
-  },
-});
+	doctype: "Downtime Reason",
+	fields: ["name"], // Adjust if your doctype uses a different field (e.g., reason_name)
+	auto: true,
+	onSuccess: (data) => {
+		reasonOptions.value = data // Assuming data is an array of { name: string }
+		console.log("Downtime reasons fetched successfully:", reasonOptions.value)
+	},
+	onError: (error) => {
+		console.error("Failed to fetch downtime reasons:", error)
+		updateMessage.value = "Failed to load downtime reasons."
+		updateSuccess.value = false
+	},
+})
 
 // Fetch current reason and reset state when dialog opens
 watch(
-  () => props.visible,
-  async (isVisible) => {
-    if (isVisible && props.downtimeId) {
-      fetchingReason.value = true;
-      selectedReason.value = '';
-      updateMessage.value = '';
-      updateSuccess.value = false;
-      try {
-        const downtimeResource = createDocumentResource({
-          doctype: 'Downtime Log',
-          name: props.downtimeId,
-          fields: ['reaon'],
-          auto: false,
-        });
-        await downtimeResource.reload();
-        if (downtimeResource.doc && downtimeResource.doc.reason) {
-          selectedReason.value = downtimeResource.doc.reason;
-        } else {
-          console.warn('No reason found for Downtime Log:', props.downtimeId);
-        }
-      } catch (error) {
-        console.error('Failed to fetch current reason:', error);
-        updateMessage.value = 'Failed to load current reason.';
-        updateSuccess.value = false;
-      } finally {
-        fetchingReason.value = false;
-      }
-    }
-  },
-  { immediate: true }
-);
+	() => props.visible,
+	async (isVisible) => {
+		if (isVisible && props.downtimeId) {
+			fetchingReason.value = true
+			selectedReason.value = ""
+			updateMessage.value = ""
+			updateSuccess.value = false
+			try {
+				const downtimeResource = createDocumentResource({
+					doctype: "Downtime Log",
+					name: props.downtimeId,
+					fields: ["reaon"],
+					auto: false,
+				})
+				await downtimeResource.reload()
+				if (downtimeResource.doc && downtimeResource.doc.reason) {
+					selectedReason.value = downtimeResource.doc.reason
+				} else {
+					console.warn("No reason found for Downtime Log:", props.downtimeId)
+				}
+			} catch (error) {
+				console.error("Failed to fetch current reason:", error)
+				updateMessage.value = "Failed to load current reason."
+				updateSuccess.value = false
+			} finally {
+				fetchingReason.value = false
+			}
+		}
+	},
+	{ immediate: true },
+)
 
 const handleUpdate = async () => {
-  if (!selectedReason.value) {
-    updateMessage.value = 'Please select a reason.';
-    updateSuccess.value = false;
-    return;
-  }
+	if (!selectedReason.value) {
+		updateMessage.value = "Please select a reason."
+		updateSuccess.value = false
+		return
+	}
 
-  loading.value = true;
-  updateMessage.value = '';
+	loading.value = true
+	updateMessage.value = ""
 
-  try {
-    console.log('Updating reason to:', props.downtimeId);
-    console.log('New reason:', selectedReason.value);
+	try {
+		console.log("Updating reason to:", props.downtimeId)
+		console.log("New reason:", selectedReason.value)
 
-    const downtimeResource = createDocumentResource({
-      doctype: 'Downtime Log',
-      name: props.downtimeId,
-      auto: false, // Explicitly disable auto-fetch
-    });
+		const downtimeResource = createDocumentResource({
+			doctype: "Downtime Log",
+			name: props.downtimeId,
+			auto: false, // Explicitly disable auto-fetch
+		})
 
-    await downtimeResource.reload();
-    console.log('Document resource:', downtimeResource);
+		await downtimeResource.reload()
+		console.log("Document resource:", downtimeResource)
 
-    await downtimeResource.setValue.submit({
-      reaon: selectedReason.value, // Corrected typo: reaon → reason
-    });
+		await downtimeResource.setValue.submit({
+			reaon: selectedReason.value, // Corrected typo: reaon → reason
+		})
 
-    updateMessage.value = 'Reason updated successfully!';
-    updateSuccess.value = true;
+		updateMessage.value = "Reason updated successfully!"
+		updateSuccess.value = true
 
-    // Emit update event to parent
-    emit('update', { downtimeId: props.downtimeId, reason: selectedReason.value });
+		// Emit update event to parent
+		emit("update", {
+			downtimeId: props.downtimeId,
+			reason: selectedReason.value,
+		})
 
-    // Clear selectedReason to reset the dropdown
-    selectedReason.value = '';
+		// Clear selectedReason to reset the dropdown
+		selectedReason.value = ""
 
-    // Clear message and close dialog after 3 seconds (increased for visibility)
-    setTimeout(() => {
-      updateMessage.value = '';
-      updateSuccess.value = false;
-      emit('cancel');
-    }, 3000);
-  } catch (error) {
-    console.error('Failed to update reason:', error);
-    updateMessage.value = 'Failed to update reason. Please try again.';
-    updateSuccess.value = false;
-  } finally {
-    loading.value = false; // Always reset loading
-  }
-};
+		// Clear message and close dialog after 3 seconds (increased for visibility)
+		setTimeout(() => {
+			updateMessage.value = ""
+			updateSuccess.value = false
+			emit("cancel")
+		}, 3000)
+	} catch (error) {
+		console.error("Failed to update reason:", error)
+		updateMessage.value = "Failed to update reason. Please try again."
+		updateSuccess.value = false
+	} finally {
+		loading.value = false // Always reset loading
+	}
+}
 
 const handleCancel = () => {
-  updateMessage.value = '';
-  updateSuccess.value = false;
-  selectedReason.value = '';
-  emit('cancel');
-};
+	updateMessage.value = ""
+	updateSuccess.value = false
+	selectedReason.value = ""
+	emit("cancel")
+}
 </script>
 
 <style scoped>

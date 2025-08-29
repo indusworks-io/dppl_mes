@@ -12,6 +12,10 @@
     - FactoryFloorMap.vue -- Path: dppl_mes/frontend/src/components/FactoryFloorMap.vue
     - DashboardComponent.vue -- Path: dppl_mes/frontend/src/components/DashboardComponent.vue
     - MachineCard.vue -- Path: dppl_mes/frontend/src/components/MachineCard.vue
+    - FactoryFilter.vue -- Path: dppl_mes/frontend/src/components/FactoryFilter.vue
+    - Machine.vue -- Path: dppl_mes/frontend/src/pages/Machine.vue
+    - router.js -- Path: dppl_mes/frontend/src/router.js
+    - api.py -- Path: dppl_mes/dppl_mes/api.py
 
 ## Expected Outcomes:
     1. Have following components:
@@ -43,14 +47,14 @@
         - The SVG path of each machine where the id of the path is same as name of Machine. example:
             In SVG: <path id="XL-D" d="M29 21V79H11V21H29Z" fill="#808080" stroke="black" stroke-width="2"/>
             In Backend: Machine Name is XL-D
-        - Iterate through all the paths in the SVG and create a reactive object for each machine path
-        - Create a function that can be used to update the color of the machine object path to #FF0000 or #00FF00 or #FFFFFF
-        - If the Machine is_active is 0 then change color of the machine object path to #FFFFFF
-        
-
-    6. Build/Update Dashboard Component
-        - In DashboardComponent.vue
-        - Create Sections with Area as the name.
-        - The Area Should be In increasing order based on sequence_number in the Area List
-        - In each Area Render MachineCard.vue.
-        - The Machine Card should In increasing order based on sequence_number in the Machine List
+        - Connect the path in the SVG with the machine from backend
+        - If for a path there is not machine found then fill that path with gray color
+        - In api.py there is a realtime event called job_metrics_update under create_telemetry(). Use that event to update te SVG as following:
+            - if run_rate_indicator == 1 then green else red
+        - If a user clicks on the machine path open a overlay/popup to show:
+            - Job Name
+            - Job Number
+            - Target Quantity
+            - Completed Quantity
+            - Button That Will Take Them To Machine Details Page (Machine.vue)
+        - if a user clicks anywhere else then close the overlay/popup

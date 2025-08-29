@@ -11,11 +11,11 @@
 <script setup>
 // Define props
 defineProps({
-  title: {
-    type: String,
-    default: 'SoundSeal Production Monitor'
-  }
-});
+	title: {
+		type: String,
+		default: "SoundSeal Production Monitor",
+	},
+})
 </script>
 
 <style scoped>

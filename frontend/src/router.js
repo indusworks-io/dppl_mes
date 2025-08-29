@@ -7,7 +7,12 @@ const routes = [
 		path: "/",
 		name: "Home",
 		component: () => import("@/pages/Home.vue"),
-	}
+	},
+	{
+		path: "/machine/:id",
+		name: "Machine",
+		component: () => import("@/pages/Machine.vue"),
+	},
 ]
 
 const router = createRouter({
@@ -16,16 +21,16 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  let isLoggedIn = session.isLoggedIn
-  try {
-    await userResource.promise
-  } catch (error) {
-    isLoggedIn = false
-  }
-  if (!isLoggedIn) {
-    window.location.href = '/login?redirect-to=/frontend'
-  }
-  next()
+	let isLoggedIn = session.isLoggedIn
+	try {
+		await userResource.promise
+	} catch (error) {
+		isLoggedIn = false
+	}
+	if (!isLoggedIn) {
+		window.location.href = "/login?redirect-to=/frontend"
+	}
+	next()
 })
 
 export default router

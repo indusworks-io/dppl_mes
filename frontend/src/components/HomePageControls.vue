@@ -22,19 +22,19 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
-import FilterDropdown from './FilterDropdown.vue';
+import { defineEmits, defineProps } from "vue"
+import FilterDropdown from "./FilterDropdown.vue"
 
 const props = defineProps({
-  factoryOptions: { type: Array, required: true },
-  selectedFactory: { type: String, required: true },
-  isFloorMapView: { type: Boolean, required: true }
-});
+	factoryOptions: { type: Array, required: true },
+	selectedFactory: { type: String, required: true },
+	isFloorMapView: { type: Boolean, required: true },
+})
 
-const emit = defineEmits(['filter-selected', 'toggle-view']);
+const emit = defineEmits(["filter-selected", "toggle-view"])
 
 function emitFactorySelection(value) {
-  emit('filter-selected', value);
+	emit("filter-selected", value)
 }
 </script>
 

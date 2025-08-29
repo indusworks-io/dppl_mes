@@ -23,46 +23,46 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import MachineCard from './MachineCard.vue';
+import { computed, onMounted, ref } from "vue"
+import MachineCard from "./MachineCard.vue"
 
 const props = defineProps({
-  areas: {
-    type: Array,
-    required: true,
-  },
-  machines: {
-    type: Array,
-    required: true,
-  },
-});
+	areas: {
+		type: Array,
+		required: true,
+	},
+	machines: {
+		type: Array,
+		required: true,
+	},
+})
 
-const loading = ref(false);
-const error = ref(null);
+const loading = ref(false)
+const error = ref(null)
 
 const sortedAreas = computed(() => {
-  return [...props.areas].sort((a, b) => a.sequence_number - b.sequence_number);
-});
+	return [...props.areas].sort((a, b) => a.sequence_number - b.sequence_number)
+})
 
 const getMachinesForArea = (areaName) => {
-  return props.machines
-    .filter((machine) => machine.area === areaName)
-    .sort((a, b) => a.sequence_number - b.sequence_number);
-};
+	return props.machines
+		.filter((machine) => machine.area === areaName)
+		.sort((a, b) => a.sequence_number - b.sequence_number)
+}
 
 const handleMachineClick = (machineId) => {
-  console.log('Machine clicked:', machineId);
-  // Handle machine click event, e.g., navigate to machine details page
-};
+	console.log("Machine clicked:", machineId)
+	// Handle machine click event, e.g., navigate to machine details page
+}
 
 onMounted(() => {
-  if (!props.areas || !props.machines) {
-    loading.value = true;
-    // In a real app, you might want to fetch data here if it's not passed via props
-  } else {
-    loading.value = false;
-  }
-});
+	if (!props.areas || !props.machines) {
+		loading.value = true
+		// In a real app, you might want to fetch data here if it's not passed via props
+	} else {
+		loading.value = false
+	}
+})
 </script>
 
 <style scoped>

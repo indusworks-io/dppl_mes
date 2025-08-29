@@ -10,6 +10,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AreaGrid: typeof import('./src/components/AreaGrid.vue')['default']
     DashboardComponent: typeof import('./src/components/DashboardComponent.vue')['default']
+    FactoryFilter: typeof import('./src/components/FactoryFilter.vue')['default']
     FactoryFloorMap: typeof import('./src/components/FactoryFloorMap.vue')['default']
     FilterDropdown: typeof import('./src/components/FilterDropdown.vue')['default']
     HomePageControls: typeof import('./src/components/HomePageControls.vue')['default']

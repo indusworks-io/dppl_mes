@@ -12,8 +12,9 @@
     <div id="HomePageView">
       <DashboardComponent
         v-if="!isFloorMapView"
-        :areas="areas"
+        :areas="filteredAreas"
         :machines="machines"
+        :selected-factory="selectedFactory"
       />
       <FactoryFloorMap
         v-else
@@ -113,6 +114,14 @@ const machineResource = createListResource({
 	onSuccess(data) {
 		machines.value = data
 	},
+})
+
+// Filter areas by selected factory
+const filteredAreas = computed(() => {
+	if (!selectedFactory.value || !areas.value) {
+		return []
+	}
+	return areas.value.filter((area) => area.factory === selectedFactory.value)
 })
 
 const initializeView = () => {

@@ -114,109 +114,111 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { createResource } from 'frappe-ui';
-import { initSocket } from '../socket.js';
-import NavBar from '../components/NavBar.vue';
+import { createResource } from "frappe-ui"
+import { onMounted, onUnmounted, ref } from "vue"
+import { useRoute, useRouter } from "vue-router"
+import NavBar from "../components/NavBar.vue"
+import { initSocket } from "../socket.js"
 
-const route = useRoute();
-const router = useRouter();
+const route = useRoute()
+const router = useRouter()
 
 // Reactive data
-const machine = ref(null);
-const jobMetrics = ref(null);
-const isLoading = ref(true);
-const error = ref('');
-const socket = ref(null);
+const machine = ref(null)
+const jobMetrics = ref(null)
+const isLoading = ref(true)
+const error = ref("")
+const socket = ref(null)
 
 // Get machine ID from route params
-const machineId = route.params.id;
+const machineId = route.params.id
 
 // Fetch machine details
 createResource({
-  url: 'frappe.client.get',
-  params: {
-    doctype: 'Machine',
-    name: machineId,
-  },
-  auto: true,
-  onSuccess(data) {
-    machine.value = data;
-    fetchJobMetrics();
-  },
-  onError(err) {
-    error.value = `Failed to load machine details: ${err.message}`;
-    isLoading.value = false;
-  }
-});
+	url: "frappe.client.get",
+	params: {
+		doctype: "Machine",
+		name: machineId,
+	},
+	auto: true,
+	onSuccess(data) {
+		machine.value = data
+		fetchJobMetrics()
+	},
+	onError(err) {
+		error.value = `Failed to load machine details: ${err.message}`
+		isLoading.value = false
+	},
+})
 
 // Fetch job metrics
 const fetchJobMetrics = () => {
-  createResource({
-    url: 'dppl_mes.api.get_job_metrics_internal_function',
-    params: { machine: machineId },
-    auto: true,
-    onSuccess(response) {
-      if (response.status === 'success' || response.data) {
-        jobMetrics.value = response.data;
-      }
-      isLoading.value = false;
-    },
-    onError(err) {
-      console.warn('Could not fetch job metrics:', err);
-      isLoading.value = false;
-    }
-  });
-};
+	createResource({
+		url: "dppl_mes.api.get_job_metrics_internal_function",
+		params: { machine: machineId },
+		auto: true,
+		onSuccess(response) {
+			if (response.status === "success" || response.data) {
+				jobMetrics.value = response.data
+			}
+			isLoading.value = false
+		},
+		onError(err) {
+			console.warn("Could not fetch job metrics:", err)
+			isLoading.value = false
+		},
+	})
+}
 
 // Socket integration for real-time updates
 const setupSocketListener = () => {
-  if (!socket.value) {
-    socket.value = initSocket();
-  }
-  
-  socket.value.on('job_metrics_update', (data) => {
-    if (data.machine === machineId) {
-      jobMetrics.value = data.job_metrics;
-    }
-  });
-};
+	if (!socket.value) {
+		socket.value = initSocket()
+	}
+
+	socket.value.on("job_metrics_update", (data) => {
+		if (data.machine === machineId) {
+			jobMetrics.value = data.job_metrics
+		}
+	})
+}
 
 // Utility functions
 const getMachineImageUrl = (imagePath) => {
-  if (!imagePath) return '';
-  return imagePath.startsWith('http') ? imagePath : `${window.location.origin}${imagePath}`;
-};
+	if (!imagePath) return ""
+	return imagePath.startsWith("http")
+		? imagePath
+		: `${window.location.origin}${imagePath}`
+}
 
 const handleImageError = (event) => {
-  event.target.style.display = 'none';
-};
+	event.target.style.display = "none"
+}
 
 const getStatusClass = () => {
-  if (!machine.value) return '';
-  return machine.value.is_active ? 'status-active' : 'status-inactive';
-};
+	if (!machine.value) return ""
+	return machine.value.is_active ? "status-active" : "status-inactive"
+}
 
 const getStatusText = () => {
-  if (!machine.value) return 'Unknown';
-  return machine.value.is_active ? 'Active' : 'Inactive';
-};
+	if (!machine.value) return "Unknown"
+	return machine.value.is_active ? "Active" : "Inactive"
+}
 
 const goBack = () => {
-  router.go(-1);
-};
+	router.go(-1)
+}
 
 // Lifecycle hooks
 onMounted(() => {
-  setupSocketListener();
-});
+	setupSocketListener()
+})
 
 onUnmounted(() => {
-  if (socket.value) {
-    socket.value.off('job_metrics_update');
-  }
-});
+	if (socket.value) {
+		socket.value.off("job_metrics_update")
+	}
+})
 </script>
 
 <style scoped>

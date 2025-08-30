@@ -157,7 +157,7 @@ const floorPlanUrl = computed(() => {
 const loadFloorPlan = async (floorPlanPath) => {
 	console.log(`🔄 loadFloorPlan called with path:`, floorPlanPath)
 	console.trace(`📍 loadFloorPlan call stack`)
-	
+
 	if (!floorPlanPath) {
 		console.log(`❌ No floor plan path provided`)
 		return
@@ -184,12 +184,12 @@ const loadFloorPlan = async (floorPlanPath) => {
 
 		// Wait for DOM to update with new SVG content
 		await nextTick()
-		
+
 		// Wait a bit more to ensure DOM is fully rendered
-		await new Promise(resolve => setTimeout(resolve, 100))
-		
+		await new Promise((resolve) => setTimeout(resolve, 100))
+
 		resetZoom()
-		
+
 		// Only setup machines if container is actually available
 		// This will be called by nextTick after DOM renders
 		nextTick(() => {
@@ -199,7 +199,9 @@ const loadFloorPlan = async (floorPlanPath) => {
 				setupMachineElements()
 				updateMachineColors()
 			} else {
-				console.log(`❌ Container still not found, will retry when DOM is ready`)
+				console.log(
+					`❌ Container still not found, will retry when DOM is ready`,
+				)
 				// Try once more after a short delay
 				setTimeout(() => {
 					if (floorPlanContainer.value) {
@@ -221,11 +223,11 @@ const loadFloorPlan = async (floorPlanPath) => {
 	}
 }
 
-// ✅ Setup machine elements mapping  
+// ✅ Setup machine elements mapping
 const setupMachineElements = async (retryCount = 0) => {
 	if (!floorPlanContainer.value) {
 		if (retryCount < 3) {
-			await new Promise(resolve => setTimeout(resolve, 200))
+			await new Promise((resolve) => setTimeout(resolve, 200))
 			return setupMachineElements(retryCount + 1)
 		} else {
 			console.error(`❌ Floor plan container not found after retries`)
@@ -263,8 +265,10 @@ const setupMachineElements = async (retryCount = 0) => {
 	})
 
 	machineStates.value = machines
-	console.log(`🏗️ Floor plan loaded with ${Object.keys(machines).length} machines`)
-	
+	console.log(
+		`🏗️ Floor plan loaded with ${Object.keys(machines).length} machines`,
+	)
+
 	// Apply any stored job metrics that arrived before floor plan was loaded
 	updateMachineColors()
 }
@@ -318,13 +322,15 @@ const handleJobMetricsUpdate = (data) => {
 	if (data && data.message) {
 		actualData = data.message // Frappe sometimes wraps data in 'message'
 	}
-	
+
 	if (actualData && actualData.machine && actualData.job_metrics) {
 		const machineName = actualData.machine
 		const jobMetrics = actualData.job_metrics
-		
-		console.log(`📊 Updating machine ${machineName} - run_rate: ${jobMetrics.run_rate_indicator}`)
-		
+
+		console.log(
+			`📊 Updating machine ${machineName} - run_rate: ${jobMetrics.run_rate_indicator}`,
+		)
+
 		// Update machine job metrics (always store this even if floor plan isn't loaded yet)
 		machineJobMetrics.value[machineName] = jobMetrics
 
@@ -333,15 +339,17 @@ const handleJobMetricsUpdate = (data) => {
 		if (jobMetrics.run_rate_indicator === 1) {
 			color = "#00FF00" // Green for running efficiently
 		} else {
-			color = "#FF0000" // Red for behind schedule  
+			color = "#FF0000" // Red for behind schedule
 		}
 
 		// Try to update color immediately
 		updateMachineColor(machineName, color)
-		
+
 		// If floor plan isn't loaded yet, the above will fail but data is stored
 		if (Object.keys(machineStates.value).length === 0) {
-			console.log(`⏰ Floor plan not loaded yet. Job metrics stored for later application.`)
+			console.log(
+				`⏰ Floor plan not loaded yet. Job metrics stored for later application.`,
+			)
 		}
 
 		// If this machine is currently selected, update the overlay
@@ -361,17 +369,21 @@ const setupSocketListener = () => {
 	socketInstance.onAny((...args) => {
 		// Check if any event contains our job metrics data
 		args.forEach((arg) => {
-			if (arg && typeof arg === 'object') {
+			if (arg && typeof arg === "object") {
 				// Check for direct machine/job_metrics structure
 				if (arg.machine && arg.job_metrics) {
 					handleJobMetricsUpdate(arg)
 				}
 				// Check for nested message structure
-				else if (arg.message && arg.message.machine && arg.message.job_metrics) {
+				else if (
+					arg.message &&
+					arg.message.machine &&
+					arg.message.job_metrics
+				) {
 					handleJobMetricsUpdate(arg.message)
 				}
 				// Check for event-specific structure
-				else if (arg.event === 'job_metrics_update' && arg.data) {
+				else if (arg.event === "job_metrics_update" && arg.data) {
 					handleJobMetricsUpdate(arg.data)
 				}
 			}
@@ -379,13 +391,13 @@ const setupSocketListener = () => {
 	})
 
 	// Primary listener for direct job_metrics_update events
-	socketInstance.on('job_metrics_update', (data) => {
+	socketInstance.on("job_metrics_update", (data) => {
 		handleJobMetricsUpdate(data)
 	})
 
 	// Listen for Frappe's default realtime event structure
-	socketInstance.on('msgprint', (data) => {
-		if (data && data.message && typeof data.message === 'object') {
+	socketInstance.on("msgprint", (data) => {
+		if (data && data.message && typeof data.message === "object") {
 			if (data.message.machine && data.message.job_metrics) {
 				handleJobMetricsUpdate(data.message)
 			}
@@ -396,9 +408,7 @@ const setupSocketListener = () => {
 	if (socketInstance.connected) {
 		console.log("✅ Socket connected for realtime updates")
 	}
-
 }
-
 
 // ✅ Machine Click Handlers
 const handleMachinePathClick = (machineName, event) => {
@@ -466,7 +476,6 @@ watch(
 	{ immediate: true },
 )
 
-
 // ✅ Zoom & Pan
 const zoomIn = () => (zoomLevel.value = Math.min(zoomLevel.value * 1.2, 5))
 const zoomOut = () => (zoomLevel.value = Math.max(zoomLevel.value / 1.2, 0.1))
@@ -514,11 +523,10 @@ const handleMouseMove = (event) => {
 
 const handleMouseUp = () => (isDragging.value = false)
 
-
 onMounted(() => {
 	// Setup socket listeners first
 	setupSocketListener()
-	
+
 	// Then load floor plan if available
 	if (floorPlanUrl.value) {
 		loadFloorPlan(floorPlanUrl.value)

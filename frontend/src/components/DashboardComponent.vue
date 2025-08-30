@@ -35,6 +35,10 @@ const props = defineProps({
 		type: Array,
 		required: true,
 	},
+	selectedFactory: {
+		type: String,
+		default: "",
+	},
 })
 
 const loading = ref(false)
@@ -67,25 +71,26 @@ onMounted(() => {
 
 <style scoped>
 .dashboard-container {
-  padding: 20px;
+  padding: 16px;
 }
 
 .area-section {
-  margin-bottom: 30px;
+  margin-bottom: 32px;
 }
 
 .area-title {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
-  margin-bottom: 15px;
+  margin-bottom: 16px;
   border-bottom: 2px solid #eee;
-  padding-bottom: 10px;
+  padding-bottom: 8px;
+  color: #333;
 }
 
 .machine-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
 }
 
 .loading-state,
@@ -94,5 +99,55 @@ onMounted(() => {
   padding: 40px;
   font-size: 18px;
   color: #888;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 12px;
+  }
+  
+  .area-section {
+    margin-bottom: 24px;
+  }
+  
+  .area-title {
+    font-size: 18px;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+  }
+  
+  .machine-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .machine-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 18px;
+  }
+}
+
+@media (min-width: 1025px) {
+  .dashboard-container {
+    padding: 24px;
+  }
+  
+  .area-section {
+    margin-bottom: 40px;
+  }
+  
+  .area-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+  }
+  
+  .machine-grid {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 24px;
+  }
 }
 </style>

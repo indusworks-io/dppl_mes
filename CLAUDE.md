@@ -12,7 +12,7 @@ DPPL MES is a Manufacturing Execution System (MES) built on the Frappe framework
 - **Framework**: Frappe (Python-based ERP framework)
 - **App Structure**: Standard Frappe app with modules for Manufacturing and Organization
 - **Key DocTypes**:
-  - Manufacturing: `Job`, `Job Card`, `Downtime Log`, `Output Log`, `Shift Plan`
+  - Manufacturing: `Job`, `Job Card`, `Downtime Log`, `Output Log`, `Shift Plan`, `Downtime Reason`
   - Organization: `Factory`, `Area`, `Machine`, `Device`, `Operator`, `Telemetry`
 - **API Layer**: REST APIs in `dppl_mes/api.py` for telemetry data ingestion and job metrics
 - **Real-time**: Socket.IO integration for live data updates
@@ -48,7 +48,9 @@ yarn lint
 yarn preview
 ```
 # Frontend Local Development URL
-http://dppl.localhost:8081/frontend/
+http://dppl.localhost:8080/frontend/
+
+Note: No need to start the frontend development server as it will be always running in a seperate terminal.
 
 
 ### Backend Development (from root directory):
@@ -64,6 +66,8 @@ npm run build
 ```
 # Backend Local Development URL
 http://dppl.localhost:8000/
+
+Note: No need to start the backend development server i.e. Bench as it will be always running in a seperate terminal.
 
 
 ### Frappe Commands (from bench directory):
@@ -113,11 +117,28 @@ bench run-tests dppl_mes
 4. PWA manifest and service worker are automatically generated
 
 ## Data Flow
+### Backend Flow: Using Frappe Default Desk UI & APIs
+1. **Job Card Creation**: The user creates Shift Plan that generates individual job card for each machine for a particular date & shift. The logic is in following files:
+  - shift_plan.py -- Path: dppl_mes/dppl_mes/manufacturing/doctype/shift_plan/shift_plan.py
+  - shift_plan.js -- Path: dppl_mes/dppl_mes/manufacturing/doctype/shift_plan/shift_plan.js
+  - job_card.py -- Path: dppl_mes/dppl_mes/manufacturing/doctype/job_card/job_card.py
+2. **Telemetry Ingestion**: External devices POST data to `api/v2/method/dppl_mes.api.create_telemetry`
+3. **Job Card Update**: Based on Telemetery Data The Job Card Gets Updated & Output Log is created The Logic is in following files:
+  - telemetery.py -- Path: dppl_mes/dppl_mes/organization/doctype/telemetry/telemetry.py
+  - job_card.py -- Path: dppl_mes/dppl_mes/manufacturing/doctype/job_card/job_card.py
+4. **Create & Update Downtime Logs** Based on Telemetery Data The Downtime Logs get created & updated. The Logic is in following files:
+  - telemetery.py -- Path: dppl_mes/dppl_mes/organization/doctype/telemetry/telemetry.py
+  - downtime.py -- Path: dppl_mes/dppl_mes/manufacturing/doctype/downtime_log/downtime_log.py
+5. **Provide Job Metrics**: Once Telemetery has been stored, job cards updated & output logs created the backend provides Job Metrics using following Functions:
+  - Fetch Job Metrics using function: get_job_metrics_internal_function stored in api.py
+  - Provide it as either as relatime event or return statement
 
-1. **Telemetry Ingestion**: External devices POST data to `/api/method/dppl_mes.api.create_telemetry`
+
+### Frontend Flow: Using Vue JS SPA
+1. **Authentication**: Handled by Frappe Frameworks Builtin Authentication
 2. **Real-time Updates**: Socket.IO broadcasts machine status changes to connected clients
 3. **Frontend State**: Vue components use frappe-ui's `createListResource` for reactive data fetching
-4. **Job Management**: Manufacturing jobs are tracked through Job and Job Card DocTypes
+
 
 ## Frontend Routing
 

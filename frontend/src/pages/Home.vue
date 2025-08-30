@@ -46,6 +46,11 @@ const socket = ref(null)
 // Toggle between views
 function toggleView() {
 	isFloorMapView.value = !isFloorMapView.value
+	// Save user preference to localStorage
+	localStorage.setItem(
+		"homePageViewPreference",
+		isFloorMapView.value.toString(),
+	)
 }
 
 // Handle factory selection
@@ -125,12 +130,29 @@ const filteredAreas = computed(() => {
 })
 
 const initializeView = () => {
-	isFloorMapView.value = window.innerWidth > 1024
+	// Check if user has a saved preference
+	const savedPreference = localStorage.getItem("homePageViewPreference")
+
+	if (savedPreference !== null) {
+		// Use saved preference
+		isFloorMapView.value = savedPreference === "true"
+	} else {
+		// Fall back to responsive default behavior for new users
+		isFloorMapView.value = window.innerWidth > 1024
+	}
+}
+
+const handleResize = () => {
+	// Only change view on resize if user hasn't set an explicit preference
+	const savedPreference = localStorage.getItem("homePageViewPreference")
+	if (savedPreference === null) {
+		isFloorMapView.value = window.innerWidth > 1024
+	}
 }
 
 onMounted(() => {
 	initializeView()
-	window.addEventListener("resize", initializeView)
+	window.addEventListener("resize", handleResize)
 
 	// Initialize socket connection
 	socket.value = initSocket()
@@ -141,7 +163,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-	window.removeEventListener("resize", initializeView)
+	window.removeEventListener("resize", handleResize)
 
 	// Clean up socket connection if needed
 	if (socket.value) {

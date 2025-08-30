@@ -15,9 +15,11 @@
     </div>
 
     <!-- Toggle Button -->
-    <button @click="$emit('toggle-view')" class="toggle-button">
-      Switch to {{ isFloorMapView ? 'Dashboard View' : 'Map View' }}
-    </button>
+    <div class="toggle-wrapper">
+      <button @click="$emit('toggle-view')" class="toggle-button">
+        Switch to {{ isFloorMapView ? 'Dashboard View' : 'Map View' }}
+      </button>
+    </div>
   </div>
 </template>
 
@@ -41,16 +43,45 @@ function emitFactorySelection(value) {
 <style scoped>
 .controls-bar {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
   padding: 12px 16px;
   background-color: #f9fafb;
   border-bottom: 1px solid #e5e7eb;
 }
 
+/* Desktop layout */
+@media (min-width: 768px) {
+  .controls-bar {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+}
+
 .filters {
   display: flex;
   align-items: center;
+  width: 100%;
+}
+
+.toggle-wrapper {
+  display: flex;
+  width: 100%;
+}
+
+/* Desktop: align toggle button to the right */
+@media (min-width: 768px) {
+  .filters {
+    width: auto;
+  }
+  
+  .toggle-wrapper {
+    width: auto;
+    justify-content: flex-end;
+  }
 }
 
 .toggle-button {
@@ -63,6 +94,16 @@ function emitFactorySelection(value) {
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
+  white-space: nowrap;
+  width: 100%;
+}
+
+/* Desktop: reset button width */
+@media (min-width: 768px) {
+  .toggle-button {
+    width: auto;
+    min-width: fit-content;
+  }
 }
 
 .toggle-button:hover {
@@ -71,5 +112,10 @@ function emitFactorySelection(value) {
 
 .toggle-button:active {
   background-color: #1e40af; /* Even darker */
+}
+
+.loading-placeholder {
+  color: #6b7280;
+  font-style: italic;
 }
 </style>

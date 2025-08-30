@@ -36,8 +36,19 @@ watch(selectedValue, (newValue) => {
 <style scoped>
 .filter-dropdown {
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+/* Desktop layout */
+@media (min-width: 768px) {
+  .filter-dropdown {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+    width: auto;
+  }
 }
 
 .filter-dropdown label {
@@ -49,7 +60,14 @@ watch(selectedValue, (newValue) => {
 .select-wrapper {
   position: relative;
   display: inline-block;
-  width: 200px;
+  width: 100%;
+}
+
+/* Desktop: fixed width */
+@media (min-width: 768px) {
+  .select-wrapper {
+    width: 200px;
+  }
 }
 
 .select-wrapper select {

@@ -88,16 +88,16 @@ const machineImageUrl = computed(() => {
 const cardColorClass = computed(() => {
 	// If machine is inactive (is_active = 0), show gray
 	if (props.machine.is_active === 0) {
-		return 'card-inactive'
+		return "card-inactive"
 	}
-	
+
 	// If machine is active, check run_rate_indicator from jobMetrics
 	if (props.jobMetrics && props.jobMetrics.run_rate_indicator !== undefined) {
-		return props.jobMetrics.run_rate_indicator === 1 ? 'card-good' : 'card-poor'
+		return props.jobMetrics.run_rate_indicator === 1 ? "card-good" : "card-poor"
 	}
-	
+
 	// Default: if no job metrics available but machine is active
-	return 'card-default'
+	return "card-default"
 })
 
 // Methods

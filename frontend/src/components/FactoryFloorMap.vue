@@ -218,7 +218,9 @@ const loadFloorPlan = async (floorPlanPath) => {
 						setupMachineElements()
 						updateMachineColors()
 					} else {
-						console.warn(`⚠️ Container not available - likely no floor plan loaded`)
+						console.warn(
+							`⚠️ Container not available - likely no floor plan loaded`,
+						)
 					}
 				}, 500)
 			}
@@ -428,8 +430,10 @@ const fetchInitialJobMetrics = () => {
 			if (data.status === "success" && data.data) {
 				// Populate initial job metrics
 				machineJobMetrics.value = { ...data.data }
-				console.log(`📊 FactoryFloorMap - Loaded initial job metrics for ${data.machines_count} machines`)
-				
+				console.log(
+					`📊 FactoryFloorMap - Loaded initial job metrics for ${data.machines_count} machines`,
+				)
+
 				// Update machine colors if floor plan is already loaded
 				if (Object.keys(machineStates.value).length > 0) {
 					updateMachineColors()
@@ -439,10 +443,13 @@ const fetchInitialJobMetrics = () => {
 			}
 		},
 		onError(error) {
-			console.error("❌ FactoryFloorMap - Failed to fetch initial job metrics:", error)
-		}
+			console.error(
+				"❌ FactoryFloorMap - Failed to fetch initial job metrics:",
+				error,
+			)
+		},
 	})
-	
+
 	jobMetricsResource.reload()
 }
 
@@ -562,7 +569,7 @@ const handleMouseUp = () => (isDragging.value = false)
 onMounted(() => {
 	// Fetch initial job metrics first
 	fetchInitialJobMetrics()
-	
+
 	// Setup socket listeners
 	setupSocketListener()
 
@@ -805,7 +812,6 @@ onUnmounted(() => {
   padding: 12px;
   background-color: #f8f9fa;
   border-radius: 8px;
-  border-left: 4px solid #007bff;
 }
 
 .detail-item label {
@@ -846,7 +852,6 @@ onUnmounted(() => {
   padding: 16px;
   background-color: #f8f9fa;
   border-radius: 8px;
-  border-left: 4px solid #6c757d;
 }
 
 .inactive-label {

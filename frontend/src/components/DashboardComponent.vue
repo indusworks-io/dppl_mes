@@ -24,10 +24,10 @@
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted, ref } from "vue"
-import MachineCard from "./MachineCard.vue"
-import { initSocket, useSocket } from "../socket.js"
 import { createResource } from "frappe-ui"
+import { computed, onMounted, onUnmounted, ref } from "vue"
+import { initSocket, useSocket } from "../socket.js"
+import MachineCard from "./MachineCard.vue"
 
 const props = defineProps({
 	areas: {
@@ -144,16 +144,21 @@ const fetchInitialJobMetrics = () => {
 			if (data.status === "success" && data.data) {
 				// Populate initial job metrics
 				machineJobMetrics.value = { ...data.data }
-				console.log(`📊 Dashboard - Loaded initial job metrics for ${data.machines_count} machines`)
+				console.log(
+					`📊 Dashboard - Loaded initial job metrics for ${data.machines_count} machines`,
+				)
 			} else {
 				console.warn("⚠️ Dashboard - No initial job metrics data received")
 			}
 		},
 		onError(error) {
-			console.error("❌ Dashboard - Failed to fetch initial job metrics:", error)
-		}
+			console.error(
+				"❌ Dashboard - Failed to fetch initial job metrics:",
+				error,
+			)
+		},
 	})
-	
+
 	jobMetricsResource.reload()
 }
 
@@ -164,10 +169,10 @@ onMounted(() => {
 	} else {
 		loading.value = false
 	}
-	
+
 	// Fetch initial job metrics first
 	fetchInitialJobMetrics()
-	
+
 	// Then setup socket listeners for realtime updates
 	setupSocketListener()
 })

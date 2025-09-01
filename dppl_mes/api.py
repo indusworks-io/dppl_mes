@@ -286,3 +286,58 @@ def get_job_metrics_internal_function(machine=None):
 #         }
 
 
+@frappe.whitelist()
+def get_all_machines_job_metrics():
+    """
+    Fetch job metrics for all active machines in one API call.
+    Returns a dictionary mapping machine names to their job metrics.
+    """
+    try:
+        # Get all active machines
+        machines = frappe.get_all(
+            "Machine",
+            fields=["name"]
+        )
+        
+        if not machines:
+            return {
+                "status": "success",
+                "data": {}
+            }
+        
+        # Collect job metrics for each machine
+        all_metrics = {}
+        
+        for machine in machines:
+            machine_name = machine.name
+            # Use the existing job metrics function
+            metrics_response = get_job_metrics_internal_function(machine=machine_name)
+            
+            if metrics_response.get("status") == "success":
+                all_metrics[machine_name] = metrics_response.get("data", {})
+            else:
+                # Include failed machines with empty metrics
+                all_metrics[machine_name] = {
+                    "job_name": "No Job Running",
+                    "job_number": "N/A",
+                    "target_quantity": 0,
+                    "completed_quantity": 0,
+                    "balance_quantity": 0,
+                    "run_rate_indicator": 0,
+                    "current_time": now()
+                }
+        
+        return {
+            "status": "success",
+            "data": all_metrics,
+            "machines_count": len(machines)
+        }
+        
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(), "Error in get_all_machines_job_metrics")
+        return {
+            "status": "error",
+            "message": "Failed to fetch job metrics for all machines",
+            "data": {}
+        }
+

@@ -1,5 +1,5 @@
 <template>
-  <div class="machine-card" @click="handleClick">
+  <div class="machine-card" :class="cardColorClass" @click="handleClick">
     <div class="machine-image-container">
       <img 
         v-if="machineImageUrl" 
@@ -14,13 +14,30 @@
       </div>
     </div>
     <div class="machine-details">
-      <p><strong>Machine: </strong>{{ machine.machine_name || machine.name }}</p>
-      <p><strong>Area: </strong>{{ machine.area || 'N/A' }}</p>
-      <p><strong>Status: </strong>
-        <span class="status-badge" :class="getStatusClass()">
-          {{ machine.is_active ? 'Active' : 'Inactive' }}
-        </span>
-      </p>
+      <h3 class="machine-name">{{ machine.machine_name || machine.name }}</h3>
+      
+      <!-- Job Progress Metrics -->
+      <div v-if="jobMetrics" class="job-metrics">
+        <div class="metric-item">
+          <span class="metric-label">Job:</span>
+          <span class="metric-value">{{ jobMetrics.job_name || 'No Job Running' }}</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-label">Job #:</span>
+          <span class="metric-value">{{ jobMetrics.job_number || 'N/A' }}</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-label">Target:</span>
+          <span class="metric-value">{{ jobMetrics.target_quantity || 0 }}</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-label">Completed:</span>
+          <span class="metric-value">{{ jobMetrics.completed_quantity || 0 }}</span>
+        </div>
+      </div>
+      <div v-else class="no-job">
+        <span class="no-job-text">No active job</span>
+      </div>
     </div>
   </div>
 </template>
@@ -45,6 +62,10 @@ const props = defineProps({
 			)
 		},
 	},
+	jobMetrics: {
+		type: Object,
+		default: () => null,
+	},
 })
 
 const emit = defineEmits(["card-clicked"])
@@ -57,6 +78,21 @@ const machineImageUrl = computed(() => {
 	return imagePath.startsWith("http")
 		? imagePath
 		: `${window.location.origin}${imagePath}`
+})
+
+const cardColorClass = computed(() => {
+	// If machine is inactive (is_active = 0), show gray
+	if (props.machine.is_active === 0) {
+		return 'card-inactive'
+	}
+	
+	// If machine is active, check run_rate_indicator from jobMetrics
+	if (props.jobMetrics && props.jobMetrics.run_rate_indicator !== undefined) {
+		return props.jobMetrics.run_rate_indicator === 1 ? 'card-good' : 'card-poor'
+	}
+	
+	// Default: if no job metrics available but machine is active
+	return 'card-default'
 })
 
 // Methods
@@ -137,9 +173,46 @@ const getStatusClass = () => {
   line-height: 1.4;
 }
 
-.machine-details strong {
-  min-width: 80px;
+.machine-name {
+  margin: 8px 0 12px 0;
+  font-size: 1.15rem;
+  font-weight: 600;
   color: #495057;
+  line-height: 1.2;
+}
+
+.job-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metric-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.metric-label {
+  font-weight: 500;
+  color: #6c757d;
+}
+
+.metric-value {
+  font-weight: 600;
+  color: #495057;
+}
+
+.no-job {
+  padding: 8px 0;
+  text-align: center;
+}
+
+.no-job-text {
+  font-size: 0.85rem;
+  color: #adb5bd;
+  font-style: italic;
 }
 
 .status-badge {
@@ -158,5 +231,40 @@ const getStatusClass = () => {
 .status-inactive {
   background-color: #f8d7da;
   color: #721c24;
+}
+
+/* Card color classes based on machine status */
+.card-inactive {
+  background-color: #f8f9fa !important;
+  border-color: #dee2e6 !important;
+}
+
+.card-good {
+  background-color: #d4edda !important;
+  border-color: #28a745 !important;
+  border-width: 2px !important;
+}
+
+.card-poor {
+  background-color: #f8d7da !important;
+  border-color: #dc3545 !important;
+  border-width: 2px !important;
+}
+
+.card-default {
+  background-color: #fff !important;
+  border-color: #ddd !important;
+}
+
+.card-inactive .machine-name {
+  color: #6c757d !important;
+}
+
+.card-good .machine-name {
+  color: #155724 !important;
+}
+
+.card-poor .machine-name {
+  color: #721c24 !important;
 }
 </style>

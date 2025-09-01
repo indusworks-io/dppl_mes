@@ -209,7 +209,7 @@ const loadFloorPlan = async (floorPlanPath) => {
 						setupMachineElements()
 						updateMachineColors()
 					} else {
-						console.error(`❌ Container never became available`)
+						console.warn(`⚠️ Container not available - likely no floor plan loaded`)
 					}
 				}, 500)
 			}
@@ -230,7 +230,7 @@ const setupMachineElements = async (retryCount = 0) => {
 			await new Promise((resolve) => setTimeout(resolve, 200))
 			return setupMachineElements(retryCount + 1)
 		} else {
-			console.error(`❌ Floor plan container not found after retries`)
+			console.warn(`⚠️ Floor plan container not found - skipping machine setup`)
 			return
 		}
 	}
@@ -410,6 +410,33 @@ const setupSocketListener = () => {
 	}
 }
 
+// Fetch initial job metrics for all machines
+const fetchInitialJobMetrics = () => {
+	const jobMetricsResource = createResource({
+		url: "dppl_mes.api.get_all_machines_job_metrics",
+		auto: false,
+		onSuccess(data) {
+			if (data.status === "success" && data.data) {
+				// Populate initial job metrics
+				machineJobMetrics.value = { ...data.data }
+				console.log(`📊 FactoryFloorMap - Loaded initial job metrics for ${data.machines_count} machines`)
+				
+				// Update machine colors if floor plan is already loaded
+				if (Object.keys(machineStates.value).length > 0) {
+					updateMachineColors()
+				}
+			} else {
+				console.warn("⚠️ FactoryFloorMap - No initial job metrics data received")
+			}
+		},
+		onError(error) {
+			console.error("❌ FactoryFloorMap - Failed to fetch initial job metrics:", error)
+		}
+	})
+	
+	jobMetricsResource.reload()
+}
+
 // ✅ Machine Click Handlers
 const handleMachinePathClick = (machineName, event) => {
 	event.stopPropagation()
@@ -524,7 +551,10 @@ const handleMouseMove = (event) => {
 const handleMouseUp = () => (isDragging.value = false)
 
 onMounted(() => {
-	// Setup socket listeners first
+	// Fetch initial job metrics first
+	fetchInitialJobMetrics()
+	
+	// Setup socket listeners
 	setupSocketListener()
 
 	// Then load floor plan if available

@@ -54,3 +54,7 @@ We are now working on the Machine Card Component that loads/renders on the Dashb
 When the page loads from the first time and the socket is not triggered an update the card shows 'No Active Job'.
 This is true for DashboardComponent.vue & FactoryFloorMap.vue.
 Can we add a functionality that when the page/section loads first we update map & cards by calling get_job_metrics_internal_function and then let socket take care of the realtime updates.
+
+In Machine Card, machines that are inactive i.e. is_ative == 0 we see Job Metrics as No Job Running. Ideally if the machine is inactive the user should just see it as Inactive
+
+In FactoryFloorMap.vue also we need to add logic/functionality similar to Machine Card. If a Machine is Inactive then the Overlay should show Inactive to the user and not show Job Metrics.

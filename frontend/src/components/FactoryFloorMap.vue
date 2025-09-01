@@ -65,7 +65,16 @@
         </div>
         
         <div class="overlay-body">
-          <div v-if="selectedMachineMetrics" class="job-details">
+          <!-- Show Inactive Status for inactive machines -->
+          <div v-if="selectedMachine.is_active === 0" class="inactive-machine-info">
+            <div class="inactive-status-display">
+              <span class="inactive-label">Machine Status:</span>
+              <span class="inactive-badge">INACTIVE</span>
+            </div>
+          </div>
+          
+          <!-- Show Job Details for active machines -->
+          <div v-else-if="selectedMachineMetrics" class="job-details">
             <div class="detail-item">
               <label>Job Name:</label>
               <span>{{ selectedMachineMetrics.job_name || 'No Job Running' }}</span>
@@ -823,6 +832,36 @@ onUnmounted(() => {
   text-align: center;
   color: #6c757d;
   padding: 20px;
+}
+
+.inactive-machine-info {
+  padding: 20px;
+  text-align: center;
+}
+
+.inactive-status-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #6c757d;
+}
+
+.inactive-label {
+  font-weight: 600;
+  color: #495057;
+}
+
+.inactive-badge {
+  background-color: #6c757d;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
 }
 
 .overlay-footer {

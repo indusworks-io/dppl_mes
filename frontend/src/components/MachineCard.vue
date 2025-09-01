@@ -16,8 +16,13 @@
     <div class="machine-details">
       <h3 class="machine-name">{{ machine.machine_name || machine.name }}</h3>
       
-      <!-- Job Progress Metrics -->
-      <div v-if="jobMetrics" class="job-metrics">
+      <!-- Show Inactive Status for inactive machines -->
+      <div v-if="machine.is_active === 0" class="inactive-status">
+        <span class="inactive-text">Inactive</span>
+      </div>
+      
+      <!-- Job Progress Metrics for active machines -->
+      <div v-else-if="jobMetrics" class="job-metrics">
         <div class="metric-item">
           <span class="metric-label">Job:</span>
           <span class="metric-value">{{ jobMetrics.job_name || 'No Job Running' }}</span>
@@ -137,6 +142,7 @@ const getStatusClass = () => {
   align-items: center;
   justify-content: center;
   background-color: #f8f9fa;
+  border: 0.5px solid #adb5bd;
   border-radius: 8px;
   overflow: hidden;
 }
@@ -213,6 +219,18 @@ const getStatusClass = () => {
   font-size: 0.85rem;
   color: #adb5bd;
   font-style: italic;
+}
+
+.inactive-status {
+  padding: 8px 0;
+  text-align: center;
+}
+
+.inactive-text {
+  font-size: 0.9rem;
+  color: #6c757d;
+  font-weight: 600;
+  text-transform: uppercase;
 }
 
 .status-badge {

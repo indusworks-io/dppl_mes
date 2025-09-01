@@ -13,6 +13,16 @@ const routes = [
 		name: "Machine",
 		component: () => import("@/pages/Machine.vue"),
 	},
+	{
+		path: "/job-card/:id",
+		name: "JobCard",
+		component: () => import("@/pages/JobCard.vue"),
+	},
+	{
+		path: "/downtime-log/:id",
+		name: "DowntimeLog",
+		component: () => import("@/pages/DowntimeLog.vue"),
+	},
 ]
 
 const router = createRouter({

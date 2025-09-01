@@ -111,7 +111,7 @@
    "type": "Link"
   }
  ],
- "modified": "2025-08-11 17:03:54.290354",
+ "modified": "2025-09-01 21:47:10.089239",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Manufacturing",
@@ -128,7 +128,7 @@
    "doc_view": "List",
    "label": "Update Downtime Log Reasons",
    "link_to": "Downtime Log",
-   "stats_filter": "[[\"Downtime Log\",\"reaon\",\"is\",\"not set\",false]]",
+   "stats_filter": "[[\"Downtime Log\",\"reason\",\"is\",\"not set\",false]]",
    "type": "DocType"
   },
   {

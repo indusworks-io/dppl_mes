@@ -132,19 +132,51 @@
             <p>Error loading job cards: {{ jobCardsResource.error }}</p>
             <button @click="jobCardsResource.reload()" class="retry-button">Retry</button>
           </div>
-          <div v-else-if="jobCardsResource.data && jobCardsResource.data.length > 0" class="job-cards-list">
-            <div v-for="jobCard in jobCardsResource.data" :key="jobCard.name" class="job-card-item">
-              <div class="job-card-header">
-                <h4>{{ jobCard.job_name || 'Unnamed Job' }}</h4>
-                <span class="status-badge" :class="getJobStatusClass(jobCard.status)">
-                  {{ jobCard.status || 'Unknown' }}
-                </span>
-              </div>
-              <div class="job-card-details">
-                <p><strong>Job #:</strong> {{ jobCard.job_number || 'N/A' }}</p>
-                <p><strong>Target:</strong> {{ jobCard.target_quantity || 0 }}</p>
-                <p><strong>Completed:</strong> {{ jobCard.completed_quantity || 0 }}</p>
-                <p><strong>Created:</strong> {{ formatDate(jobCard.creation) }}</p>
+          <div v-else-if="jobCardsResource.data && jobCardsResource.data.length > 0" class="job-cards-container">
+            <!-- Job Cards List Header (Desktop) -->
+            <div class="job-cards-header">
+              <div class="header-cell">Date</div>
+              <div class="header-cell">Shift</div>
+              <div class="header-cell">Job Name</div>
+              <div class="header-cell">Target Qty</div>
+              <div class="header-cell">Completed Qty</div>
+              <div class="header-cell">Status</div>
+            </div>
+            
+            <!-- Job Cards List Items -->
+            <div class="job-cards-list">
+              <div 
+                v-for="jobCard in jobCardsResource.data" 
+                :key="jobCard.name" 
+                class="job-card-row"
+                @click="navigateToJobCard(jobCard.name)"
+              >
+                <div class="job-card-cell date-cell">
+                  <span class="mobile-label">Date:</span>
+                  <span class="cell-value">{{ formatDate(jobCard.date) }}</span>
+                </div>
+                <div class="job-card-cell shift-cell">
+                  <span class="mobile-label">Shift:</span>
+                  <span class="cell-value">{{ jobCard.shift || 'N/A' }}</span>
+                </div>
+                <div class="job-card-cell job-name-cell">
+                  <span class="mobile-label">Job Name:</span>
+                  <span class="cell-value">{{ jobCard.job_name || 'Unnamed Job' }}</span>
+                </div>
+                <div class="job-card-cell target-cell">
+                  <span class="mobile-label">Target Qty:</span>
+                  <span class="cell-value">{{ jobCard.target_quantity || 0 }}</span>
+                </div>
+                <div class="job-card-cell completed-cell">
+                  <span class="mobile-label">Completed Qty:</span>
+                  <span class="cell-value">{{ jobCard.completed_quantity || 0 }}</span>
+                </div>
+                <div class="job-card-cell status-cell">
+                  <span class="mobile-label">Status:</span>
+                  <span class="status-badge" :class="getJobStatusClass(jobCard.status)">
+                    {{ jobCard.status || 'Unknown' }}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -163,21 +195,51 @@
             <p>Error loading downtime logs: {{ downtimeLogsResource.error }}</p>
             <button @click="downtimeLogsResource.reload()" class="retry-button">Retry</button>
           </div>
-          <div v-else-if="downtimeLogsResource.data && downtimeLogsResource.data.length > 0" class="downtime-logs-list">
-            <div v-for="log in downtimeLogsResource.data" :key="log.name" class="downtime-log-item">
-              <div class="downtime-log-header">
-                <h4>{{ log.reason || 'Unknown Reason' }}</h4>
-                <span class="status-badge" :class="getDowntimeStatusClass(log.status)">
-                  {{ log.status || 'Unknown' }}
-                </span>
-              </div>
-              <div class="downtime-log-details">
-                <p><strong>Start:</strong> {{ formatDateTime(log.start_date_time) || 'N/A' }}</p>
-                <p><strong>End:</strong> {{ formatDateTime(log.end_date_time) || 'Ongoing' }}</p>
-                <p><strong>Duration:</strong> {{ log.duration || 'Calculating...' }}</p>
-                <p><strong>Created:</strong> {{ formatDate(log.created_date) }}</p>
-                <p v-if="log.category"><strong>Category:</strong> {{ log.category }}</p>
-                <p v-if="log.remarks" class="remarks"><strong>Remarks:</strong> {{ log.remarks }}</p>
+          <div v-else-if="downtimeLogsResource.data && downtimeLogsResource.data.length > 0" class="downtime-logs-container">
+            <!-- Downtime Logs List Header (Desktop) -->
+            <div class="downtime-logs-header">
+              <div class="header-cell">Log Name</div>
+              <div class="header-cell">Start DateTime</div>
+              <div class="header-cell">End DateTime</div>
+              <div class="header-cell">Duration</div>
+              <div class="header-cell">Reason</div>
+              <div class="header-cell">Status</div>
+            </div>
+            
+            <!-- Downtime Logs List Items -->
+            <div class="downtime-logs-list">
+              <div 
+                v-for="log in downtimeLogsResource.data" 
+                :key="log.name" 
+                class="downtime-log-row"
+                @click="navigateToDowntimeLog(log.name)"
+              >
+                <div class="downtime-log-cell name-cell">
+                  <span class="mobile-label">Log Name:</span>
+                  <span class="cell-value">{{ log.name || 'N/A' }}</span>
+                </div>
+                <div class="downtime-log-cell start-cell">
+                  <span class="mobile-label">Start:</span>
+                  <span class="cell-value">{{ formatDateTime(log.start_date_time) }}</span>
+                </div>
+                <div class="downtime-log-cell end-cell">
+                  <span class="mobile-label">End:</span>
+                  <span class="cell-value">{{ log.end_date_time ? formatDateTime(log.end_date_time) : 'Ongoing' }}</span>
+                </div>
+                <div class="downtime-log-cell duration-cell">
+                  <span class="mobile-label">Duration:</span>
+                  <span class="cell-value">{{ formatDurationDetailed(log.duration) }}</span>
+                </div>
+                <div class="downtime-log-cell reason-cell">
+                  <span class="mobile-label">Reason:</span>
+                  <span class="cell-value">{{ log.reason || 'Unknown' }}</span>
+                </div>
+                <div class="downtime-log-cell status-cell">
+                  <span class="mobile-label">Status:</span>
+                  <span class="status-badge" :class="getDowntimeStatusClass(log.status)">
+                    {{ log.status || 'Unknown' }}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -223,6 +285,9 @@ const jobCardsResource = createListResource({
 	doctype: "Job Card",
 	fields: [
 		"name",
+		"machine",
+		"date",
+		"shift",
 		"job_name",
 		"job_number",
 		"status",
@@ -346,11 +411,19 @@ const goBack = () => {
 	router.go(-1)
 }
 
+const navigateToJobCard = (jobCardId) => {
+	router.push(`/job-card/${jobCardId}`)
+}
+
+const navigateToDowntimeLog = (downtimeLogId) => {
+	router.push(`/downtime-log/${downtimeLogId}`)
+}
+
 // Utility functions for formatting and status classes
 const formatDate = (dateString) => {
 	if (!dateString) return "N/A"
 	try {
-		return new Date(dateString).toLocaleDateString()
+		return new Date(dateString).toLocaleDateString('en-GB')
 	} catch {
 		return "Invalid Date"
 	}
@@ -359,10 +432,33 @@ const formatDate = (dateString) => {
 const formatDateTime = (dateTimeString) => {
 	if (!dateTimeString) return "N/A"
 	try {
-		return new Date(dateTimeString).toLocaleString()
+		return new Date(dateTimeString).toLocaleString('en-GB', {
+			day: '2-digit',
+			month: '2-digit',
+			year: 'numeric',
+			hour: '2-digit',
+			minute: '2-digit',
+			hour12: true
+		})
 	} catch {
 		return "Invalid DateTime"
 	}
+}
+
+const formatDurationDetailed = (seconds) => {
+	if (!seconds || seconds === 0) return "N/A"
+	
+	const totalSeconds = Math.floor(seconds)
+	const hours = Math.floor(totalSeconds / 3600)
+	const minutes = Math.floor((totalSeconds % 3600) / 60)
+	const remainingSeconds = totalSeconds % 60
+	
+	const parts = []
+	if (hours > 0) parts.push(`${hours}h`)
+	if (minutes > 0) parts.push(`${minutes}m`)
+	if (remainingSeconds > 0 || parts.length === 0) parts.push(`${remainingSeconds}s`)
+	
+	return parts.join(' ')
 }
 
 const getJobStatusClass = (status) => {
@@ -722,51 +818,86 @@ onUnmounted(() => {
   padding: 20px 0;
 }
 
-.job-cards-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 20px;
-}
-
-.job-card-item {
+.job-cards-container {
   background: white;
   border-radius: 12px;
-  padding: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  overflow: hidden;
 }
 
-.job-card-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.job-cards-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr 1fr 1fr 1.2fr;
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #e9ecef;
+  padding: 0;
 }
 
-.job-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 16px;
-  gap: 12px;
-}
-
-.job-card-header h4 {
-  margin: 0;
-  color: #2c3e50;
-  font-size: 1.1rem;
+.header-cell {
+  padding: 16px 12px;
   font-weight: 600;
-  flex: 1;
-}
-
-.job-card-details p {
-  margin: 8px 0;
-  color: #6c757d;
-  font-size: 0.9rem;
-  line-height: 1.4;
-}
-
-.job-card-details strong {
   color: #495057;
+  font-size: 0.9rem;
+  text-align: left;
+  border-right: 1px solid #dee2e6;
+}
+
+.header-cell:last-child {
+  border-right: none;
+}
+
+.job-cards-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.job-card-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr 1fr 1fr 1.2fr;
+  border-bottom: 1px solid #f8f9fa;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.job-card-row:hover {
+  background-color: #f8f9fa;
+}
+
+.job-card-row:last-child {
+  border-bottom: none;
+}
+
+.job-card-cell {
+  padding: 16px 12px;
+  display: flex;
+  align-items: center;
+  border-right: 1px solid #f8f9fa;
+  font-size: 0.9rem;
+}
+
+.job-card-cell:last-child {
+  border-right: none;
+}
+
+.mobile-label {
+  display: none;
   font-weight: 600;
+  color: #6c757d;
+  margin-right: 8px;
+  min-width: 100px;
+}
+
+.cell-value {
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+.job-name-cell .cell-value {
+  font-weight: 600;
+}
+
+.status-cell {
+  justify-content: flex-start;
 }
 
 /* Downtime Logs Tab */
@@ -774,63 +905,52 @@ onUnmounted(() => {
   padding: 20px 0;
 }
 
-.downtime-logs-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 20px;
-}
-
-.downtime-log-item {
+.downtime-logs-container {
   background: white;
   border-radius: 12px;
-  padding: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  overflow: hidden;
 }
 
-.downtime-log-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.downtime-log-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 16px;
-  gap: 12px;
-}
-
-.downtime-log-header h4 {
-  margin: 0;
-  color: #2c3e50;
-  font-size: 1.1rem;
-  font-weight: 600;
-  flex: 1;
-}
-
-.downtime-log-details p {
-  margin: 8px 0;
-  color: #6c757d;
-  font-size: 0.9rem;
-  line-height: 1.4;
-}
-
-.downtime-log-details strong {
-  color: #495057;
-  font-weight: 600;
-}
-
-.downtime-log-details .remarks {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid #f8f9fa;
-  font-style: italic;
+.downtime-logs-header {
+  display: grid;
+  grid-template-columns: 1.5fr 1.5fr 1.5fr 1fr 1.2fr 1fr;
   background-color: #f8f9fa;
-  padding: 12px;
-  border-radius: 6px;
-  margin-left: 0;
-  margin-right: 0;
+  border-bottom: 2px solid #e9ecef;
+  padding: 0;
+}
+
+.downtime-logs-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.downtime-log-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1.5fr 1.5fr 1fr 1.2fr 1fr;
+  border-bottom: 1px solid #f8f9fa;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.downtime-log-row:hover {
+  background-color: #f8f9fa;
+}
+
+.downtime-log-row:last-child {
+  border-bottom: none;
+}
+
+.downtime-log-cell {
+  padding: 16px 12px;
+  display: flex;
+  align-items: center;
+  border-right: 1px solid #f8f9fa;
+  font-size: 0.9rem;
+}
+
+.downtime-log-cell:last-child {
+  border-right: none;
 }
 
 /* Status Badge Variants */
@@ -872,6 +992,41 @@ onUnmounted(() => {
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .job-cards-header {
+    grid-template-columns: 1fr 1fr 1.5fr 1fr 1fr 1fr;
+    font-size: 0.8rem;
+  }
+  
+  .job-card-row {
+    grid-template-columns: 1fr 1fr 1.5fr 1fr 1fr 1fr;
+  }
+  
+  .job-card-cell {
+    padding: 12px 8px;
+    font-size: 0.8rem;
+  }
+  
+  .header-cell {
+    padding: 12px 8px;
+    font-size: 0.8rem;
+  }
+  
+  .downtime-logs-header {
+    grid-template-columns: 1.2fr 1.3fr 1.3fr 0.8fr 1fr 0.8fr;
+    font-size: 0.8rem;
+  }
+  
+  .downtime-log-row {
+    grid-template-columns: 1.2fr 1.3fr 1.3fr 0.8fr 1fr 0.8fr;
+  }
+  
+  .downtime-log-cell {
+    padding: 12px 8px;
+    font-size: 0.8rem;
+  }
+}
+
 @media (max-width: 768px) {
   .machine-content {
     padding: 16px;
@@ -900,9 +1055,86 @@ onUnmounted(() => {
     font-size: 0.9rem;
   }
   
-  .job-cards-list,
+  .job-cards-header {
+    display: none;
+  }
+  
+  .job-card-row {
+    display: block;
+    padding: 16px;
+    margin-bottom: 12px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+  }
+  
+  .job-cards-container {
+    background: transparent;
+    box-shadow: none;
+  }
+  
+  .job-cards-list {
+    gap: 0;
+  }
+  
+  .job-card-cell {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-right: none;
+    border-bottom: 1px solid #f8f9fa;
+  }
+  
+  .job-card-cell:last-child {
+    border-bottom: none;
+  }
+  
+  .mobile-label {
+    display: block;
+  }
+  
+  .cell-value {
+    text-align: right;
+  }
+  
+  .status-badge {
+    margin-left: auto;
+  }
+  
+  .downtime-logs-header {
+    display: none;
+  }
+  
+  .downtime-log-row {
+    display: block;
+    padding: 16px;
+    margin-bottom: 12px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+  }
+  
+  .downtime-logs-container {
+    background: transparent;
+    box-shadow: none;
+  }
+  
   .downtime-logs-list {
-    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  
+  .downtime-log-cell {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-right: none;
+    border-bottom: 1px solid #f8f9fa;
+  }
+  
+  .downtime-log-cell:last-child {
+    border-bottom: none;
   }
 }
 

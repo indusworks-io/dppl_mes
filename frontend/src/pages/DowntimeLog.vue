@@ -166,8 +166,8 @@
 import { createDocumentResource } from "frappe-ui"
 import { ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import NavBar from "../components/NavBar.vue"
 import DowntimeLogUpdateModal from "../components/DowntimeLogUpdateModal.vue"
+import NavBar from "../components/NavBar.vue"
 
 const route = useRoute()
 const router = useRouter()
@@ -277,7 +277,7 @@ const handleDowntimeLogUpdated = () => {
 	// Refresh the downtime log data after successful update
 	downtimeLogResource.reload()
 	successMessage.value = "Downtime log updated successfully!"
-	
+
 	// Clear success message after 3 seconds
 	setTimeout(() => {
 		successMessage.value = ""

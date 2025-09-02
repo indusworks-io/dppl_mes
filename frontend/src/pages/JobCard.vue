@@ -257,7 +257,14 @@ const jobCardId = route.params.id
 // Create list resource for downtime logs
 const downtimeLogs = createListResource({
 	doctype: "Downtime Log",
-	fields: ["name", "duration", "status", "start_date_time", "end_date_time", "reason"],
+	fields: [
+		"name",
+		"duration",
+		"status",
+		"start_date_time",
+		"end_date_time",
+		"reason",
+	],
 	filters: {
 		job_card: jobCardId,
 	},
@@ -362,17 +369,17 @@ const totalDowntimeDuration = computed(() => {
 // Format downtime duration in hours, minutes, seconds
 const formatDowntimeDuration = (seconds) => {
 	if (!seconds || seconds === 0) return "0h 0m 0s"
-	
+
 	const totalSeconds = Math.floor(seconds)
 	const hours = Math.floor(totalSeconds / 3600)
 	const minutes = Math.floor((totalSeconds % 3600) / 60)
 	const secs = totalSeconds % 60
-	
+
 	const parts = []
 	if (hours > 0) parts.push(`${hours}h`)
 	if (minutes > 0) parts.push(`${minutes}m`)
 	if (secs > 0 || parts.length === 0) parts.push(`${secs}s`)
-	
+
 	return parts.join(" ")
 }
 

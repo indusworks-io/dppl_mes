@@ -105,113 +105,117 @@
 </template>
 
 <script setup>
-import { createDocumentResource, createListResource } from 'frappe-ui'
-import { computed, ref, watch } from 'vue'
+import { createDocumentResource, createListResource } from "frappe-ui"
+import { computed, ref, watch } from "vue"
 
 const props = defineProps({
-  isVisible: {
-    type: Boolean,
-    default: false
-  },
-  downtimeLogData: {
-    type: Object,
-    default: null
-  }
+	isVisible: {
+		type: Boolean,
+		default: false,
+	},
+	downtimeLogData: {
+		type: Object,
+		default: null,
+	},
 })
 
-const emit = defineEmits(['close', 'updated'])
+const emit = defineEmits(["close", "updated"])
 
 // Reactive state
 const isSaving = ref(false)
 const isLoadingReasons = ref(false)
-const errorMessage = ref('')
+const errorMessage = ref("")
 const availableReasons = ref([])
 
 // Form data
 const formData = ref({
-  reason: ''
+	reason: "",
 })
 
 // Create list resource for downtime reasons
 const downtimeReasonsResource = createListResource({
-  doctype: 'Downtime Reason',
-  fields: ['name', 'category'],
-  filters: {
-    is_active: 1
-  },
-  onSuccess(data) {
-    availableReasons.value = data || []
-    isLoadingReasons.value = false
-    console.log('Downtime reasons loaded:', data)
-  },
-  onError(error) {
-    console.error('Failed to fetch downtime reasons:', error)
-    errorMessage.value = 'Failed to load downtime reasons. Please try again.'
-    isLoadingReasons.value = false
-  }
+	doctype: "Downtime Reason",
+	fields: ["name", "category"],
+	filters: {
+		is_active: 1,
+	},
+	onSuccess(data) {
+		availableReasons.value = data || []
+		isLoadingReasons.value = false
+		console.log("Downtime reasons loaded:", data)
+	},
+	onError(error) {
+		console.error("Failed to fetch downtime reasons:", error)
+		errorMessage.value = "Failed to load downtime reasons. Please try again."
+		isLoadingReasons.value = false
+	},
 })
 
 // Watch for modal visibility to initialize data and load reasons
-watch(() => props.isVisible, (isVisible) => {
-  if (isVisible) {
-    // Reset form and errors
-    formData.value.reason = ''
-    errorMessage.value = ''
-    
-    // Load downtime reasons if not already loaded
-    if (availableReasons.value.length === 0) {
-      isLoadingReasons.value = true
-      downtimeReasonsResource.reload()
-    }
-  }
-})
+watch(
+	() => props.isVisible,
+	(isVisible) => {
+		if (isVisible) {
+			// Reset form and errors
+			formData.value.reason = ""
+			errorMessage.value = ""
+
+			// Load downtime reasons if not already loaded
+			if (availableReasons.value.length === 0) {
+				isLoadingReasons.value = true
+				downtimeReasonsResource.reload()
+			}
+		}
+	},
+)
 
 const submitUpdate = async () => {
-  if (isSaving.value || !props.downtimeLogData?.name || !formData.value.reason) return
-  
-  isSaving.value = true
-  errorMessage.value = ''
-  
-  try {
-    console.log('Updating downtime log:', props.downtimeLogData.name, {
-      reason: formData.value.reason
-    })
-    
-    // Create resource for updating
-    const updateResource = createDocumentResource({
-      doctype: 'Downtime Log',
-      name: props.downtimeLogData.name
-    })
-    
-    // Submit update
-    await updateResource.setValue.submit({
-      reason: formData.value.reason
-    })
-    
-    console.log('Downtime log updated successfully')
-    
-    // Success - emit updated event and close modal
-    emit('updated')
-    closeModal()
-    
-  } catch (error) {
-    console.error('Failed to update downtime log:', error)
-    errorMessage.value = error.message || 'Failed to update downtime log. Please try again.'
-  } finally {
-    isSaving.value = false
-  }
+	if (isSaving.value || !props.downtimeLogData?.name || !formData.value.reason)
+		return
+
+	isSaving.value = true
+	errorMessage.value = ""
+
+	try {
+		console.log("Updating downtime log:", props.downtimeLogData.name, {
+			reason: formData.value.reason,
+		})
+
+		// Create resource for updating
+		const updateResource = createDocumentResource({
+			doctype: "Downtime Log",
+			name: props.downtimeLogData.name,
+		})
+
+		// Submit update
+		await updateResource.setValue.submit({
+			reason: formData.value.reason,
+		})
+
+		console.log("Downtime log updated successfully")
+
+		// Success - emit updated event and close modal
+		emit("updated")
+		closeModal()
+	} catch (error) {
+		console.error("Failed to update downtime log:", error)
+		errorMessage.value =
+			error.message || "Failed to update downtime log. Please try again."
+	} finally {
+		isSaving.value = false
+	}
 }
 
 const closeModal = () => {
-  errorMessage.value = ''
-  formData.value.reason = ''
-  emit('close')
+	errorMessage.value = ""
+	formData.value.reason = ""
+	emit("close")
 }
 
 const handleOverlayClick = () => {
-  if (!isSaving.value) {
-    closeModal()
-  }
+	if (!isSaving.value) {
+		closeModal()
+	}
 }
 </script>
 

@@ -204,6 +204,23 @@
             </div>
           </div>
         </div>
+
+        <!-- Downtime Information Card -->
+        <div class="details-card">
+          <div class="card-header">
+            <h3>Downtime Information</h3>
+          </div>
+          <div class="card-content">
+            <div class="detail-item">
+              <span class="detail-label">Total Downtime Duration:</span>
+              <span class="detail-value">{{ formatDowntimeDuration(totalDowntimeDuration) }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Number of Downtime Events:</span>
+              <span class="detail-value">{{ downtimeLogsCount }}</span>
+            </div>
+          </div>
+        </div>
       </div>
       
       <!-- Update Modal -->
@@ -218,8 +235,8 @@
 </template>
 
 <script setup>
-import { createDocumentResource } from "frappe-ui"
-import { onMounted, ref } from "vue"
+import { createDocumentResource, createListResource } from "frappe-ui"
+import { computed, onMounted, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import JobCardUpdateModal from "../components/JobCardUpdateModal.vue"
 import NavBar from "../components/NavBar.vue"
@@ -236,6 +253,16 @@ const successMessage = ref("")
 
 // Get job card ID from route params
 const jobCardId = route.params.id
+
+// Create list resource for downtime logs
+const downtimeLogs = createListResource({
+	doctype: "Downtime Log",
+	fields: ["name", "duration", "status", "start_date_time", "end_date_time", "reason"],
+	filters: {
+		job_card: jobCardId,
+	},
+	auto: true,
+})
 
 // Create document resource for job card
 const jobCardResource = createDocumentResource({
@@ -321,6 +348,38 @@ const formatWastage = (wastage) => {
 	if (!wastage || wastage === 0) return "0.00 kg"
 	return `${Number.parseFloat(wastage).toFixed(2)} kg`
 }
+
+// Computed property for total downtime duration
+const totalDowntimeDuration = computed(() => {
+	if (!downtimeLogs.data || downtimeLogs.data.length === 0) {
+		return 0
+	}
+	return downtimeLogs.data.reduce((total, log) => {
+		return total + (log.duration || 0)
+	}, 0)
+})
+
+// Format downtime duration in hours, minutes, seconds
+const formatDowntimeDuration = (seconds) => {
+	if (!seconds || seconds === 0) return "0h 0m 0s"
+	
+	const totalSeconds = Math.floor(seconds)
+	const hours = Math.floor(totalSeconds / 3600)
+	const minutes = Math.floor((totalSeconds % 3600) / 60)
+	const secs = totalSeconds % 60
+	
+	const parts = []
+	if (hours > 0) parts.push(`${hours}h`)
+	if (minutes > 0) parts.push(`${minutes}m`)
+	if (secs > 0 || parts.length === 0) parts.push(`${secs}s`)
+	
+	return parts.join(" ")
+}
+
+// Get downtime logs count
+const downtimeLogsCount = computed(() => {
+	return downtimeLogs.data ? downtimeLogs.data.length : 0
+})
 
 // Modal handling methods
 const openUpdateModal = () => {

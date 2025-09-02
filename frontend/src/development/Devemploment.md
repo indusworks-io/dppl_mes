@@ -6,20 +6,29 @@
 5. Job Card Wastage Functionality -- Done
 6. Job Card Update Functionality -- Done
 7. Downtime Log Update Functionality -- Done
+8. Include Job Card In Downtime Logs
+
+# Frontend UI/UX Improvement
+- Update App Name
+- Update App Icon
+- Update App Favicon
+- Update Page Title -- Done
+- Update Navbar with SoundSeal Logo & Hyperlink
+- Add Logout Functionality
+- Login Page Logo
+- Remove Title From Factory Floor Plan Component
+- In FactoryFloorMap.vue, Map overlay, if there is no job running then performance value should be N/A
+- In Machine.vue, Active Job Section, if there is no job running then performance value should be N/A
+- Consistent Date Time Format
+- Consitent Duration Format
+- Make All Fonts, Borders, Spacing, Radius etc. consistent as per Google Material Design
+- Include Percentage Completed On Map Overlay.
 
 
-# UI/UX Improvement
-1. Update App Name
-2. Update App Icon
-3. Update App Favicon
-4. Update Page Title
-5. Update Navbar with SoundSeal Logo & Hyperlink
-6. Add Logout Functionality
-7. Make All Fonts, Borders, Spacing, Radius etc. consistent as per Google Material Design
-8. Login Page Logo
-9. Remove Title From Factory Floor Plan Component
-10. In FactoryFloorMap.vue, Map overlay, if there is no job running then performance value should be N/A
-11. In Machine.vue, Active Job Section, if there is no job running then performance value should be N/A
+# Backend Development
+1. Update Desk Navbar Logo
+2. Update Desk Favicon
+3. Update Job Card Report To Incorporate Wastage
 
 ## Job Card List View Development
 Now we are working on the Job Card Tab in the Machine Page.
@@ -133,3 +142,17 @@ We need to allow user to update the following fields of the Downtime Log:
 1. Reason
 
 The functionality needs to similar to job card update functionality.
+
+
+## Include Job Card In Downtime Logs
+Now we need to work on updating job card doctype where.
+In downtime log we have added link to Job Card. You can check downtime_log.json path: dppl_mes/dppl_mes/manufacturing/doctype/downtime_log/downtime_log.json
+We have adde before_save() in downtime_log.py path: dppl_mes/dppl_mes/manufacturing/doctype/downtime_log/downtime_log.py
+In the before_save() function we need add code that does following:
+- if the Job Card field is empty then:
+    - Fetch Job Card for the Machine where Job Card Status is 'In Progress'
+    - Update that Job Card in Job Card Field
+
+## Include Downtime Duration Card in Job Card Page:
+Now we need to work on updating Job Card Page in frontend i.e. JobCard.vue path: dppl_mes/frontend/src/pages/JobCard.vue
+Add a card called Downtime Information where we show total duration of all the downtimes associated with that Job Card in Hours, Minutes and Seconds.

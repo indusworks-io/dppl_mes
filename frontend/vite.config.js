@@ -14,8 +14,8 @@ export default defineConfig({
 				type: "module",
 			},
 			manifest: {
-				name: "DPPL MES",
-				short_name: "DPPL MES",
+				name: "SoundSeal MES",
+				short_name: "SoundSeal MES",
 				icons: [
 					{
 						src: "img/icons/pwa-192x192.png",

@@ -12,3 +12,17 @@ class DowntimeLog(Document):
 			self.duration = time_diff_in_seconds(self.end_date_time, self.start_date_time)
 		else:
 			self.duration = time_diff_in_seconds(now(), self.start_date_time)
+		
+		if not self.job_card and self.machine:
+			in_progress_job_cards = frappe.get_list(
+				"Job Card",
+				filters={
+					"machine": self.machine,
+					"status": "In Progress"
+				},
+				fields=["name"],
+				limit=1
+			)
+			
+			if in_progress_job_cards:
+				self.job_card = in_progress_job_cards[0].name

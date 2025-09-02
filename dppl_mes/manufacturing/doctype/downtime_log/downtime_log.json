@@ -15,7 +15,8 @@
   "duration",
   "reason",
   "category",
-  "remarks"
+  "remarks",
+  "job_card"
  ],
  "fields": [
   {
@@ -88,13 +89,19 @@
    "in_standard_filter": 1,
    "label": "Reason",
    "options": "Downtime Reason"
+  },
+  {
+   "fieldname": "job_card",
+   "fieldtype": "Link",
+   "label": "Job Card",
+   "options": "Job Card"
   }
  ],
  "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-01 16:31:24.372531",
+ "modified": "2025-09-02 15:45:23.458784",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Downtime Log",

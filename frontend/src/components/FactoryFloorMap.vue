@@ -22,7 +22,6 @@
     <!-- Floor Plan Display -->
     <div v-else class="floor-plan-container">
       <div class="floor-plan-header">
-        <h3>{{ selectedFactory }} - Floor Plan</h3>
         <div class="floor-plan-controls">
           <button @click="zoomIn" class="control-btn" title="Zoom In">🔍+</button>
           <button @click="zoomOut" class="control-btn" title="Zoom Out">🔍-</button>
@@ -92,12 +91,22 @@
               <span>{{ selectedMachineMetrics.completed_quantity || 0 }}</span>
             </div>
             <div class="detail-item">
+              <label>Balance Quantity:</label>
+              <span>{{ (selectedMachineMetrics.target_quantity || 0) - (selectedMachineMetrics.completed_quantity || 0) }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Completion %:</label>
+              <span>{{ selectedMachineMetrics.target_quantity ? Math.round((selectedMachineMetrics.completed_quantity || 0) / selectedMachineMetrics.target_quantity * 100) : 0 }}%</span>
+            </div>
+            <div class="detail-item">
               <label>Performance:</label>
               <span 
-                :class="selectedMachineMetrics.run_rate_indicator === 1 ? 'status-good' : 'status-poor'"
+                v-if="selectedMachineMetrics.job_name"
+                :class="selectedMachineMetrics.run_rate_indicator === 1 ? 'status-on-schedule' : 'status-behind'"
               >
-                {{ selectedMachineMetrics.run_rate_indicator === 1 ? 'On Track' : 'Behind Schedule' }}
+                {{ selectedMachineMetrics.run_rate_indicator === 1 ? 'On Schedule' : 'Behind Schedule' }}
               </span>
+              <span v-else>N/A</span>
             </div>
           </div>
           
@@ -641,7 +650,7 @@ onUnmounted(() => {
 
 .floor-plan-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   padding: 12px 20px;
   background: white;
@@ -795,8 +804,6 @@ onUnmounted(() => {
 
 .overlay-body {
   padding: 20px;
-  max-height: 400px;
-  overflow-y: auto;
 }
 
 .job-details {
@@ -830,6 +837,16 @@ onUnmounted(() => {
 }
 
 .status-poor {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+.status-on-schedule {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.status-behind {
   color: #dc3545;
   font-weight: 600;
 }

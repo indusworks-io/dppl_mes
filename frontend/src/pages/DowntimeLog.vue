@@ -1,6 +1,6 @@
 <template>
   <div class="downtime-log-page">
-    <NavBar title="Downtime Log Details" />
+    <NavBar />
     
     <!-- Loading State -->
     <div v-if="isLoading" class="loading-container">

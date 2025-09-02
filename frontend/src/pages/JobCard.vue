@@ -1,6 +1,6 @@
 <template>
   <div class="job-card-page">
-    <NavBar title="Job Card Details" />
+    <NavBar />
     
     <!-- Loading State -->
     <div v-if="isLoading" class="loading-container">
@@ -304,7 +304,22 @@ const formatDate = (dateString) => {
 const formatDateTime = (dateTimeString) => {
 	if (!dateTimeString) return "N/A"
 	try {
-		return new Date(dateTimeString).toLocaleString("en-GB")
+		const date = new Date(dateTimeString)
+
+		// Format date as DD/MM/YYYY
+		const day = date.getDate().toString().padStart(2, "0")
+		const month = (date.getMonth() + 1).toString().padStart(2, "0")
+		const year = date.getFullYear()
+
+		// Format time in 12-hour AM/PM format
+		let hours = date.getHours()
+		const minutes = date.getMinutes().toString().padStart(2, "0")
+		const ampm = hours >= 12 ? "PM" : "AM"
+		hours = hours % 12
+		hours = hours ? hours : 12 // Convert 0 to 12
+		const formattedHours = hours.toString().padStart(2, "0")
+
+		return `${day}/${month}/${year} ${formattedHours}:${minutes} ${ampm}`
 	} catch {
 		return "Invalid DateTime"
 	}

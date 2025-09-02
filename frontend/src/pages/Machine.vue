@@ -1,6 +1,6 @@
 <template>
   <div class="machine-details-page">
-    <NavBar title="Machine Details" />
+    <NavBar />
     
     <!-- Loading State -->
     <div v-if="isLoading" class="loading-container">
@@ -108,8 +108,12 @@
                     <div class="tile-value">{{ jobMetrics.balance_quantity || 0 }}</div>
                   </div>
                   <div class="job-detail-tile">
+                    <div class="tile-label">Completion %</div>
+                    <div class="tile-value">{{ jobMetrics.target_quantity ? Math.round((jobMetrics.completed_quantity || 0) / jobMetrics.target_quantity * 100) : 0 }}%</div>
+                  </div>
+                  <div class="job-detail-tile">
                     <div class="tile-label">Performance</div>
-                    <div class="tile-value" :class="jobMetrics.run_rate_indicator === 1 ? 'performance-good' : 'performance-poor'">
+                    <div class="tile-value" :class="jobMetrics.run_rate_indicator === 1 ? 'performance-on-schedule' : 'performance-behind'">
                       {{ jobMetrics.run_rate_indicator === 1 ? 'On Schedule' : 'Behind Schedule' }}
                     </div>
                   </div>
@@ -124,7 +128,7 @@
         
         <!-- Job Cards Tab -->
         <div v-show="activeTab === 'jobcards'" class="jobcards-section">
-          <div v-if="jobCardsResource.loading" class="loading-state">
+          <div v-if="jobCardsResource.loading && allJobCards.length === 0" class="loading-state">
             <div class="loading-spinner"></div>
             <p>Loading job cards...</p>
           </div>
@@ -132,7 +136,7 @@
             <p>Error loading job cards: {{ jobCardsResource.error }}</p>
             <button @click="jobCardsResource.reload()" class="retry-button">Retry</button>
           </div>
-          <div v-else-if="jobCardsResource.data && jobCardsResource.data.length > 0" class="job-cards-container">
+          <div v-else-if="allJobCards.length > 0" class="job-cards-container">
             <!-- Job Cards List Header (Desktop) -->
             <div class="job-cards-header">
               <div class="header-cell">Date</div>
@@ -146,7 +150,7 @@
             <!-- Job Cards List Items -->
             <div class="job-cards-list">
               <div 
-                v-for="jobCard in jobCardsResource.data" 
+                v-for="jobCard in allJobCards" 
                 :key="jobCard.name" 
                 class="job-card-row"
                 @click="navigateToJobCard(jobCard.name)"
@@ -179,15 +183,33 @@
                 </div>
               </div>
             </div>
+            
+            <!-- Load More Section -->
+            <div class="load-more-container">
+              <div v-if="jobCardsLoadingMore" class="loading-more">
+                <div class="loading-spinner-small"></div>
+                <span>Loading more job cards...</span>
+              </div>
+              <button 
+                v-else-if="jobCardsHasMore" 
+                @click="loadMoreJobCards" 
+                class="load-more-button"
+              >
+                Load More Job Cards
+              </button>
+              <div v-else class="no-more-records">
+                No More Records Found
+              </div>
+            </div>
           </div>
-          <div v-else class="no-data">
+          <div v-else-if="!jobCardsResource.loading && allJobCards.length === 0" class="no-data">
             <p>No job cards found for this machine</p>
           </div>
         </div>
         
         <!-- Downtime Logs Tab -->
         <div v-show="activeTab === 'downtime'" class="downtime-section">
-          <div v-if="downtimeLogsResource.loading" class="loading-state">
+          <div v-if="downtimeLogsResource.loading && allDowntimeLogs.length === 0" class="loading-state">
             <div class="loading-spinner"></div>
             <p>Loading downtime logs...</p>
           </div>
@@ -195,7 +217,7 @@
             <p>Error loading downtime logs: {{ downtimeLogsResource.error }}</p>
             <button @click="downtimeLogsResource.reload()" class="retry-button">Retry</button>
           </div>
-          <div v-else-if="downtimeLogsResource.data && downtimeLogsResource.data.length > 0" class="downtime-logs-container">
+          <div v-else-if="allDowntimeLogs.length > 0" class="downtime-logs-container">
             <!-- Downtime Logs List Header (Desktop) -->
             <div class="downtime-logs-header">
               <div class="header-cell">Log Name</div>
@@ -209,7 +231,7 @@
             <!-- Downtime Logs List Items -->
             <div class="downtime-logs-list">
               <div 
-                v-for="log in downtimeLogsResource.data" 
+                v-for="log in allDowntimeLogs" 
                 :key="log.name" 
                 class="downtime-log-row"
                 @click="navigateToDowntimeLog(log.name)"
@@ -242,8 +264,26 @@
                 </div>
               </div>
             </div>
+            
+            <!-- Load More Section -->
+            <div class="load-more-container">
+              <div v-if="downtimeLogsLoadingMore" class="loading-more">
+                <div class="loading-spinner-small"></div>
+                <span>Loading more downtime logs...</span>
+              </div>
+              <button 
+                v-else-if="downtimeLogsHasMore" 
+                @click="loadMoreDowntimeLogs" 
+                class="load-more-button"
+              >
+                Load More Downtime Logs
+              </button>
+              <div v-else class="no-more-records">
+                No More Records Found
+              </div>
+            </div>
           </div>
-          <div v-else class="no-data">
+          <div v-else-if="!downtimeLogsResource.loading && allDowntimeLogs.length === 0" class="no-data">
             <p>No downtime logs found for this machine</p>
           </div>
         </div>
@@ -254,7 +294,7 @@
 
 <script setup>
 import { createListResource, createResource } from "frappe-ui"
-import { onMounted, onUnmounted, ref } from "vue"
+import { onMounted, onUnmounted, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import NavBar from "../components/NavBar.vue"
 import { initSocket } from "../socket.js"
@@ -269,6 +309,18 @@ const isLoading = ref(true)
 const error = ref("")
 const socket = ref(null)
 const activeTab = ref("overview")
+
+// Pagination state for Job Cards
+const jobCardsStart = ref(0)
+const jobCardsHasMore = ref(true)
+const jobCardsLoadingMore = ref(false)
+const allJobCards = ref([])
+
+// Pagination state for Downtime Logs
+const downtimeLogsStart = ref(0)
+const downtimeLogsHasMore = ref(true)
+const downtimeLogsLoadingMore = ref(false)
+const allDowntimeLogs = ref([])
 
 // Tab definitions
 const tabs = ref([
@@ -299,14 +351,32 @@ const jobCardsResource = createListResource({
 	],
 	filters: { machine: machineId },
 	orderBy: "creation desc",
+	start: jobCardsStart.value,
 	pageLength: 50,
 	auto: false,
 	cache: ["job_cards", machineId],
 	onSuccess(data) {
 		console.log("Job cards loaded:", data?.length || 0)
+
+		if (jobCardsStart.value === 0) {
+			// Initial load - replace data
+			allJobCards.value = data || []
+			// Reset hasMore flag for initial load
+			jobCardsHasMore.value = data && data.length === 50
+		} else {
+			// Load more - append data
+			allJobCards.value = [...allJobCards.value, ...(data || [])]
+			// Check if there are more records
+			if (!data || data.length < 50) {
+				jobCardsHasMore.value = false
+			}
+		}
+
+		jobCardsLoadingMore.value = false
 	},
 	onError(err) {
 		console.warn("Could not fetch job cards:", err)
+		jobCardsLoadingMore.value = false
 	},
 })
 
@@ -326,14 +396,32 @@ const downtimeLogsResource = createListResource({
 	],
 	filters: { machine: machineId },
 	orderBy: "created_date desc",
+	start: downtimeLogsStart.value,
 	pageLength: 50,
 	auto: false,
 	cache: ["downtime_logs", machineId],
 	onSuccess(data) {
 		console.log("Downtime logs loaded:", data?.length || 0)
+
+		if (downtimeLogsStart.value === 0) {
+			// Initial load - replace data
+			allDowntimeLogs.value = data || []
+			// Reset hasMore flag for initial load
+			downtimeLogsHasMore.value = data && data.length === 50
+		} else {
+			// Load more - append data
+			allDowntimeLogs.value = [...allDowntimeLogs.value, ...(data || [])]
+			// Check if there are more records
+			if (!data || data.length < 50) {
+				downtimeLogsHasMore.value = false
+			}
+		}
+
+		downtimeLogsLoadingMore.value = false
 	},
 	onError(err) {
 		console.warn("Could not fetch downtime logs:", err)
+		downtimeLogsLoadingMore.value = false
 	},
 })
 
@@ -491,6 +579,50 @@ const getDowntimeStatusClass = (status) => {
 	}
 	return "status-pending"
 }
+
+// Load more functions for pagination
+const loadMoreJobCards = () => {
+	if (jobCardsLoadingMore.value || !jobCardsHasMore.value) return
+
+	jobCardsLoadingMore.value = true
+	jobCardsStart.value += 50
+
+	// Update the resource with new start value and reload
+	jobCardsResource.update({
+		start: jobCardsStart.value,
+	})
+	jobCardsResource.reload()
+}
+
+const loadMoreDowntimeLogs = () => {
+	if (downtimeLogsLoadingMore.value || !downtimeLogsHasMore.value) return
+
+	downtimeLogsLoadingMore.value = true
+	downtimeLogsStart.value += 50
+
+	// Update the resource with new start value and reload
+	downtimeLogsResource.update({
+		start: downtimeLogsStart.value,
+	})
+	downtimeLogsResource.reload()
+}
+
+// Watch for tab changes to load data if needed
+watch(activeTab, (newTab) => {
+	if (
+		newTab === "jobcards" &&
+		allJobCards.value.length === 0 &&
+		!jobCardsResource.loading
+	) {
+		jobCardsResource.reload()
+	} else if (
+		newTab === "downtime" &&
+		allDowntimeLogs.value.length === 0 &&
+		!downtimeLogsResource.loading
+	) {
+		downtimeLogsResource.reload()
+	}
+})
 
 // Lifecycle hooks
 onMounted(() => {
@@ -773,6 +905,14 @@ onUnmounted(() => {
 }
 
 .performance-poor {
+  color: #dc3545;
+}
+
+.performance-on-schedule {
+  color: #28a745;
+}
+
+.performance-behind {
   color: #dc3545;
 }
 
@@ -1157,6 +1297,75 @@ onUnmounted(() => {
   .active-job-card,
   .machine-card {
     padding: 16px;
+  }
+}
+
+/* Load More Styles */
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px 0;
+  margin-top: 16px;
+  border-top: 1px solid #e9ecef;
+}
+
+.load-more-button {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.load-more-button:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.load-more-button:active {
+  transform: translateY(0);
+}
+
+.loading-more {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.loading-spinner-small {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.no-more-records {
+  color: #6c757d;
+  font-size: 0.9rem;
+  font-style: italic;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+}
+
+@media (max-width: 768px) {
+  .load-more-container {
+    padding: 20px 16px;
+  }
+  
+  .load-more-button {
+    width: 100%;
+    padding: 14px;
   }
 }
 </style>

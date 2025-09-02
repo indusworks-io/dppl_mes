@@ -39,6 +39,14 @@
           <span class="metric-label">Completed:</span>
           <span class="metric-value">{{ jobMetrics.completed_quantity || 0 }}</span>
         </div>
+        <div class="metric-item">
+          <span class="metric-label">Balance:</span>
+          <span class="metric-value">{{ (jobMetrics.target_quantity || 0) - (jobMetrics.completed_quantity || 0) }}</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-label">Completion:</span>
+          <span class="metric-value">{{ jobMetrics.target_quantity ? Math.round((jobMetrics.completed_quantity || 0) / jobMetrics.target_quantity * 100) : 0 }}%</span>
+        </div>
       </div>
       <div v-else class="no-job">
         <span class="no-job-text">No active job</span>

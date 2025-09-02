@@ -6,28 +6,30 @@
 5. Job Card Wastage Functionality -- Done
 6. Job Card Update Functionality -- Done
 7. Downtime Log Update Functionality -- Done
-8. Include Job Card In Downtime Logs
+8. Include Job Card In Downtime Logs -- Done
 
 # Frontend UI/UX Improvement
-- Update App Name
-- Update App Icon
-- Update App Favicon
+- Update App Name -- Done
+- Update App Icon -- Done
+- Update App Favicon -- Done
 - Update Page Title -- Done
-- Update Navbar with SoundSeal Logo & Hyperlink
-- Add Logout Functionality
-- Login Page Logo
-- Remove Title From Factory Floor Plan Component
-- In FactoryFloorMap.vue, Map overlay, if there is no job running then performance value should be N/A
-- In Machine.vue, Active Job Section, if there is no job running then performance value should be N/A
-- Consistent Date Time Format
-- Consitent Duration Format
+- Login Page Logo -- Done
+- Update Navbar with SoundSeal Logo & Hyperlink -- Done
+- Add Logout Functionality -- Done
+- Remove Title From Factory Floor Plan Component -- Done
+- In FactoryFloorMap.vue, Map overlay, if there is no job running then performance value should be N/A -- Done
+- In Machine.vue, Active Job Section, if there is no job running then performance value should be N/A -- Done
+- Include Percentage Completed On Map Overlay. -- Done
+- Consistent Date Time Format -- Done
+- Consitent Duration Format -- Done
+- Functionality to load more job cards & more downtime logs
+- Sorting logic of job cards & downtime logs -- Done
 - Make All Fonts, Borders, Spacing, Radius etc. consistent as per Google Material Design
-- Include Percentage Completed On Map Overlay.
 
 
 # Backend Development
-1. Update Desk Navbar Logo
-2. Update Desk Favicon
+1. Update Desk Navbar Logo -- Done
+2. Update Desk Favicon -- Done
 3. Update Job Card Report To Incorporate Wastage
 
 ## Job Card List View Development
@@ -156,3 +158,50 @@ In the before_save() function we need add code that does following:
 ## Include Downtime Duration Card in Job Card Page:
 Now we need to work on updating Job Card Page in frontend i.e. JobCard.vue path: dppl_mes/frontend/src/pages/JobCard.vue
 Add a card called Downtime Information where we show total duration of all the downtimes associated with that Job Card in Hours, Minutes and Seconds.
+
+
+## Update App Icons in PWA 
+I have generated PWA Icons and put them as following:
+- icons.json path: dppl_mes/frontend/public/icons.json
+- android images folder path: dppl_mes/frontend/public/android
+- iOs images folder path: dppl_mes/frontend/public/ios
+Please update icons section in the PWA part in vite.config.json path: dppl_mes/frontend/vite.config.js
+Note: remove the old icons
+
+
+## Update Navbar
+In the Navar Component path: dppl_mes/frontend/src/components/NavBar.vue I want to show only brand image on the left side path: dppl_mes/frontend/public/soundseal-logo.png
+Also, remove the Title Property from it and all the places it is being passsed around.
+On clicking the image we should come to the main page of the app
+
+
+## Add Logout Functionality
+Currently there is no way for the user to logout from the application.
+In the Navbar add a logout Icon on the right side.
+If the user clicks on it then log him out and take them to /login or /login?redirect-to=/frontend
+
+## Map Overlay Update
+We need to make data pattern same/similar across the app:
+In the Map overlay functionality in the FactoryFloorMap.vue path: dppl_mes/frontend/src/components/FactoryFloorMap.vue we need to make following changes:
+1. If No Job Running then show in Performance section show 'N/A'
+2. If Job is 'In Progress' and run_rate_indicator is 0 then show 'Behind Schedule' In Red Color
+3. If Job is 'In Progress' and run_rate_indicator is 1 then show 'On Schedule' In Green Color
+4. Show a Balance Quantity
+5. Show Completion %
+
+Similarly add the following in MachineCard.vue path: dppl_mes/frontend/src/components/MachineCard.vue
+1. Balance Quantity
+2. Completion %
+
+Similarly add the following in Machine.vue Active Job Section path: dppl_mes/frontend/src/pages/Machine.vue:
+1. Completion %
+2. If Job is 'In Progress' and run_rate_indicator is 0 then show 'Behind Schedule' In Red Color
+3. If Job is 'In Progress' and run_rate_indicator is 1 then show 'On Schedule' In Green Color
+
+## Load More Job Cards & Downtime Logs
+Currently we are getting 50 records from the backend for Job Cards & Downtime Logs.
+But there is no option to load more records.
+Ideally at the end of the list there should be some option to load more records.
+Please functionality that allows a user to load more Job Cards & Downtime Logs if they exisit else show him text 'No More Records found'
+Create a Plan Before Changing the Code
+

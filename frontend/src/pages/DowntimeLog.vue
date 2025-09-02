@@ -28,9 +28,26 @@
         <div class="header-info">
           <h1 class="downtime-log-title">{{ downtimeLog.name || 'N/A' }}</h1>
         </div>
-        <span class="status-badge" :class="getDowntimeStatusClass(downtimeLog.status)">
-          {{ downtimeLog.status || 'Unknown' }}
-        </span>
+        <div class="header-actions">
+          <button @click="openUpdateModal" class="edit-button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="m18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+            Edit
+          </button>
+          <span class="status-badge" :class="getDowntimeStatusClass(downtimeLog.status)">
+            {{ downtimeLog.status || 'Unknown' }}
+          </span>
+        </div>
+      </div>
+      
+      <!-- Success Message -->
+      <div v-if="successMessage" class="success-message">
+        <div class="success-alert">
+          <div class="success-icon">✅</div>
+          <div class="success-content">{{ successMessage }}</div>
+        </div>
       </div>
       
       <!-- Downtime Duration Progress -->
@@ -133,15 +150,24 @@
           </div>
         </div>
       </div>
+      
+      <!-- Update Modal -->
+      <DowntimeLogUpdateModal
+        :is-visible="isUpdateModalVisible"
+        :downtime-log-data="downtimeLog"
+        @close="closeUpdateModal"
+        @updated="handleDowntimeLogUpdated"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
-import { createResource } from "frappe-ui"
+import { createDocumentResource } from "frappe-ui"
 import { ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import NavBar from "../components/NavBar.vue"
+import DowntimeLogUpdateModal from "../components/DowntimeLogUpdateModal.vue"
 
 const route = useRoute()
 const router = useRouter()
@@ -150,87 +176,112 @@ const router = useRouter()
 const downtimeLog = ref(null)
 const isLoading = ref(true)
 const error = ref("")
+const isUpdateModalVisible = ref(false)
+const successMessage = ref("")
 
 // Get downtime log ID from route params
 const downtimeLogId = route.params.id
 
-// Fetch downtime log details
-createResource({
-  url: "frappe.client.get",
-  params: {
-    doctype: "Downtime Log",
-    name: downtimeLogId,
-  },
-  auto: true,
-  onSuccess(data) {
-    downtimeLog.value = data
-    isLoading.value = false
-  },
-  onError(err) {
-    error.value = `Failed to load downtime log details: ${err.message}`
-    isLoading.value = false
-  },
+// Create document resource for downtime log
+const downtimeLogResource = createDocumentResource({
+	doctype: "Downtime Log",
+	name: downtimeLogId,
+	auto: true,
+	onSuccess(data) {
+		downtimeLog.value = data
+		isLoading.value = false
+		error.value = ""
+	},
+	onError(err) {
+		error.value = `Failed to load downtime log details: ${err.message}`
+		isLoading.value = false
+	},
 })
 
 // Utility functions
 const goBack = () => {
-  router.go(-1)
+	router.go(-1)
 }
 
 const formatDate = (dateString) => {
-  if (!dateString) return "N/A"
-  try {
-    return new Date(dateString).toLocaleDateString('en-GB')
-  } catch {
-    return "Invalid Date"
-  }
+	if (!dateString) return "N/A"
+	try {
+		return new Date(dateString).toLocaleDateString("en-GB")
+	} catch {
+		return "Invalid Date"
+	}
 }
 
 const formatDateTime = (dateTimeString) => {
-  if (!dateTimeString) return "N/A"
-  try {
-    return new Date(dateTimeString).toLocaleString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    })
-  } catch {
-    return "Invalid DateTime"
-  }
+	if (!dateTimeString) return "N/A"
+	try {
+		return new Date(dateTimeString).toLocaleString("en-GB", {
+			day: "2-digit",
+			month: "2-digit",
+			year: "numeric",
+			hour: "2-digit",
+			minute: "2-digit",
+			hour12: true,
+		})
+	} catch {
+		return "Invalid DateTime"
+	}
 }
 
 const formatDurationDetailed = (seconds) => {
-  if (!seconds || seconds === 0) return "N/A"
-  
-  const totalSeconds = Math.floor(seconds)
-  const hours = Math.floor(totalSeconds / 3600)
-  const minutes = Math.floor((totalSeconds % 3600) / 60)
-  const remainingSeconds = totalSeconds % 60
-  
-  const parts = []
-  if (hours > 0) parts.push(`${hours}h`)
-  if (minutes > 0) parts.push(`${minutes}m`)
-  if (remainingSeconds > 0 || parts.length === 0) parts.push(`${remainingSeconds}s`)
-  
-  return parts.join(' ')
+	if (!seconds || seconds === 0) return "N/A"
+
+	const totalSeconds = Math.floor(seconds)
+	const hours = Math.floor(totalSeconds / 3600)
+	const minutes = Math.floor((totalSeconds % 3600) / 60)
+	const remainingSeconds = totalSeconds % 60
+
+	const parts = []
+	if (hours > 0) parts.push(`${hours}h`)
+	if (minutes > 0) parts.push(`${minutes}m`)
+	if (remainingSeconds > 0 || parts.length === 0)
+		parts.push(`${remainingSeconds}s`)
+
+	return parts.join(" ")
 }
 
 const getDowntimeStatusClass = (status) => {
-  if (!status) return "status-unknown"
-  const statusLower = status.toLowerCase()
-  if (statusLower.includes("open") || statusLower.includes("active") || statusLower.includes("ongoing")) {
-    return "status-error"
-  } else if (
-    statusLower.includes("closed") ||
-    statusLower.includes("resolved") ||
-    statusLower.includes("complete")
-  ) {
-    return "status-complete"
-  }
-  return "status-pending"
+	if (!status) return "status-unknown"
+	const statusLower = status.toLowerCase()
+	if (
+		statusLower.includes("open") ||
+		statusLower.includes("active") ||
+		statusLower.includes("ongoing")
+	) {
+		return "status-error"
+	} else if (
+		statusLower.includes("closed") ||
+		statusLower.includes("resolved") ||
+		statusLower.includes("complete")
+	) {
+		return "status-complete"
+	}
+	return "status-pending"
+}
+
+// Modal handling methods
+const openUpdateModal = () => {
+	isUpdateModalVisible.value = true
+}
+
+const closeUpdateModal = () => {
+	isUpdateModalVisible.value = false
+}
+
+const handleDowntimeLogUpdated = () => {
+	// Refresh the downtime log data after successful update
+	downtimeLogResource.reload()
+	successMessage.value = "Downtime log updated successfully!"
+	
+	// Clear success message after 3 seconds
+	setTimeout(() => {
+		successMessage.value = ""
+	}, 3000)
 }
 </script>
 
@@ -334,6 +385,35 @@ const getDowntimeStatusClass = (status) => {
   font-weight: 600;
   color: #2c3e50;
   margin: 0 0 4px 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.edit-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.edit-button:hover {
+  background-color: #2563eb;
+}
+
+.edit-button:active {
+  transform: translateY(1px);
 }
 
 /* Duration Section */
@@ -505,6 +585,44 @@ const getDowntimeStatusClass = (status) => {
   white-space: pre-wrap;
 }
 
+/* Success Message */
+.success-message {
+  margin: 0 20px 20px 20px;
+}
+
+.success-alert {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  border-radius: 8px;
+  color: #155724;
+  font-weight: 500;
+  animation: slideDown 0.3s ease-out;
+}
+
+.success-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.success-content {
+  flex: 1;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .downtime-log-content {
@@ -517,6 +635,16 @@ const getDowntimeStatusClass = (status) => {
   
   .downtime-log-title {
     font-size: 1.3rem;
+  }
+  
+  .header-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .edit-button {
+    padding: 8px 12px;
+    font-size: 0.8rem;
   }
   
   .downtime-log-details-grid {

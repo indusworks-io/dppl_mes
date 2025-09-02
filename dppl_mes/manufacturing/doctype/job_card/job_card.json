@@ -33,6 +33,14 @@
   "actual_end_date_time",
   "actual_duration",
   "actual_run_rate",
+  "wastage_section",
+  "machine_wastage",
+  "job_setting_wastage",
+  "roll_wastage",
+  "printing_wastage",
+  "barcode_wastage",
+  "column_break_lswu",
+  "total_wastage",
   "connections_tab"
  ],
  "fields": [
@@ -209,9 +217,69 @@
    "description": "This field is for development purpose.",
    "fieldname": "completed_quantity_checker",
    "fieldtype": "Int",
+   "hidden": 1,
    "label": "Completed Quantity Checker",
    "non_negative": 1,
+   "print_hide": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "wastage_section",
+   "fieldtype": "Section Break",
+   "label": "Wastage"
+  },
+  {
+   "description": "In Kilograms",
+   "fieldname": "machine_wastage",
+   "fieldtype": "Float",
+   "label": "Machine Wastage",
+   "non_negative": 1,
+   "precision": "2"
+  },
+  {
+   "description": "In Kilograms",
+   "fieldname": "job_setting_wastage",
+   "fieldtype": "Float",
+   "label": "Job Setting Wastage",
+   "non_negative": 1,
+   "precision": "2"
+  },
+  {
+   "description": "In Kilograms",
+   "fieldname": "roll_wastage",
+   "fieldtype": "Float",
+   "label": "Roll Wastage",
+   "non_negative": 1,
+   "precision": "2"
+  },
+  {
+   "description": "In Kilograms",
+   "fieldname": "printing_wastage",
+   "fieldtype": "Float",
+   "label": "Printing Wastage",
+   "non_negative": 1,
+   "precision": "2"
+  },
+  {
+   "description": "In Kilograms",
+   "fieldname": "barcode_wastage",
+   "fieldtype": "Float",
+   "label": "Barcode Wastage",
+   "non_negative": 1,
+   "precision": "2"
+  },
+  {
+   "description": "In Kilograms",
+   "fieldname": "total_wastage",
+   "fieldtype": "Float",
+   "label": "Total Wastage",
+   "non_negative": 1,
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_lswu",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
@@ -223,7 +291,7 @@
    "link_fieldname": "job_card"
   }
  ],
- "modified": "2025-08-20 16:08:17.945014",
+ "modified": "2025-09-02 11:37:26.813688",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Job Card",

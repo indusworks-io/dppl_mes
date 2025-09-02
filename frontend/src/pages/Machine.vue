@@ -423,7 +423,7 @@ const navigateToDowntimeLog = (downtimeLogId) => {
 const formatDate = (dateString) => {
 	if (!dateString) return "N/A"
 	try {
-		return new Date(dateString).toLocaleDateString('en-GB')
+		return new Date(dateString).toLocaleDateString("en-GB")
 	} catch {
 		return "Invalid Date"
 	}
@@ -432,13 +432,13 @@ const formatDate = (dateString) => {
 const formatDateTime = (dateTimeString) => {
 	if (!dateTimeString) return "N/A"
 	try {
-		return new Date(dateTimeString).toLocaleString('en-GB', {
-			day: '2-digit',
-			month: '2-digit',
-			year: 'numeric',
-			hour: '2-digit',
-			minute: '2-digit',
-			hour12: true
+		return new Date(dateTimeString).toLocaleString("en-GB", {
+			day: "2-digit",
+			month: "2-digit",
+			year: "numeric",
+			hour: "2-digit",
+			minute: "2-digit",
+			hour12: true,
 		})
 	} catch {
 		return "Invalid DateTime"
@@ -447,18 +447,19 @@ const formatDateTime = (dateTimeString) => {
 
 const formatDurationDetailed = (seconds) => {
 	if (!seconds || seconds === 0) return "N/A"
-	
+
 	const totalSeconds = Math.floor(seconds)
 	const hours = Math.floor(totalSeconds / 3600)
 	const minutes = Math.floor((totalSeconds % 3600) / 60)
 	const remainingSeconds = totalSeconds % 60
-	
+
 	const parts = []
 	if (hours > 0) parts.push(`${hours}h`)
 	if (minutes > 0) parts.push(`${minutes}m`)
-	if (remainingSeconds > 0 || parts.length === 0) parts.push(`${remainingSeconds}s`)
-	
-	return parts.join(' ')
+	if (remainingSeconds > 0 || parts.length === 0)
+		parts.push(`${remainingSeconds}s`)
+
+	return parts.join(" ")
 }
 
 const getJobStatusClass = (status) => {

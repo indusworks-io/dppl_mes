@@ -7,8 +7,6 @@ from frappe.utils import now, now_datetime, time_diff_in_seconds
 
 @frappe.whitelist(methods=["POST"], allow_guest=True)
 def get_context_for_dev():
-	if not frappe.conf.developer_mode:
-		frappe.throw("This method is only meant for developer mode")
 	return get_boot()
 
 
@@ -21,7 +19,6 @@ def get_boot():
 			"csrf_token": frappe.sessions.get_csrf_token(),
 		}
 	)
-
 
 def get_default_route():
 	return "/frontend"

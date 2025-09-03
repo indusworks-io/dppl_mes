@@ -47,19 +47,21 @@ for (const key in globalComponents) {
 }
 
 let socket
-if (import.meta.env.DEV) {
-	frappeRequest({ url: "/api/method/dppl_mes.api.get_context_for_dev" }).then(
-		(values) => {
-			for (const key in values) {
-				window[key] = values[key]
-			}
-			socket = initSocket()
-			app.config.globalProperties.$socket = socket
-			app.mount("#app")
-		},
-	)
-} else {
-	socket = initSocket()
-	app.config.globalProperties.$socket = socket
-	app.mount("#app")
+
+async function setupAppContext() {
+	try {
+		const values = await frappeRequest({ url: "/api/method/dppl_mes.api.get_context_for_dev" })
+		
+		for (const key in values) {
+			window[key] = values[key]
+		}
+		
+		socket = initSocket()
+		app.config.globalProperties.$socket = socket
+		app.mount("#app")
+	} catch (error) {
+		console.error("Failed to setup app context:", error)
+	}
 }
+
+setupAppContext()

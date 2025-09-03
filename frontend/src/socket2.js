@@ -32,7 +32,7 @@ export function initSocket() {
 	const protocol = window.location.protocol === "https:" ? "wss" : "ws"
 
 	// Determine socket.io port dynamically
-	const socketio_port = frappe.boot?.socketio_port || 9000
+	const socketio_port = frappe.boot.socketio_port || 9000
 
 	// Use current hostname for client connection
 	let hostname = window.location.hostname

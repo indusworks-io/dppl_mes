@@ -254,3 +254,33 @@ The columns that I would like to see are as following:
 {'fieldname': 'printing_wastage_two', 'label': 'Printing Wastage', 'fieldtype': 'float', 'width': 150},
 {'fieldname': 'barcode_wastage_two', 'label': 'Barcode Wastage', 'fieldtype': 'float', 'width': 150},
 {'fieldname': 'total_wastage_two', 'label': 'Total Wastage', 'fieldtype': 'float', 'width': 150},
+
+
+## Socket Error: ✅ RESOLVED
+~~In the socket2.js frappe.boot.socketio_port command fails as frappe does not exisit in the vue JS application.~~
+
+**FINAL SOLUTION IMPLEMENTED:**
+After analyzing Frappe CRM's working implementation, simplified our approach:
+
+**Backend Changes (`dppl_mes/api.py`):**
+- Simplified `get_boot()` to match Frappe CRM's minimal approach
+- Removed complex Docker detection and custom port configuration 
+- Uses only essential fields: `frappe_version`, `default_route`, `site_name`, `csrf_token`
+
+**Frontend Changes:**
+- **`socket.js`**: Created simple socket implementation following Frappe CRM pattern
+  - Uses default port 9000, standard hostname detection
+  - Handles `refetch_resource` events for frappe-ui integration
+  - Exports both `initSocket()` and `useSocket()` for component usage
+- **`main.js`**: Simplified context loading to match Frappe CRM exactly
+  - Clean context loading without complex error handling
+  - Uses local socket.js instead of frappe-ui utils
+
+**Key Insight:** 
+The issue was over-engineering. Frappe CRM works perfectly with simple, standard patterns. Our custom complex configuration was causing more problems than it solved.
+
+**Files Modified:**
+- ✅ `dppl_mes/api.py` - Simplified to Frappe CRM pattern
+- ✅ `frontend/src/socket.js` - New simple implementation  
+- ✅ `frontend/src/main.js` - Simplified context loading
+- ✅ Removed obsolete `socket2.js`

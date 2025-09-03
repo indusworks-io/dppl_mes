@@ -216,3 +216,41 @@ do the following:
 The objective is to make the app look and feel like a super polished & professional looking.
 Think a lot before doing anything.
 Create a to do plan before executing.
+
+## Update Job Card Report To Incorporate Wastage
+We have added following fields in Job Card DocType:
+- Machine Wastage
+- Job Setting Wastage
+- Roll Wastage
+- Printing Wastage
+- Barcode Wastage
+- Total Wastage
+You can find the fields in job_card.json path: dppl_mes/dppl_mes/manufacturing/doctype/job_card/job_card.json
+
+Now we need to incorporate the fields in the Job Report path: dppl_mes/dppl_mes/manufacturing/report/job_report/job_report.py
+Go through the exisiting report structure and incorporate changes
+The columns that I would like to see are as following:
+{'fieldname': 'machine', 'label': 'Machine', 'fieldtype': 'Link', 'options': 'Machine', 'width': 150},
+{'fieldname': 'date', 'label': 'Date', 'fieldtype': 'Date', 'width': 120},
+{'fieldname': 'shift', 'label': 'Shift', 'fieldtype': 'Data', 'width': 120},
+{'fieldname': 'operator', 'label': 'Operator', 'fieldtype': 'Data', 'width': 150},
+{'fieldname': 'job_name_one', 'label': 'Job Name', 'fieldtype': 'Link', 'options': 'Job', 'width': 200},
+{'fieldname': 'job_number_one', 'label': 'Job No.', 'fieldtype': 'Data', 'width': 150},
+{'fieldname': 'target_quantity_one', 'label': 'Target Quantity', 'fieldtype': 'Int', 'width': 150},
+{'fieldname': 'completed_quantity_one', 'label': 'Completed Quantity', 'fieldtype': 'Int', 'width': 150},
+{'fieldname': 'efficiency_one_percent', 'label': 'Efficiency (%)', 'fieldtype': 'Percent', 'width': 150},
+{'fieldname': 'machine_wastage_one', 'label': 'Machine Wastage', 'fieldtype': 'float', 'width': 150},
+{'fieldname': 'job_setting_wastage_one', 'label': 'Job Setting Wastage', 'fieldtype': 'float', 'width': 150},
+{'fieldname': 'printing_wastage_one', 'label': 'Printing Wastage', 'fieldtype': 'float', 'width': 150},
+{'fieldname': 'barcode_wastage_one', 'label': 'Barcode Wastage', 'fieldtype': 'float', 'width': 150},
+{'fieldname': 'total_wastage_one', 'label': 'Total Wastage', 'fieldtype': 'float', 'width': 150},
+{'fieldname': 'job_name_two', 'label': 'Job Name', 'fieldtype': 'Link', 'options': 'Job', 'width': 200},
+{'fieldname': 'job_number_two', 'label': 'Job No.', 'fieldtype': 'Data', 'width': 150},
+{'fieldname': 'target_quantity_two', 'label': 'Target Quantity', 'fieldtype': 'Int', 'width': 150},
+{'fieldname': 'completed_quantity_two', 'label': 'Completed Quantity', 'fieldtype': 'Int', 'width': 150},
+{'fieldname': 'efficiency_two_percent', 'label': 'Efficiency (%)', 'fieldtype': 'Percent', 'width': 150},
+{'fieldname': 'machine_wastage_two', 'label': 'Machine Wastage', 'fieldtype': 'float', 'width': 150},
+{'fieldname': 'job_setting_wastage_two', 'label': 'Job Setting Wastage', 'fieldtype': 'float', 'width': 150},
+{'fieldname': 'printing_wastage_two', 'label': 'Printing Wastage', 'fieldtype': 'float', 'width': 150},
+{'fieldname': 'barcode_wastage_two', 'label': 'Barcode Wastage', 'fieldtype': 'float', 'width': 150},
+{'fieldname': 'total_wastage_two', 'label': 'Total Wastage', 'fieldtype': 'float', 'width': 150},

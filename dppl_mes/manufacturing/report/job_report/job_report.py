@@ -25,6 +25,7 @@ def execute(filters=None):
 
 
 def get_columns():
+    
     # Final order as requested:
     return [
         {'fieldname': 'machine', 'label': 'Machine', 'fieldtype': 'Link', 'options': 'Machine', 'width': 150},
@@ -36,11 +37,23 @@ def get_columns():
         {'fieldname': 'target_quantity_one', 'label': 'Target Quantity', 'fieldtype': 'Int', 'width': 150},
         {'fieldname': 'completed_quantity_one', 'label': 'Completed Quantity', 'fieldtype': 'Int', 'width': 150},
         {'fieldname': 'efficiency_one_percent', 'label': 'Efficiency (%)', 'fieldtype': 'Percent', 'width': 150},
+        {'fieldname': 'machine_wastage_one', 'label': 'Machine Wastage', 'fieldtype': 'Float', 'width': 150},
+        {'fieldname': 'job_setting_wastage_one', 'label': 'Job Setting Wastage', 'fieldtype': 'Float', 'width': 150},
+        {'fieldname': 'roll_wastage_one', 'label': 'Roll Wastage', 'fieldtype': 'Float', 'width': 150},
+        {'fieldname': 'printing_wastage_one', 'label': 'Printing Wastage', 'fieldtype': 'Float', 'width': 150},
+        {'fieldname': 'barcode_wastage_one', 'label': 'Barcode Wastage', 'fieldtype': 'Float', 'width': 150},
+        {'fieldname': 'total_wastage_one', 'label': 'Total Wastage', 'fieldtype': 'Float', 'width': 150},
         {'fieldname': 'job_name_two', 'label': 'Job Name', 'fieldtype': 'Link', 'options': 'Job', 'width': 200},
         {'fieldname': 'job_number_two', 'label': 'Job No.', 'fieldtype': 'Data', 'width': 150},
         {'fieldname': 'target_quantity_two', 'label': 'Target Quantity', 'fieldtype': 'Int', 'width': 150},
         {'fieldname': 'completed_quantity_two', 'label': 'Completed Quantity', 'fieldtype': 'Int', 'width': 150},
         {'fieldname': 'efficiency_two_percent', 'label': 'Efficiency (%)', 'fieldtype': 'Percent', 'width': 150},
+        {'fieldname': 'machine_wastage_two', 'label': 'Machine Wastage', 'fieldtype': 'Float', 'width': 150},
+        {'fieldname': 'job_setting_wastage_two', 'label': 'Job Setting Wastage', 'fieldtype': 'Float', 'width': 150},
+        {'fieldname': 'roll_wastage_two', 'label': 'Roll Wastage', 'fieldtype': 'Float', 'width': 150},
+        {'fieldname': 'printing_wastage_two', 'label': 'Printing Wastage', 'fieldtype': 'Float', 'width': 150},
+        {'fieldname': 'barcode_wastage_two', 'label': 'Barcode Wastage', 'fieldtype': 'Float', 'width': 150},
+        {'fieldname': 'total_wastage_two', 'label': 'Total Wastage', 'fieldtype': 'Float', 'width': 150},
     ]
 
 
@@ -70,7 +83,9 @@ def get_data(from_date, to_date):
         fields=[
             "machine", "date", "shift", "operator",
             "job_name", "job_number", "job_sequence_number",
-            "target_quantity", "completed_quantity"
+            "target_quantity", "completed_quantity",
+            "machine_wastage", "job_setting_wastage", "roll_wastage",
+            "printing_wastage", "barcode_wastage", "total_wastage"
         ]
     )
 
@@ -129,6 +144,12 @@ def get_data(from_date, to_date):
                     "efficiency_one_percent": (
                         (job1.get("completed_quantity") / job1.get("target_quantity") * 100) if job1 and job1.get("target_quantity") else 0
                     ) if job1 else 0,
+                    "machine_wastage_one": job1.get("machine_wastage") or 0 if job1 else 0,
+                    "job_setting_wastage_one": job1.get("job_setting_wastage") or 0 if job1 else 0,
+                    "roll_wastage_one": job1.get("roll_wastage") or 0 if job1 else 0,
+                    "printing_wastage_one": job1.get("printing_wastage") or 0 if job1 else 0,
+                    "barcode_wastage_one": job1.get("barcode_wastage") or 0 if job1 else 0,
+                    "total_wastage_one": job1.get("total_wastage") or 0 if job1 else 0,
                     "job_name_two": job2.get("job_name") if job2 else "",
                     "job_number_two": job2.get("job_number") if job2 else "",
                     "target_quantity_two": job2.get("target_quantity") if job2 and job2.get("target_quantity") is not None else "",
@@ -136,6 +157,12 @@ def get_data(from_date, to_date):
                     "efficiency_two_percent": (
                         (job2.get("completed_quantity") / job2.get("target_quantity") * 100) if job2 and job2.get("target_quantity") else 0
                     ) if job2 else 0,
+                    "machine_wastage_two": job2.get("machine_wastage") or 0 if job2 else 0,
+                    "job_setting_wastage_two": job2.get("job_setting_wastage") or 0 if job2 else 0,
+                    "roll_wastage_two": job2.get("roll_wastage") or 0 if job2 else 0,
+                    "printing_wastage_two": job2.get("printing_wastage") or 0 if job2 else 0,
+                    "barcode_wastage_two": job2.get("barcode_wastage") or 0 if job2 else 0,
+                    "total_wastage_two": job2.get("total_wastage") or 0 if job2 else 0,
                 }
                 data.append(row)
 

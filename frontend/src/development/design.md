@@ -367,6 +367,223 @@ xl: 1280px  /* Extra large devices */
 
 ---
 
+## Status Indicators
+
+### Machine Status Cards
+```css
+/* Active & Running Well */
+bg-green-50 border-2 border-green-600
+text-green-900
+
+/* Active & Running Poorly */
+bg-red-50 border-2 border-red-600
+text-red-900
+
+/* Inactive */
+bg-gray-50 border border-gray-300
+text-gray-600
+
+/* No Job */
+bg-white border border-gray-200
+text-gray-700
+```
+
+### Status Badges
+```css
+/* Success/Active */
+bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium
+
+/* Error/Inactive */
+bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium
+
+/* Warning */
+bg-amber-100 text-amber-800 px-2 py-1 rounded-full text-xs font-medium
+
+/* Info */
+bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium
+```
+
+---
+
+## Modal/Dialog Patterns
+
+### Modal Overlay
+```css
+/* Overlay */
+fixed inset-0 bg-black/50 z-50
+flex items-center justify-center p-4
+
+/* Modal Container */
+bg-white rounded-2xl shadow-xl
+w-full max-w-2xl max-h-[90vh] overflow-y-auto
+```
+
+### Modal Header
+```css
+/* Header Container */
+flex items-center justify-between
+px-6 py-4 border-b border-gray-200
+
+/* Title */
+text-xl font-semibold text-gray-900
+
+/* Close Button */
+p-2 rounded-lg hover:bg-gray-100
+text-gray-500 hover:text-gray-700
+transition-colors duration-200
+```
+
+### Modal Body
+```css
+/* Body Container */
+px-6 py-4
+
+/* Form Sections */
+space-y-6
+```
+
+### Modal Footer
+```css
+/* Footer Container */
+flex items-center justify-end gap-3
+px-6 py-4 border-t border-gray-200
+
+/* Action Buttons follow standard button patterns */
+```
+
+---
+
+## Loading & Empty States
+
+### Loading States
+```css
+/* Loading Container */
+flex flex-col items-center justify-center
+min-h-[200px] text-gray-600
+
+/* Loading Spinner */
+animate-spin h-8 w-8 text-blue-600
+
+/* Loading Text */
+text-sm text-gray-500 mt-4
+```
+
+### Empty States
+```css
+/* Empty Container */
+flex flex-col items-center justify-center
+min-h-[200px] py-12
+
+/* Empty Icon */
+text-gray-400 text-5xl mb-4
+
+/* Empty Text */
+text-gray-600 text-base font-medium mb-2
+
+/* Empty Description */
+text-gray-500 text-sm
+```
+
+---
+
+## Navigation Patterns
+
+### Top Navigation Bar
+```css
+/* Nav Container */
+bg-white shadow-sm border-b border-gray-200
+px-4 py-3 md:px-6 md:py-4
+
+/* Logo/Brand */
+h-10 cursor-pointer hover:opacity-80
+transition-opacity duration-200
+
+/* Nav Actions */
+flex items-center gap-4
+```
+
+### Page Headers
+```css
+/* Header Container */
+bg-white border-b border-gray-200
+px-4 py-4 md:px-6 md:py-5
+
+/* Page Title */
+text-2xl font-semibold text-gray-900
+
+/* Page Actions */
+flex items-center gap-3
+```
+
+---
+
+## Form Patterns
+
+### Form Sections
+```css
+/* Section Container */
+space-y-6 mb-8
+
+/* Section Title */
+text-lg font-semibold text-gray-900
+border-b-2 border-gray-200 pb-2 mb-4
+
+/* Form Grid */
+grid grid-cols-1 md:grid-cols-2 gap-4
+```
+
+### Form Validation
+```css
+/* Error State */
+border-red-500 focus:border-red-500 focus:ring-red-500
+
+/* Error Message */
+text-sm text-red-600 mt-1
+
+/* Success State */
+border-green-500 focus:border-green-500 focus:ring-green-500
+
+/* Success Message */
+text-sm text-green-600 mt-1
+```
+
+---
+
+## Data Display
+
+### Data Tables
+```css
+/* Table Container */
+overflow-x-auto rounded-lg border border-gray-200
+
+/* Table */
+w-full divide-y divide-gray-200
+
+/* Table Header */
+bg-gray-50 text-xs font-medium text-gray-700 uppercase tracking-wider
+
+/* Table Cell */
+px-6 py-4 whitespace-nowrap text-sm text-gray-900
+```
+
+### Metric Cards
+```css
+/* Metric Container */
+bg-white rounded-lg shadow-sm border border-gray-200 p-4
+
+/* Metric Label */
+text-xs font-medium text-gray-500 uppercase tracking-wider
+
+/* Metric Value */
+text-2xl font-semibold text-gray-900 mt-1
+
+/* Metric Change */
+text-sm text-green-600 or text-red-600
+flex items-center gap-1 mt-2
+```
+
+---
+
 ## Quick Reference
 
 ### Most Common Class Combinations
@@ -374,5 +591,7 @@ xl: 1280px  /* Extra large devices */
 - **Card**: `bg-white rounded-xl shadow-sm hover:shadow-md border border-gray-100 p-6 transition-shadow duration-200`
 - **Input**: `w-full px-3 py-3 border border-gray-300 rounded-md focus:border-blue-600 focus:ring-1 focus:ring-blue-600`
 - **List Item**: `flex items-center py-3 px-4 hover:bg-gray-50 border-b border-gray-100`
+- **Modal**: `fixed inset-0 bg-black/50 z-50 flex items-center justify-center`
+- **Loading**: `flex items-center justify-center min-h-[200px] text-gray-600`
 
 This design system ensures consistent Material Design implementation across all Vue.js components using Tailwind CSS utilities.

@@ -152,3 +152,6 @@ bench run-tests dppl_mes
 - Real-time machine status updates
 - Automatic reconnection handling
 - Used for live dashboard updates without page refresh
+
+## Frontend Design Guide
+The frontend design guide is maintained in design.md path: dppl_mes/frontend/src/development/design.md

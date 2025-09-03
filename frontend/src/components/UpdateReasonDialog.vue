@@ -1,19 +1,62 @@
 <template>
-  <div v-if="visible" class="modal-overlay">
-    <div class="modal-content">
-      <h3>Update Downtime Reason</h3>
-      <div v-if="updateMessage" class="update-message" :class="{ 'success': updateSuccess, 'error': !updateSuccess }">
-        {{ updateMessage }}
+  <div v-if="visible" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+        <h3 class="text-xl font-semibold text-gray-900">Update Downtime Reason</h3>
+        <button 
+          @click="handleCancel" 
+          :disabled="loading || fetchingReason"
+          class="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
       </div>
-      <select v-model="selectedReason" :disabled="loading || fetchingReason">
-        <option value="" disabled>Select a reason</option>
-        <option v-for="reason in reasonOptions" :key="reason.name" :value="reason.name">
-          {{ reason.name }}
-        </option>
-      </select>
-      <div class="modal-actions">
-        <button class="action-btn" @click="handleUpdate" :disabled="!selectedReason || loading || fetchingReason">Update</button>
-        <button class="action-btn cancel" @click="handleCancel" :disabled="loading || fetchingReason">Cancel</button>
+      
+      <!-- Modal Body -->
+      <div class="px-6 py-4">
+        <!-- Alert Message -->
+        <div v-if="updateMessage" 
+          class="mb-4 p-3 rounded-lg text-sm font-medium"
+          :class="updateSuccess ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'"
+        >
+          {{ updateMessage }}
+        </div>
+        
+        <!-- Select Field -->
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Reason</label>
+          <select 
+            v-model="selectedReason" 
+            :disabled="loading || fetchingReason"
+            class="w-full px-3 py-3 border border-gray-300 rounded-md focus:border-blue-600 focus:ring-1 focus:ring-blue-600 disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed transition-colors duration-200"
+          >
+            <option value="" disabled>Select a reason</option>
+            <option v-for="reason in reasonOptions" :key="reason.name" :value="reason.name">
+              {{ reason.name }}
+            </option>
+          </select>
+        </div>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200">
+        <button 
+          @click="handleCancel" 
+          :disabled="loading || fetchingReason"
+          class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Cancel
+        </button>
+        <button 
+          @click="handleUpdate" 
+          :disabled="!selectedReason || loading || fetchingReason"
+          class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-full shadow-sm hover:shadow-md transition-all duration-200 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+        >
+          Update
+        </button>
       </div>
     </div>
   </div>
@@ -148,114 +191,3 @@ const handleCancel = () => {
 	emit("cancel")
 }
 </script>
-
-<style scoped>
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: #ffffff;
-  padding: 24px;
-  border-radius: 8px;
-  width: 400px;
-  max-width: 90%;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  border: 1px solid #e0e0e0;
-}
-
-h3 {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #333;
-  text-align: center;
-}
-
-select {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #d1d1d1;
-  border-radius: 6px;
-  font-size: 1rem;
-  background: #f9f9f9;
-  cursor: pointer;
-  transition: border-color 0.2s;
-}
-
-select:focus {
-  outline: none;
-  border-color: #2ecc71;
-}
-
-select:disabled {
-  background: #e0e0e0;
-  cursor: not-allowed;
-}
-
-.update-message {
-  padding: 10px;
-  border-radius: 4px;
-  text-align: center;
-  font-size: 0.9rem;
-}
-
-.update-message.success {
-  background: #e6f4ea;
-  color: #2ecc71;
-}
-
-.update-message.error {
-  background: #ffe6e6;
-  color: #c0392b;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.action-btn {
-  flex: 1;
-  background-color: #2ecc71;
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: background-color 0.2s;
-}
-
-.action-btn:hover:not(:disabled) {
-  background-color: #27ae60;
-}
-
-.action-btn:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-.action-btn.cancel {
-  background-color: #ffb3b3;
-  color: #c0392b;
-}
-
-.action-btn.cancel:hover:not(:disabled) {
-  background-color: #ff7675;
-}
-</style>

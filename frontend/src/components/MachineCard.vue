@@ -1,55 +1,61 @@
 <template>
-  <div class="machine-card" :class="cardColorClass" @click="handleClick">
-    <div class="machine-image-container">
+  <div 
+    @click="handleClick"
+    class="bg-white rounded-xl shadow-sm hover:shadow-md border p-4 cursor-pointer transition-all duration-200 hover:-translate-y-1"
+    :class="cardColorClass"
+  >
+    <div class="w-full h-40 mb-3 flex items-center justify-center bg-gray-50 border border-gray-200 rounded-lg overflow-hidden">
       <img 
         v-if="machineImageUrl" 
         :src="machineImageUrl" 
         :alt="machine.machine_name || machine.name"
-        class="machine-photo"
+        class="w-full h-full object-cover"
         @error="handleImageError"
       />
-      <div v-else class="no-image-placeholder">
-        <span>📷</span>
-        <p>No image</p>
+      <div v-else class="flex flex-col items-center text-gray-400">
+        <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        </svg>
+        <p class="text-sm">No image</p>
       </div>
     </div>
-    <div class="machine-details">
-      <h3 class="machine-name">{{ machine.machine_name || machine.name }}</h3>
+    <div class="space-y-2">
+      <h3 class="text-lg font-semibold text-gray-900" :class="titleColorClass">{{ machine.machine_name || machine.name }}</h3>
       
       <!-- Show Inactive Status for inactive machines -->
-      <div v-if="machine.is_active === 0" class="inactive-status">
-        <span class="inactive-text">Inactive</span>
+      <div v-if="machine.is_active === 0" class="text-center py-2">
+        <span class="inline-flex px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600 uppercase">Inactive</span>
       </div>
       
       <!-- Job Progress Metrics for active machines -->
-      <div v-else-if="jobMetrics" class="job-metrics">
-        <div class="metric-item">
-          <span class="metric-label">Job:</span>
-          <span class="metric-value">{{ jobMetrics.job_name || 'No Job Running' }}</span>
+      <div v-else-if="jobMetrics" class="space-y-1.5">
+        <div class="flex justify-between items-center text-sm">
+          <span class="font-medium text-gray-600">Job:</span>
+          <span class="font-semibold text-gray-900 truncate ml-2">{{ jobMetrics.job_name || 'No Job Running' }}</span>
         </div>
-        <div class="metric-item">
-          <span class="metric-label">Job #:</span>
-          <span class="metric-value">{{ jobMetrics.job_number || 'N/A' }}</span>
+        <div class="flex justify-between items-center text-sm">
+          <span class="font-medium text-gray-600">Job #:</span>
+          <span class="font-semibold text-gray-900">{{ jobMetrics.job_number || 'N/A' }}</span>
         </div>
-        <div class="metric-item">
-          <span class="metric-label">Target:</span>
-          <span class="metric-value">{{ jobMetrics.target_quantity || 0 }}</span>
+        <div class="flex justify-between items-center text-sm">
+          <span class="font-medium text-gray-600">Target:</span>
+          <span class="font-semibold text-gray-900">{{ jobMetrics.target_quantity || 0 }}</span>
         </div>
-        <div class="metric-item">
-          <span class="metric-label">Completed:</span>
-          <span class="metric-value">{{ jobMetrics.completed_quantity || 0 }}</span>
+        <div class="flex justify-between items-center text-sm">
+          <span class="font-medium text-gray-600">Completed:</span>
+          <span class="font-semibold text-gray-900">{{ jobMetrics.completed_quantity || 0 }}</span>
         </div>
-        <div class="metric-item">
-          <span class="metric-label">Balance:</span>
-          <span class="metric-value">{{ (jobMetrics.target_quantity || 0) - (jobMetrics.completed_quantity || 0) }}</span>
+        <div class="flex justify-between items-center text-sm">
+          <span class="font-medium text-gray-600">Balance:</span>
+          <span class="font-semibold text-gray-900">{{ (jobMetrics.target_quantity || 0) - (jobMetrics.completed_quantity || 0) }}</span>
         </div>
-        <div class="metric-item">
-          <span class="metric-label">Completion:</span>
-          <span class="metric-value">{{ jobMetrics.target_quantity ? Math.round((jobMetrics.completed_quantity || 0) / jobMetrics.target_quantity * 100) : 0 }}%</span>
+        <div class="flex justify-between items-center text-sm">
+          <span class="font-medium text-gray-600">Completion:</span>
+          <span class="font-semibold text-gray-900">{{ jobMetrics.target_quantity ? Math.round((jobMetrics.completed_quantity || 0) / jobMetrics.target_quantity * 100) : 0 }}%</span>
         </div>
       </div>
-      <div v-else class="no-job">
-        <span class="no-job-text">No active job</span>
+      <div v-else class="text-center py-3">
+        <span class="text-sm text-gray-400 italic">No active job</span>
       </div>
     </div>
   </div>
@@ -96,16 +102,35 @@ const machineImageUrl = computed(() => {
 const cardColorClass = computed(() => {
 	// If machine is inactive (is_active = 0), show gray
 	if (props.machine.is_active === 0) {
-		return "card-inactive"
+		return "bg-gray-50 border-gray-300"
 	}
 
 	// If machine is active, check run_rate_indicator from jobMetrics
 	if (props.jobMetrics && props.jobMetrics.run_rate_indicator !== undefined) {
-		return props.jobMetrics.run_rate_indicator === 1 ? "card-good" : "card-poor"
+		return props.jobMetrics.run_rate_indicator === 1
+			? "bg-green-50 border-2 border-green-600"
+			: "bg-red-50 border-2 border-red-600"
 	}
 
 	// Default: if no job metrics available but machine is active
-	return "card-default"
+	return "border-gray-200"
+})
+
+const titleColorClass = computed(() => {
+	// If machine is inactive (is_active = 0), show gray
+	if (props.machine.is_active === 0) {
+		return "text-gray-600"
+	}
+
+	// If machine is active, check run_rate_indicator from jobMetrics
+	if (props.jobMetrics && props.jobMetrics.run_rate_indicator !== undefined) {
+		return props.jobMetrics.run_rate_indicator === 1
+			? "text-green-900"
+			: "text-red-900"
+	}
+
+	// Default: if no job metrics available but machine is active
+	return "text-gray-900"
 })
 
 // Methods
@@ -118,179 +143,4 @@ const handleImageError = (event) => {
 	event.target.style.display = "none"
 	event.target.nextElementSibling?.classList.remove("hidden")
 }
-
-const getStatusClass = () => {
-	return props.machine.is_active ? "status-active" : "status-inactive"
-}
 </script>
-
-<style scoped>
-.machine-card {
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  padding: 16px;
-  margin: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  background-color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.machine-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  border-color: #007bff;
-}
-
-.machine-image-container {
-  width: 100%;
-  height: 150px;
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #f8f9fa;
-  border: 0.5px solid #adb5bd;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.machine-photo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.no-image-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: #6c757d;
-  text-align: center;
-}
-
-.no-image-placeholder span {
-  font-size: 2rem;
-  margin-bottom: 4px;
-}
-
-.no-image-placeholder p {
-  margin: 0;
-  font-size: 0.9rem;
-}
-
-.machine-details p {
-  margin: 8px 0;
-  display: flex;
-  align-items: center;
-  font-size: 0.95rem;
-  line-height: 1.4;
-}
-
-.machine-name {
-  margin: 8px 0 12px 0;
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: #495057;
-  line-height: 1.2;
-}
-
-.job-metrics {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.metric-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.85rem;
-}
-
-.metric-label {
-  font-weight: 500;
-  color: #6c757d;
-}
-
-.metric-value {
-  font-weight: 600;
-  color: #495057;
-}
-
-.no-job {
-  padding: 8px 0;
-  text-align: center;
-}
-
-.no-job-text {
-  font-size: 0.85rem;
-  color: #adb5bd;
-  font-style: italic;
-}
-
-.inactive-status {
-  padding: 8px 0;
-  text-align: center;
-}
-
-.inactive-text {
-  font-size: 0.9rem;
-  color: #6c757d;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.status-badge {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.status-active {
-  background-color: #d4edda;
-  color: #155724;
-}
-
-.status-inactive {
-  background-color: #f8d7da;
-  color: #721c24;
-}
-
-/* Card color classes based on machine status */
-.card-inactive {
-  background-color: #f8f9fa !important;
-  border-color: #dee2e6 !important;
-}
-
-.card-good {
-  background-color: #d4edda !important;
-  border-color: #28a745 !important;
-  border-width: 2px !important;
-}
-
-.card-poor {
-  background-color: #f8d7da !important;
-  border-color: #dc3545 !important;
-  border-width: 2px !important;
-}
-
-.card-default {
-  background-color: #fff !important;
-  border-color: #ddd !important;
-}
-
-.card-inactive .machine-name {
-  color: #6c757d !important;
-}
-
-.card-good .machine-name {
-  color: #155724 !important;
-}
-
-.card-poor .machine-name {
-  color: #721c24 !important;
-}
-</style>

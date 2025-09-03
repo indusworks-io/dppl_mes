@@ -24,7 +24,7 @@
 - Consitent Duration Format -- Done
 - Functionality to load more job cards & more downtime logs
 - Sorting logic of job cards & downtime logs -- Done
-- Make All Fonts, Borders, Spacing, Radius etc. consistent as per Google Material Design
+- Make All Fonts, Borders, Spacing, Radius etc. consistent as per Google Material Design -- Done
 
 
 # Backend Development
@@ -205,3 +205,14 @@ Ideally at the end of the list there should be some option to load more records.
 Please functionality that allows a user to load more Job Cards & Downtime Logs if they exisit else show him text 'No More Records found'
 Create a Plan Before Changing the Code
 
+## UI Improvement
+Currently some components look like they belong to same design system and some belog to different design system.
+This makes the app little less polished.
+I have created a simple design guide called design.md path: dppl_mes/frontend/src/development/design.md
+do the following:
+1. Go through the design guide and understand it.
+2. Make necessary additions/subtractions from the guide based on our components.
+3. Modify/Update the components & Pages as per the design guide.
+The objective is to make the app look and feel like a super polished & professional looking.
+Think a lot before doing anything.
+Create a to do plan before executing.

@@ -134,7 +134,7 @@
           </div>
           <div v-else-if="jobCardsResource.error" class="error-state">
             <p>Error loading job cards: {{ jobCardsResource.error }}</p>
-            <button @click="jobCardsResource.reload()" class="retry-button">Retry</button>
+            <button @click="retryLoadJobCards" class="retry-button">Retry</button>
           </div>
           <div v-else-if="allJobCards.length > 0" class="job-cards-container">
             <!-- Job Cards List Header (Desktop) -->
@@ -204,6 +204,7 @@
           </div>
           <div v-else-if="!jobCardsResource.loading && allJobCards.length === 0" class="no-data">
             <p>No job cards found for this machine</p>
+            <button @click="retryLoadJobCards" class="retry-button">Refresh</button>
           </div>
         </div>
         
@@ -215,7 +216,7 @@
           </div>
           <div v-else-if="downtimeLogsResource.error" class="error-state">
             <p>Error loading downtime logs: {{ downtimeLogsResource.error }}</p>
-            <button @click="downtimeLogsResource.reload()" class="retry-button">Retry</button>
+            <button @click="retryLoadDowntimeLogs" class="retry-button">Retry</button>
           </div>
           <div v-else-if="allDowntimeLogs.length > 0" class="downtime-logs-container">
             <!-- Downtime Logs List Header (Desktop) -->
@@ -285,6 +286,7 @@
           </div>
           <div v-else-if="!downtimeLogsResource.loading && allDowntimeLogs.length === 0" class="no-data">
             <p>No downtime logs found for this machine</p>
+            <button @click="retryLoadDowntimeLogs" class="retry-button">Refresh</button>
           </div>
         </div>
       </div>
@@ -332,7 +334,7 @@ const tabs = ref([
 // Get machine ID from route params
 const machineId = route.params.id
 
-// Create Job Cards resource
+// Create Job Cards resource with reactive start
 const jobCardsResource = createListResource({
 	doctype: "Job Card",
 	fields: [
@@ -351,12 +353,17 @@ const jobCardsResource = createListResource({
 	],
 	filters: { machine: machineId },
 	orderBy: "creation desc",
-	start: jobCardsStart.value,
+	start: 0, // Start with 0 initially
 	pageLength: 50,
 	auto: false,
-	cache: ["job_cards", machineId],
+	cache: false, // Disable cache to avoid stale data issues
 	onSuccess(data) {
-		console.log("Job cards loaded:", data?.length || 0)
+		console.log(
+			"Job cards loaded:",
+			data?.length || 0,
+			"Start:",
+			jobCardsStart.value,
+		)
 
 		if (jobCardsStart.value === 0) {
 			// Initial load - replace data
@@ -375,12 +382,16 @@ const jobCardsResource = createListResource({
 		jobCardsLoadingMore.value = false
 	},
 	onError(err) {
-		console.warn("Could not fetch job cards:", err)
+		console.error("Error fetching job cards:", err)
 		jobCardsLoadingMore.value = false
+		// Reset loading states on error
+		if (jobCardsResource.loading) {
+			jobCardsResource.loading = false
+		}
 	},
 })
 
-// Create Downtime Logs resource
+// Create Downtime Logs resource with reactive start
 const downtimeLogsResource = createListResource({
 	doctype: "Downtime Log",
 	fields: [
@@ -393,15 +404,21 @@ const downtimeLogsResource = createListResource({
 		"status",
 		"category",
 		"remarks",
+		"machine", // Add machine field to ensure proper filtering
 	],
 	filters: { machine: machineId },
 	orderBy: "created_date desc",
-	start: downtimeLogsStart.value,
+	start: 0, // Start with 0 initially
 	pageLength: 50,
 	auto: false,
-	cache: ["downtime_logs", machineId],
+	cache: false, // Disable cache to avoid stale data issues
 	onSuccess(data) {
-		console.log("Downtime logs loaded:", data?.length || 0)
+		console.log(
+			"Downtime logs loaded:",
+			data?.length || 0,
+			"Start:",
+			downtimeLogsStart.value,
+		)
 
 		if (downtimeLogsStart.value === 0) {
 			// Initial load - replace data
@@ -420,8 +437,12 @@ const downtimeLogsResource = createListResource({
 		downtimeLogsLoadingMore.value = false
 	},
 	onError(err) {
-		console.warn("Could not fetch downtime logs:", err)
+		console.error("Error fetching downtime logs:", err)
 		downtimeLogsLoadingMore.value = false
+		// Reset loading states on error
+		if (downtimeLogsResource.loading) {
+			downtimeLogsResource.loading = false
+		}
 	},
 })
 
@@ -436,9 +457,9 @@ createResource({
 	onSuccess(data) {
 		machine.value = data
 		fetchJobMetrics()
-		// Reload the list resources
-		jobCardsResource.reload()
-		downtimeLogsResource.reload()
+		// Don't auto-load job cards and downtime logs here
+		// They will be loaded when their respective tabs are clicked
+		console.log("Machine details loaded:", data.name)
 	},
 	onError(err) {
 		error.value = `Failed to load machine details: ${err.message}`
@@ -580,6 +601,31 @@ const getDowntimeStatusClass = (status) => {
 	return "status-pending"
 }
 
+// Retry functions for error states
+const retryLoadJobCards = () => {
+	console.log("Retrying job cards load")
+	jobCardsStart.value = 0
+	allJobCards.value = []
+	jobCardsHasMore.value = true
+	jobCardsResource.update({
+		start: 0,
+		filters: { machine: machineId },
+	})
+	jobCardsResource.reload()
+}
+
+const retryLoadDowntimeLogs = () => {
+	console.log("Retrying downtime logs load")
+	downtimeLogsStart.value = 0
+	allDowntimeLogs.value = []
+	downtimeLogsHasMore.value = true
+	downtimeLogsResource.update({
+		start: 0,
+		filters: { machine: machineId },
+	})
+	downtimeLogsResource.reload()
+}
+
 // Load more functions for pagination
 const loadMoreJobCards = () => {
 	if (jobCardsLoadingMore.value || !jobCardsHasMore.value) return
@@ -608,21 +654,43 @@ const loadMoreDowntimeLogs = () => {
 }
 
 // Watch for tab changes to load data if needed
-watch(activeTab, (newTab) => {
-	if (
-		newTab === "jobcards" &&
-		allJobCards.value.length === 0 &&
-		!jobCardsResource.loading
-	) {
-		jobCardsResource.reload()
-	} else if (
-		newTab === "downtime" &&
-		allDowntimeLogs.value.length === 0 &&
-		!downtimeLogsResource.loading
-	) {
-		downtimeLogsResource.reload()
-	}
-})
+watch(
+	activeTab,
+	(newTab, oldTab) => {
+		console.log("Tab changed from", oldTab, "to", newTab)
+
+		if (newTab === "jobcards") {
+			// Always try to load job cards when switching to this tab if not already loaded
+			if (allJobCards.value.length === 0 && !jobCardsResource.loading) {
+				console.log("Loading job cards for first time")
+				// Reset pagination before loading
+				jobCardsStart.value = 0
+				jobCardsHasMore.value = true
+				// Update resource and reload
+				jobCardsResource.update({
+					start: 0,
+					filters: { machine: machineId },
+				})
+				jobCardsResource.reload()
+			}
+		} else if (newTab === "downtime") {
+			// Always try to load downtime logs when switching to this tab if not already loaded
+			if (allDowntimeLogs.value.length === 0 && !downtimeLogsResource.loading) {
+				console.log("Loading downtime logs for first time")
+				// Reset pagination before loading
+				downtimeLogsStart.value = 0
+				downtimeLogsHasMore.value = true
+				// Update resource and reload
+				downtimeLogsResource.update({
+					start: 0,
+					filters: { machine: machineId },
+				})
+				downtimeLogsResource.reload()
+			}
+		}
+	},
+	{ immediate: false },
+)
 
 // Lifecycle hooks
 onMounted(() => {

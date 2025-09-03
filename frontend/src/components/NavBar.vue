@@ -1,21 +1,25 @@
 <template>
-  <nav class="top-bar">
-    <div class="navbar-left">
+  <nav class="bg-white shadow-sm border-b border-gray-200 px-4 py-3 md:px-6 md:py-4 flex items-center justify-between">
+    <div class="flex items-center">
       <img 
         src="/soundseal-logo.png" 
         alt="SoundSeal Logo" 
-        class="brand-logo"
+        class="h-10 cursor-pointer hover:opacity-80 transition-opacity duration-200"
         @click="navigateToHome"
       />
     </div>
-    <div class="navbar-right">
-      <button @click="handleLogout" class="logout-button" title="Logout">
+    <div class="flex items-center gap-4">
+      <button 
+        @click="handleLogout" 
+        class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 font-medium text-sm hover:bg-gray-50 hover:border-gray-400 active:bg-gray-100 transition-all duration-200 shadow-sm hover:shadow-md"
+        title="Logout"
+      >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
           <polyline points="16 17 21 12 16 7"></polyline>
           <line x1="21" y1="12" x2="9" y2="12"></line>
         </svg>
-        <span class="logout-text">Logout</span>
+        <span class="hidden sm:inline">Logout</span>
       </button>
     </div>
   </nav>
@@ -43,81 +47,3 @@ const handleLogout = async () => {
 	}
 }
 </script>
-
-<style scoped>
-.top-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 32px;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  border-bottom: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.navbar-left {
-  display: flex;
-  align-items: center;
-}
-
-.navbar-right {
-  display: flex;
-  align-items: center;
-}
-
-.brand-logo {
-  height: 40px;
-  width: auto;
-  cursor: pointer;
-  transition: transform 0.2s ease, opacity 0.2s ease;
-  object-fit: contain;
-}
-
-.brand-logo:hover {
-  transform: scale(1.05);
-  opacity: 0.9;
-}
-
-.logout-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  color: #475569;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-.logout-button:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
-  color: #334155;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.logout-button:active {
-  transform: translateY(0);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-.logout-text {
-  font-size: 14px;
-}
-
-@media (max-width: 640px) {
-  .logout-text {
-    display: none;
-  }
-  
-  .logout-button {
-    padding: 8px 12px;
-  }
-}
-</style>

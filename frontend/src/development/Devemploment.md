@@ -284,3 +284,14 @@ The issue was over-engineering. Frappe CRM works perfectly with simple, standard
 - ✅ `frontend/src/socket.js` - New simple implementation  
 - ✅ `frontend/src/main.js` - Simplified context loading
 - ✅ Removed obsolete `socket2.js`
+
+
+Deployment setup... 
+My app is installed on AWS EC2
+It uses Docker Container for running
+I build the docker containers using pwd.yml file path: dppl_mes/frontend/src/development/pwd.yml
+I am getting following error in the browser console...
+frontend/:1 Mixed Content: The page at 'https://production.soundseal.in/frontend/' was loaded over HTTPS, but requested an insecure resource 'http://production.soundseal.in:8080/frontend'. This request has been blocked; the content must be served over HTTPS.
+I feel this error is coming from socket.js path:dppl_mes/frontend/src/socket.js can you check and confirm?
+
+here is the output from the debug statements written in the socket.js 

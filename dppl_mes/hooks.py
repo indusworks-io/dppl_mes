@@ -246,4 +246,4 @@ app_license = "mit"
 # }
 
 
-website_route_rules = [{'from_route': '/frontend/<path:app_path>', 'to_route': 'frontend'}, {'from_route': '/application/<path:app_path>', 'to_route': 'application'}, {'from_route': '/frontend/<path:app_path>', 'to_route': 'frontend'},]
+website_route_rules = [{'from_route': '/frontend/<path:app_path>', 'to_route': 'frontend'},]

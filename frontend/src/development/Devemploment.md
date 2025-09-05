@@ -295,3 +295,16 @@ frontend/:1 Mixed Content: The page at 'https://production.soundseal.in/frontend
 I feel this error is coming from socket.js path:dppl_mes/frontend/src/socket.js can you check and confirm?
 
 here is the output from the debug statements written in the socket.js 
+
+
+My app is now live on AWS and I think the CSRF issue has fixed the socket issue also...
+but there seems to be another issue...
+This is my starting URL https://production.soundseal.in/frontend/ but when I refresh the page using the browser refresh button it changes to https://production.soundseal.in:8080/frontend
+
+
+Things To Fix:
+1. URL Change Issue: https://production.soundseal.in:8080/frontend
+2. Session Not Working Properly between app --> Frontend toggle
+3. PWA Related Errors
+
+

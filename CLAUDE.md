@@ -155,3 +155,13 @@ bench run-tests dppl_mes
 
 ## Frontend Design Guide
 The frontend design guide is maintained in design.md path: dppl_mes/frontend/src/development/design.md
+
+## Frontend Deployment Step:
+- The Vue js app is part of Frappe Framework
+- During the build step the bench does following:
+  - run Yarn Build to compile the app
+  - move/copy the assets to public folder path: dppl_mes/dppl_mes/public
+  - move/copy the html to WWW folder path: dppl_mes/dppl_mes/www
+- This way the app becomes part of the frappe application where the url structure becomes like this:
+  - Desk App: https://production.soundseal.in/app/
+  - Vue Js App: https://production.soundseal.in/frontend/

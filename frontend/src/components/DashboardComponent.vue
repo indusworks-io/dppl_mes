@@ -25,7 +25,7 @@
 
 <script setup>
 import { createResource } from "frappe-ui"
-import { computed, onMounted, onUnmounted, ref, watch, inject } from "vue"
+import { computed, onMounted, onUnmounted, ref } from "vue"
 import { initSocket, useSocket } from "../socket.js"
 import MachineCard from "./MachineCard.vue"
 
@@ -47,9 +47,6 @@ const props = defineProps({
 const loading = ref(false)
 const error = ref(null)
 const machineJobMetrics = ref({})
-
-// Inject session for authentication-aware data fetching
-const session = inject('session')
 
 const sortedAreas = computed(() => {
 	return [...props.areas].sort((a, b) => a.sequence_number - b.sequence_number)
@@ -165,18 +162,6 @@ const fetchInitialJobMetrics = () => {
 	jobMetricsResource.reload()
 }
 
-// Watch for session login status and fetch data when authenticated
-watch(
-	() => session.isLoggedIn,
-	(isLoggedIn) => {
-		if (isLoggedIn) {
-			// Fetch initial job metrics only when session is authenticated
-			fetchInitialJobMetrics()
-		}
-	},
-	{ immediate: true }
-)
-
 onMounted(() => {
 	if (!props.areas || !props.machines) {
 		loading.value = true
@@ -185,10 +170,11 @@ onMounted(() => {
 		loading.value = false
 	}
 
-	// Setup socket listeners for realtime updates (can be done immediately)
-	setupSocketListener()
+	// Fetch initial job metrics first
+	fetchInitialJobMetrics()
 
-	// Data fetching is now handled by the session watcher above
+	// Then setup socket listeners for realtime updates
+	setupSocketListener()
 })
 
 onUnmounted(() => {

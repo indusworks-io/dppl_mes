@@ -127,7 +127,7 @@
 
 <script setup>
 import { createResource } from "frappe-ui"
-import { computed, nextTick, onMounted, onUnmounted, ref, watch, inject } from "vue"
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue"
 import { useRouter } from "vue-router"
 import { initSocket, useSocket } from "../socket.js"
 
@@ -140,9 +140,6 @@ const props = defineProps({
 const emit = defineEmits(["machine-selected"])
 
 const router = useRouter()
-
-// Inject session for authentication-aware data fetching
-const session = inject('session')
 
 // ✅ State
 const isLoading = ref(false)
@@ -578,28 +575,17 @@ const handleMouseMove = (event) => {
 
 const handleMouseUp = () => (isDragging.value = false)
 
-// Watch for session login status and fetch data when authenticated
-watch(
-	() => session.isLoggedIn,
-	(isLoggedIn) => {
-		if (isLoggedIn) {
-			// Fetch initial job metrics only when session is authenticated
-			fetchInitialJobMetrics()
-		}
-	},
-	{ immediate: true }
-)
-
 onMounted(() => {
-	// Setup socket listeners (can be done immediately)
+	// Fetch initial job metrics first
+	fetchInitialJobMetrics()
+
+	// Setup socket listeners
 	setupSocketListener()
 
-	// Load floor plan if available (doesn't require authentication)
+	// Then load floor plan if available
 	if (floorPlanUrl.value) {
 		loadFloorPlan(floorPlanUrl.value)
 	}
-
-	// Data fetching is now handled by the session watcher above
 })
 
 onUnmounted(() => {

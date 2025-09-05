@@ -98,3 +98,8 @@ docker inspect dppl-websocket-1 | grep -A 20 "NetworkSettings"
             "Networks": {
                 "dppl_default": {
                     "IPAMConfig": null,
+
+For some reason realtime update functionality that should trigger job_metrics_update on:
+- DashboardComponent.vue path: dppl_mes/frontend/src/components/DashboardComponent.vue
+- FactoryFloorMap.vue path: dppl_mes/frontend/src/components/FactoryFloorMap.vue
+Is not working... can you please check why?

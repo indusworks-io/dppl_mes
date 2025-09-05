@@ -13,6 +13,15 @@ export function initSocket() {
 		withCredentials: true,
 		reconnectionAttempts: 5,
 	})
+	
+	console.log("🔍 Socket Debug Info:")
+	console.log("host:", host)
+	console.log("siteName:", siteName)
+	console.log("socketio_port from config:", socketio_port)
+	console.log("port (computed):", port)
+	console.log("protocol:", protocol)
+	console.log("Final Socket URL:", url)
+
 	return socket
 }
 

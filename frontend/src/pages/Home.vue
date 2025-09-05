@@ -28,7 +28,7 @@
 
 <script setup>
 import { createListResource, createResource } from "frappe-ui"
-import { computed, onMounted, onUnmounted, ref, watch, inject } from "vue"
+import { computed, onMounted, onUnmounted, ref } from "vue"
 import DashboardComponent from "../components/DashboardComponent.vue"
 import FactoryFloorMap from "../components/FactoryFloorMap.vue"
 import HomePageControls from "../components/HomePageControls.vue"
@@ -42,9 +42,6 @@ const selectedFactoryData = ref(null)
 const areas = ref([])
 const machines = ref([])
 const socket = ref(null)
-
-// Inject session for authentication-aware data fetching
-const session = inject('session')
 
 // Toggle between views
 function toggleView() {
@@ -68,7 +65,7 @@ const factoryResource = createListResource({
 	doctype: "Factory",
 	fields: ["name", "factory_name", "floor_plan"],
 	filters: { is_active: 1 },
-	auto: false, // Don't auto-fetch, wait for session
+	auto: true,
 	onSuccess(data) {
 		factoryOptions.value = data.map((f) => ({
 			value: f.name,
@@ -84,7 +81,7 @@ function fetchDefaultFactory() {
 	createResource({
 		url: "frappe.client.get",
 		params: { doctype: "Organization Settings", name: "Organization Settings" },
-		auto: false, // Don't auto-fetch, called manually after session validation
+		auto: true,
 		onSuccess(res) {
 			if (res && res.default_factory) {
 				selectedFactory.value = res.default_factory
@@ -93,14 +90,14 @@ function fetchDefaultFactory() {
 					null
 			}
 		},
-	}).fetch() // Fetch immediately when called
+	})
 }
 
 // Fetch areas
 const areaResource = createListResource({
 	doctype: "Area",
 	fields: ["name", "area_name", "factory", "sequence_number"],
-	auto: false, // Don't auto-fetch, wait for session
+	auto: true,
 	onSuccess(data) {
 		areas.value = data
 	},
@@ -117,7 +114,7 @@ const machineResource = createListResource({
 		"sequence_number",
 		"machine_image",
 	],
-	auto: false, // Don't auto-fetch, wait for session
+	auto: true,
 	pageLength: 2000,
 	onSuccess(data) {
 		machines.value = data
@@ -153,20 +150,6 @@ const handleResize = () => {
 	}
 }
 
-// Watch for session login status and fetch data when authenticated
-watch(
-	() => session.isLoggedIn,
-	(isLoggedIn) => {
-		if (isLoggedIn) {
-			// Fetch all data when session is authenticated
-			factoryResource.reload()
-			areaResource.reload()
-			machineResource.reload()
-		}
-	},
-	{ immediate: true }
-)
-
 onMounted(() => {
 	initializeView()
 	window.addEventListener("resize", handleResize)
@@ -174,7 +157,9 @@ onMounted(() => {
 	// Initialize socket connection
 	socket.value = initSocket()
 
-	// Data fetching is now handled by the session watcher above
+	factoryResource.reload()
+	areaResource.reload()
+	machineResource.reload()
 })
 
 onUnmounted(() => {

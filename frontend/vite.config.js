@@ -9,25 +9,34 @@ export default defineConfig({
 	plugins: [
 		VitePWA({
 			registerType: "autoUpdate",
-			devOptions: {
-				enabled: true,
-				type: "module",
-			},
 			manifest: {
 				name: "SoundSeal MES",
 				short_name: "SoundSeal MES",
+				description: "Manufacturing Execution System for factory floor monitoring and control",
 				icons: [
 					{
 						src: "android/android-launchericon-512-512.png",
 						sizes: "512x512",
 						type: "image/png",
-						purpose: "any maskable",
+						purpose: "any",
+					},
+					{
+						src: "android/android-launchericon-512-512.png",
+						sizes: "512x512",
+						type: "image/png",
+						purpose: "maskable",
 					},
 					{
 						src: "android/android-launchericon-192-192.png",
 						sizes: "192x192",
 						type: "image/png",
-						purpose: "any maskable",
+						purpose: "any",
+					},
+					{
+						src: "android/android-launchericon-192-192.png",
+						sizes: "192x192",
+						type: "image/png",
+						purpose: "maskable",
 					},
 					{
 						src: "android/android-launchericon-144-144.png",
@@ -72,8 +81,26 @@ export default defineConfig({
 						purpose: "any",
 					},
 				],
-				start_url: "/frontend",
+				screenshots: [
+					{
+						src: "screenshots/desktop-1280x720.png",
+						sizes: "1280x720",
+						type: "image/png",
+						form_factor: "wide",
+						label: "Factory floor dashboard view"
+					},
+					{
+						src: "screenshots/mobile-750x1334.png",
+						sizes: "750x1334",
+						type: "image/png",
+						form_factor: "narrow",
+						label: "Mobile factory monitoring"
+					}
+				],
+				start_url: "/frontend/",
+				scope: "/frontend/",
 				display: "standalone",
+				orientation: "any",
 				background_color: "#FFFFFF",
 				theme_color: "#FFFFFF",
 			},

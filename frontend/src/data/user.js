@@ -1,4 +1,3 @@
-import router from '@/router'
 import { createResource } from 'frappe-ui'
 
 export const userResource = createResource({
@@ -7,7 +6,7 @@ export const userResource = createResource({
 	onError(error) {
 		if (error && error.exc_type === 'AuthenticationError') {
 			console.log('I was called from user.js')
-			router.push({ name: "Home" })
+			window.location.href = `/login?redirect-to=${encodeURIComponent(to.fullPath)}`;
 		}
 	},
 })

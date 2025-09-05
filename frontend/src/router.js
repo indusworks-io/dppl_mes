@@ -30,23 +30,6 @@ const router = createRouter({
 	routes,
 })
 
-// router.beforeEach(async (to, from, next) => {
-// 	let isLoggedIn = session.isLoggedIn;
-// 	try {
-// 		await userResource.fetch();
-// 	} catch (error) {
-// 		isLoggedIn = false;
-// 	}
-	
-// 	if (to.name === "Login" && isLoggedIn) {
-// 		next({ name: "Home" });
-// 	} else if (to.name !== "Login" && !isLoggedIn) {
-		
-// 	} else {
-// 		next();
-// 	}
-// })
-
 router.beforeEach(async (to, from, next) => {
 	let isLoggedIn = session.isLoggedIn;
 	console.log('isLoggedIn Init')
@@ -60,7 +43,7 @@ router.beforeEach(async (to, from, next) => {
 	if (to.name === "Login" && isLoggedIn) {
 		next({ name: "Home" });
 	} else if (to.name !== "Login" && !isLoggedIn) {
-		window.location.href = "/login?redirect-to=/frontend";
+		window.location.href = `/login?redirect-to=${encodeURIComponent(to.fullPath)}`;
 		return;
 	} else {
 		next();

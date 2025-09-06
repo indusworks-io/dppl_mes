@@ -103,3 +103,8 @@ For some reason realtime update functionality that should trigger job_metrics_up
 - DashboardComponent.vue path: dppl_mes/frontend/src/components/DashboardComponent.vue
 - FactoryFloorMap.vue path: dppl_mes/frontend/src/components/FactoryFloorMap.vue
 Is not working... can you please check why?
+
+## Open Issues:
+1. Stale frontend.html going up till docker
+2. 301 Redirect Issue
+frontend/:1 Mixed Content: The page at 'https://production.soundseal.in/frontend/' was loaded over HTTPS, but requested an insecure resource 'http://production.soundseal.in:8080/frontend'. This request has been blocked; the content must be served over HTTPS.

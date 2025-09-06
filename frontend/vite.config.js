@@ -84,14 +84,14 @@ export default defineConfig({
 				screenshots: [
 					{
 						src: "screenshots/desktop-1280x720.png",
-						sizes: "1280x720",
+						sizes: "1905x967",
 						type: "image/png",
 						form_factor: "wide",
 						label: "Factory floor dashboard view"
 					},
 					{
 						src: "screenshots/mobile-750x1334.png",
-						sizes: "750x1334",
+						sizes: "415x899",
 						type: "image/png",
 						form_factor: "narrow",
 						label: "Mobile factory monitoring"

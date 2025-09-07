@@ -6,7 +6,7 @@ export const userResource = createResource({
 	onError(error) {
 		if (error && error.exc_type === 'AuthenticationError') {
 			console.log('I was called from user.js')
-			window.location.href = `/login?redirect-to=${encodeURIComponent(to.fullPath)}`;
+			window.location.href = "/login?redirect-to=/frontend"
 		}
 	},
 })

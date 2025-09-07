@@ -43,8 +43,7 @@ router.beforeEach(async (to, from, next) => {
 	if (to.name === "Login" && isLoggedIn) {
 		next({ name: "Home" });
 	} else if (to.name !== "Login" && !isLoggedIn) {
-		window.location.href = `/login?redirect-to=${encodeURIComponent(to.fullPath)}`;
-		return;
+		window.location.href = "/login?redirect-to=/frontend"
 	} else {
 		next();
 	}

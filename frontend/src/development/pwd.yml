@@ -2,7 +2,7 @@ version: "3"
 
 services:
   backend:
-    image: navneetindusworks/dppl:3.1.7
+    image: navneetindusworks/dppl:3.2.1
     platform: linux/amd64
     deploy:
       restart_policy:
@@ -12,7 +12,7 @@ services:
       - logs:/home/frappe/frappe-bench/logs
 
   configurator:
-    image: navneetindusworks/dppl:3.1.7
+    image: navneetindusworks/dppl:3.2.1
     platform: linux/amd64
     deploy:
       restart_policy:
@@ -41,7 +41,7 @@ services:
       - logs:/home/frappe/frappe-bench/logs
 
   create-site:
-    image: navneetindusworks/dppl:3.1.7
+    image: navneetindusworks/dppl:3.2.1
     platform: linux/amd64
     deploy:
       restart_policy:
@@ -93,7 +93,7 @@ services:
       - db-data:/var/lib/mysql
 
   frontend:
-    image: navneetindusworks/dppl:3.1.7
+    image: navneetindusworks/dppl:3.2.1
     platform: linux/amd64
     depends_on:
       - backend
@@ -120,7 +120,7 @@ services:
       - "8080:8080"
 
   queue-long:
-    image: navneetindusworks/dppl:3.1.7
+    image: navneetindusworks/dppl:3.2.1
     platform: linux/amd64
     deploy:
       restart_policy:
@@ -135,7 +135,7 @@ services:
       - logs:/home/frappe/frappe-bench/logs
 
   queue-short:
-    image: navneetindusworks/dppl:3.1.7
+    image: navneetindusworks/dppl:3.2.1
     platform: linux/amd64
     deploy:
       restart_policy:
@@ -166,7 +166,7 @@ services:
         condition: on-failure
 
   scheduler:
-    image: navneetindusworks/dppl:3.1.7
+    image: navneetindusworks/dppl:3.2.1
     platform: linux/amd64
     deploy:
       restart_policy:
@@ -179,7 +179,7 @@ services:
       - logs:/home/frappe/frappe-bench/logs
 
   websocket:
-    image: navneetindusworks/dppl:3.1.7
+    image: navneetindusworks/dppl:3.2.1
     platform: linux/amd64
     deploy:
       restart_policy:

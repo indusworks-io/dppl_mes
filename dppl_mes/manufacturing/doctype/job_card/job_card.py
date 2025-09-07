@@ -9,7 +9,7 @@ from frappe.utils import now, time_diff_in_seconds, flt
 class JobCard(Document):
 	def before_save(self):
 		if self.planned_end_date_time and self.planned_start_date_time:
-			self.planned_duration = time_diff_in_seconds(self.planned_end_date_time, self.planned_start_date_time)
+			self.planned_duration = abs(time_diff_in_seconds(self.planned_end_date_time, self.planned_start_date_time))
 
 		if self.actual_duration == "":
 			self.actual_duration = None

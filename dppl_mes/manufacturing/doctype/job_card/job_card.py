@@ -8,31 +8,27 @@ from frappe.utils import now, time_diff_in_seconds, flt
 
 class JobCard(Document):
 	def before_save(self):
-		if self.planned_end_date_time and self.planned_start_date_time:
-			self.planned_duration = abs(time_diff_in_seconds(self.planned_end_date_time, self.planned_start_date_time))
-
-		if self.actual_duration == "":
-			self.actual_duration = None
-
-		if self.actual_start_date_time:
-			self.actual_duration = 0
-
-			if self.actual_end_date_time:
-
-				self.actual_duration = time_diff_in_seconds(self.actual_end_date_time, self.actual_start_date_time)
-				duration_in_minutes = self.actual_duration / 60
-				if duration_in_minutes > 0:
-					self.actual_run_rate = self.completed_quantity / duration_in_minutes
-
-			else:
-				print("Job Card: No actual end time, calculating duration from start time to now")
-				self.actual_duration = time_diff_in_seconds(now(), self.actual_start_date_time)
-				duration_in_minutes = self.actual_duration / 60
-				if duration_in_minutes > 0:
-					self.actual_run_rate = self.completed_quantity / duration_in_minutes
-		
-		# Calculate total wastage from individual wastage components
-		self.calculate_total_wastage()
+		try:
+			if self.planned_end_date_time and self.planned_start_date_time:
+				self.planned_duration = abs(time_diff_in_seconds(self.planned_end_date_time, self.planned_start_date_time))
+			if self.actual_duration == "":
+				self.actual_duration = None
+			if self.actual_start_date_time:
+				self.actual_duration = 0
+				if self.actual_end_date_time:
+					self.actual_duration = time_diff_in_seconds(self.actual_end_date_time, self.actual_start_date_time)
+					duration_in_minutes = self.actual_duration / 60
+					if duration_in_minutes > 0:
+						self.actual_run_rate = self.completed_quantity / duration_in_minutes
+				else:
+					print("Job Card: No actual end time, calculating duration from start time to now")
+					self.actual_duration = time_diff_in_seconds(now(), self.actual_start_date_time)
+					duration_in_minutes = self.actual_duration / 60
+					if duration_in_minutes > 0:
+						self.actual_run_rate = self.completed_quantity / duration_in_minutes
+			self.calculate_total_wastage()
+		except Exception as e:
+			frappe.log_error(frappe.get_traceback(), "Job Card Error")
 
 	def calculate_total_wastage(self):
 		"""Calculate total wastage by summing all individual wastage components"""

@@ -293,7 +293,8 @@ def get_all_machines_job_metrics():
         # Get all active machines
         machines = frappe.get_all(
             "Machine",
-            fields=["name"]
+            fields=["name"],
+            filters={"is_active": "1"}
         )
         
         if not machines:

@@ -97,6 +97,7 @@ function fetchDefaultFactory() {
 const areaResource = createListResource({
 	doctype: "Area",
 	fields: ["name", "area_name", "factory", "sequence_number"],
+	filters: { is_active: 1 },
 	auto: true,
 	onSuccess(data) {
 		areas.value = data
@@ -114,6 +115,7 @@ const machineResource = createListResource({
 		"sequence_number",
 		"machine_image",
 	],
+	filters: { is_active: 1 },
 	auto: true,
 	pageLength: 2000,
 	onSuccess(data) {

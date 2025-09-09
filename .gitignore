@@ -6,7 +6,7 @@ tags
 node_modules
 __pycache__
 dppl_mes/public/frontend/
-dppl_mes/dppl_mes/www/frontend.html
+*frontend.html
 .claude
 CLAUDE.md
 Infrastructure.md

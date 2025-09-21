@@ -148,9 +148,17 @@
   {
    "link_doctype": "Downtime Log",
    "link_fieldname": "machine"
+  },
+  {
+   "link_doctype": "Energy Log",
+   "link_fieldname": "machine"
+  },
+  {
+   "link_doctype": "Energy Meter",
+   "link_fieldname": "machine"
   }
  ],
- "modified": "2025-08-05 18:35:51.083022",
+ "modified": "2025-09-21 18:39:12.336844",
  "modified_by": "Administrator",
  "module": "Organization",
  "name": "Machine",

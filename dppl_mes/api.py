@@ -351,44 +351,127 @@ def create_energy_log():
         if not frappe.request.data:
             frappe.throw(_("Request body is empty"))
         data = json.loads(frappe.request.data)
-        
+
         # Extract fields with validation
         timestamp = data.get("timestamp")
         energy_meter = data.get("energy_meter")
         machine = data.get("machine")
         message = data.get("message")
-        
+
         # Validate required fields
         if not all([timestamp, energy_meter, machine, message]):
-            frappe.throw(_("Missing required fields. Required: timestamp, device, machine, message"))
-        
+            frappe.throw(_("Missing required fields. Required: timestamp, energy_meter, machine, message"))
+
         # Validate timestamp format
         try:
             if isinstance(timestamp, str):
                 datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
         except ValueError:
             frappe.throw(_("Invalid timestamp format. Use ISO format (YYYY-MM-DD HH:MM:SS)"))
-        
+
         # Validate that Energy Meter and Machine exist
         if not frappe.db.exists("Energy Meter", energy_meter):
             frappe.throw(_("Energy Meter '{}' does not exist").format(energy_meter))
         if not frappe.db.exists("Machine", machine):
             frappe.throw(_("Machine '{}' does not exist").format(machine))
-        
-        # Create new Telemetry document
-        telemetry = frappe.new_doc("Energy Log")
-        telemetry.timestamp = timestamp
-        telemetry.energy_meter = energy_meter
-        telemetry.machine = machine
-        telemetry.data = message
-        telemetry.insert(ignore_permissions=True)
+
+        # Parse message JSON to extract individual energy parameters
+        energy_data = {}
+        if isinstance(message, dict):
+            energy_data = message
+        elif isinstance(message, str):
+            try:
+                energy_data = json.loads(message)
+            except json.JSONDecodeError:
+                frappe.throw(_("Invalid JSON format in message field"))
+        else:
+            frappe.throw(_("Message field must be a JSON object or string"))
+
+        # Extract individual energy parameters (optional fields)
+        voltage = energy_data.get("voltage")
+        current = energy_data.get("current")
+        power = energy_data.get("power")
+        power_factor = energy_data.get("power_factor")
+        energy = energy_data.get("energy")
+
+        # Validate numeric values if provided
+        numeric_fields = {
+            "voltage": voltage,
+            "current": current,
+            "power": power,
+            "power_factor": power_factor,
+            "energy": energy
+        }
+
+        for field_name, field_value in numeric_fields.items():
+            if field_value is not None:
+                try:
+                    float(field_value)
+                except (ValueError, TypeError):
+                    frappe.throw(_("Invalid {} value. Must be a number").format(field_name))
+
+        # Create new Energy Log document
+        energy_log = frappe.new_doc("Energy Log")
+        energy_log.timestamp = timestamp
+        energy_log.energy_meter = energy_meter
+        energy_log.machine = machine
+        energy_log.raw_data = json.dumps(energy_data) if isinstance(energy_data, dict) else str(energy_data)
+
+        # Set individual energy parameters if provided
+        if voltage is not None:
+            energy_log.voltage = float(voltage)
+        if current is not None:
+            energy_log.current = float(current)
+        if power is not None:
+            energy_log.power = float(power)
+        if power_factor is not None:
+            energy_log.power_factor = float(power_factor)
+        if energy is not None:
+            energy_log.energy = float(energy)
+
+        energy_log.insert(ignore_permissions=True)
         frappe.db.commit()
-    
+
+        return {
+            "status": "success",
+            "message": "Energy log created successfully",
+            "data": {
+                "energy_meter": energy_meter,
+                "machine": machine,
+                "timestamp": timestamp,
+                "parameters_stored": {
+                    "voltage": voltage is not None,
+                    "current": current is not None,
+                    "power": power is not None,
+                    "power_factor": power_factor is not None,
+                    "energy": energy is not None
+                }
+            }
+        }
+
+    except frappe.ValidationError as e:
+        frappe.log_error(frappe.get_traceback(), "Energy Log Validation Error")
+        frappe.response["http_status_code"] = 400
+        return {
+            "status": "error",
+            "error_type": "validation_error",
+            "message": str(e)
+        }
+
+    except json.JSONDecodeError as e:
+        frappe.log_error(frappe.get_traceback(), "Energy Log JSON Parse Error")
+        frappe.response["http_status_code"] = 400
+        return {
+            "status": "error",
+            "error_type": "json_error",
+            "message": "Invalid JSON format in request body"
+        }
+
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), "Create Energy Log Error")
         frappe.response["http_status_code"] = 500
         return {
             "status": "error",
-            "error_type": "server_error", 
+            "error_type": "server_error",
             "message": "Internal server error occurred"
         }

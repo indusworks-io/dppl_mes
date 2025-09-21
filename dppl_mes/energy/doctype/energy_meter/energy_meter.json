@@ -1,0 +1,72 @@
+{
+ "actions": [],
+ "autoname": "field:serial_number",
+ "creation": "2025-09-20 16:46:32.716144",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "serial_number",
+  "make",
+  "machine",
+  "is_active"
+ ],
+ "fields": [
+  {
+   "allow_in_quick_entry": 1,
+   "fieldname": "serial_number",
+   "fieldtype": "Data",
+   "label": "Serial Number",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "make",
+   "fieldtype": "Data",
+   "label": "Make"
+  },
+  {
+   "fieldname": "machine",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Machine",
+   "options": "Machine",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Active?"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-09-20 16:49:03.522868",
+ "modified_by": "Administrator",
+ "module": "Energy",
+ "name": "Energy Meter",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

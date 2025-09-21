@@ -99,6 +99,7 @@ export default defineConfig({
 				],
 				start_url: "/frontend/",
 				scope: "/frontend/",
+				id: "/frontend/",
 				display: "standalone",
 				orientation: "any",
 				background_color: "#FFFFFF",

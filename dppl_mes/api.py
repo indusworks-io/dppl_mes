@@ -339,3 +339,56 @@ def get_all_machines_job_metrics():
             "data": {}
         }
 
+
+
+############ Energy Logs ##################
+@frappe.whitelist()
+def create_energy_log():
+    if frappe.request.method != "POST":
+        frappe.throw(_("Only POST requests are allowed"), frappe.PermissionError)
+    try:
+        # Parse the JSON data from request body
+        if not frappe.request.data:
+            frappe.throw(_("Request body is empty"))
+        data = json.loads(frappe.request.data)
+        
+        # Extract fields with validation
+        timestamp = data.get("timestamp")
+        energy_meter = data.get("energy_meter")
+        machine = data.get("machine")
+        message = data.get("message")
+        
+        # Validate required fields
+        if not all([timestamp, energy_meter, machine, message]):
+            frappe.throw(_("Missing required fields. Required: timestamp, device, machine, message"))
+        
+        # Validate timestamp format
+        try:
+            if isinstance(timestamp, str):
+                datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+        except ValueError:
+            frappe.throw(_("Invalid timestamp format. Use ISO format (YYYY-MM-DD HH:MM:SS)"))
+        
+        # Validate that Energy Meter and Machine exist
+        if not frappe.db.exists("Energy Meter", energy_meter):
+            frappe.throw(_("Energy Meter '{}' does not exist").format(energy_meter))
+        if not frappe.db.exists("Machine", machine):
+            frappe.throw(_("Machine '{}' does not exist").format(machine))
+        
+        # Create new Telemetry document
+        telemetry = frappe.new_doc("Energy Log")
+        telemetry.timestamp = timestamp
+        telemetry.energy_meter = energy_meter
+        telemetry.machine = machine
+        telemetry.data = message
+        telemetry.insert(ignore_permissions=True)
+        frappe.db.commit()
+    
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(), "Create Energy Log Error")
+        frappe.response["http_status_code"] = 500
+        return {
+            "status": "error",
+            "error_type": "server_error", 
+            "message": "Internal server error occurred"
+        }

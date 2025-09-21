@@ -1,0 +1,117 @@
+{
+ "actions": [],
+ "allow_copy": 1,
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "format:EL-{YY}{MM}{DD}-{###}",
+ "creation": "2025-09-20 16:38:21.832650",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "timestamp",
+  "machine",
+  "energy_meter",
+  "voltage",
+  "current",
+  "power",
+  "power_factor",
+  "energy",
+  "raw_data"
+ ],
+ "fields": [
+  {
+   "fieldname": "timestamp",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Timestamp",
+   "reqd": 1
+  },
+  {
+   "fieldname": "machine",
+   "fieldtype": "Link",
+   "label": "Machine",
+   "options": "Machine",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "energy_meter",
+   "fieldtype": "Link",
+   "label": "Energy Meter",
+   "options": "Energy Meter",
+   "reqd": 1
+  },
+  {
+   "fieldname": "voltage",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Voltage (V)",
+   "non_negative": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "current",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Current (A)",
+   "non_negative": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "power",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Power (kW)",
+   "non_negative": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "power_factor",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Power Factor",
+   "non_negative": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "energy",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Energy (kWh)",
+   "non_negative": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "raw_data",
+   "fieldtype": "JSON",
+   "label": "Raw Data"
+  }
+ ],
+ "grid_page_length": 50,
+ "hide_toolbar": 1,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-09-20 17:25:17.989271",
+ "modified_by": "Administrator",
+ "module": "Energy",
+ "name": "Energy Log",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

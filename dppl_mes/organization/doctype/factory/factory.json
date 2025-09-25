@@ -10,6 +10,7 @@
   "factory_name",
   "is_active",
   "floor_plan",
+  "factory_heads",
   "shift_information_section",
   "shift_timings",
   "connections_tab"
@@ -52,13 +53,21 @@
    "fieldname": "floor_plan",
    "fieldtype": "Attach",
    "label": "Floor Plan"
+  },
+  {
+   "description": "These users will have access to this factory and associated resources.",
+   "fieldname": "factory_heads",
+   "fieldtype": "Table MultiSelect",
+   "label": "Factory Heads",
+   "options": "Owner",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-26 15:12:11.279119",
+ "modified": "2025-09-25 13:05:31.519303",
  "modified_by": "Administrator",
  "module": "Organization",
  "name": "Factory",

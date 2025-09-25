@@ -10,7 +10,7 @@
   "factory_name",
   "is_active",
   "floor_plan",
-  "factory_heads",
+  "supervisors",
   "shift_information_section",
   "shift_timings",
   "connections_tab"
@@ -55,10 +55,10 @@
    "label": "Floor Plan"
   },
   {
-   "description": "These users will have access to this factory and associated resources.",
-   "fieldname": "factory_heads",
+   "description": "Please select factory level supervisors.\nThese users will have access to this factory and associated resources.",
+   "fieldname": "supervisors",
    "fieldtype": "Table MultiSelect",
-   "label": "Factory Heads",
+   "label": "Supervisors",
    "options": "Owner",
    "reqd": 1
   }
@@ -67,7 +67,7 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-25 13:05:31.519303",
+ "modified": "2025-09-25 13:32:41.491316",
  "modified_by": "Administrator",
  "module": "Organization",
  "name": "Factory",

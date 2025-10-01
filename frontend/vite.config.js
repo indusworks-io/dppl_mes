@@ -140,10 +140,11 @@ export default defineConfig({
 		alias: {
 			"@": path.resolve(__dirname, "src"),
 			"tailwind.config.js": path.resolve(__dirname, "tailwind.config.js"),
+			"interactjs/dist/interact.min.js": "interactjs",
 		},
 	},
 	optimizeDeps: {
-		include: ["feather-icons", "showdown", "highlight.js/lib/core"],
+		include: ["feather-icons", "showdown", "highlight.js/lib/core", "interactjs",],
 	},
 	server: {
 		allowedHosts: true,

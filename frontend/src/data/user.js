@@ -10,3 +10,16 @@ export const userResource = createResource({
 		}
 	},
 })
+
+export const userDetailsResource = createResource({
+	url: 'frappe.client.get_value',
+	params: () => ({
+		doctype: 'User',
+		fieldname: ['first_name', 'last_name', 'full_name', 'email'],
+		filters: { name: userResource.data }
+	}),
+	cache: 'UserDetails',
+	onError(error) {
+		console.error('Failed to load user details:', error)
+	},
+})

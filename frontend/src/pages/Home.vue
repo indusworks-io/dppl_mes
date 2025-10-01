@@ -1,6 +1,5 @@
 <template>
-  <div id="app">
-    <NavBar />
+  <div id="app" class="p-6">
     <HomePageControls
       :factory-options="factoryOptions"
       :selected-factory="selectedFactory"
@@ -32,7 +31,6 @@ import { computed, onMounted, onUnmounted, ref } from "vue"
 import DashboardComponent from "../components/DashboardComponent.vue"
 import FactoryFloorMap from "../components/FactoryFloorMap.vue"
 import HomePageControls from "../components/HomePageControls.vue"
-import NavBar from "../components/NavBar.vue"
 import { initSocket } from "../socket.js"
 
 const isFloorMapView = ref(false)

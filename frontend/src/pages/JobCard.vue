@@ -1,6 +1,5 @@
 <template>
-  <div class="job-card-page">
-    <NavBar />
+  <div class="job-card-page p-6">
     
     <!-- Loading State -->
     <div v-if="isLoading" class="loading-container">
@@ -239,7 +238,6 @@ import { createDocumentResource, createListResource } from "frappe-ui"
 import { computed, onMounted, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import JobCardUpdateModal from "../components/JobCardUpdateModal.vue"
-import NavBar from "../components/NavBar.vue"
 
 const route = useRoute()
 const router = useRouter()

@@ -1,6 +1,5 @@
 <template>
-  <div class="machine-details-page">
-    <NavBar />
+  <div class="machine-details-page p-6">
     
     <!-- Loading State -->
     <div v-if="isLoading" class="loading-container">
@@ -298,7 +297,6 @@
 import { createListResource, createResource } from "frappe-ui"
 import { onMounted, onUnmounted, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import NavBar from "../components/NavBar.vue"
 import { initSocket } from "../socket.js"
 
 const route = useRoute()

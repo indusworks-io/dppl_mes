@@ -1,6 +1,5 @@
 <template>
-  <div class="downtime-log-page">
-    <NavBar />
+  <div class="downtime-log-page p-6">
     
     <!-- Loading State -->
     <div v-if="isLoading" class="loading-container">
@@ -167,7 +166,6 @@ import { createDocumentResource } from "frappe-ui"
 import { ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import DowntimeLogUpdateModal from "../components/DowntimeLogUpdateModal.vue"
-import NavBar from "../components/NavBar.vue"
 
 const route = useRoute()
 const router = useRouter()

@@ -14,6 +14,7 @@ import {
 	ErrorMessage,
 	FormControl,
 	Input,
+	Sidebar,
 	TextInput,
 	frappeRequest,
 	pageMetaPlugin,
@@ -32,6 +33,7 @@ const globalComponents = {
 	Dialog,
 	Alert,
 	Badge,
+	Sidebar,
 }
 
 const app = createApp(App)

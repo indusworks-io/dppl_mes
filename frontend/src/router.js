@@ -29,8 +29,8 @@ const routes = [
 	},
 	{
 		path: "/production/shift-plans/:name",
-		name: "ShiftPlanDetail",
-		component: () => import("@/pages/production/ShiftPlanDetail.vue"),
+		name: "ShiftPlan",
+		component: () => import("@/pages/production/ShiftPlan.vue"),
 	},
 	{
 		path: "/production/job-cards",
@@ -49,8 +49,8 @@ const routes = [
 	},
 	{
 		path: "/production/job-master",
-		name: "JobMaster",
-		component: () => import("@/pages/production/JobMaster.vue"),
+		name: "Jobs",
+		component: () => import("@/pages/production/Jobs.vue"),
 	},
 	{
 		path: "/production/downtime-reasons",

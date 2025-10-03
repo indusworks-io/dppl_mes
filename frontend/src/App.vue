@@ -134,7 +134,7 @@ const sidebarSections = computed(() => [
 			{
 				label: "Job Master",
 				icon: LucideBriefcase,
-				to: "/production/job-master",
+				to: "/production/jobs",
 				isActive: router.currentRoute.value.path === "/production/job-master",
 			},
 			{

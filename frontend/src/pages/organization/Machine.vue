@@ -297,7 +297,7 @@
 import { createListResource, createResource } from "frappe-ui"
 import { onMounted, onUnmounted, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import { initSocket } from "../socket.js"
+import { initSocket } from "../../socket.js"
 
 const route = useRoute()
 const router = useRouter()

@@ -118,32 +118,32 @@ import { createListResource } from "frappe-ui"
 import { computed } from "vue"
 
 const outputLogs = createListResource({
-  doctype: "Output Log",
-  fields: ["name", "machine", "job_card", "quantity", "unit", "creation"],
-  orderBy: "creation desc",
-  pageLength: 50,
-  auto: true,
+	doctype: "Output Log",
+	fields: ["name", "machine", "job_card", "quantity", "unit", "creation"],
+	orderBy: "creation desc",
+	pageLength: 50,
+	auto: true,
 })
 
 const totalQuantity = computed(() => {
-  if (!outputLogs.data) return 0
-  return outputLogs.data.reduce((sum, log) => sum + (log.quantity || 0), 0)
+	if (!outputLogs.data) return 0
+	return outputLogs.data.reduce((sum, log) => sum + (log.quantity || 0), 0)
 })
 
 const todaysQuantity = computed(() => {
-  if (!outputLogs.data) return 0
-  const today = new Date().toISOString().split('T')[0]
-  return outputLogs.data
-    .filter(log => log.creation && log.creation.startsWith(today))
-    .reduce((sum, log) => sum + (log.quantity || 0), 0)
+	if (!outputLogs.data) return 0
+	const today = new Date().toISOString().split("T")[0]
+	return outputLogs.data
+		.filter((log) => log.creation && log.creation.startsWith(today))
+		.reduce((sum, log) => sum + (log.quantity || 0), 0)
 })
 
 const formatDateTime = (dateTimeString) => {
-  if (!dateTimeString) return "N/A"
-  try {
-    return new Date(dateTimeString).toLocaleString("en-GB")
-  } catch {
-    return "Invalid DateTime"
-  }
+	if (!dateTimeString) return "N/A"
+	try {
+		return new Date(dateTimeString).toLocaleString("en-GB")
+	} catch {
+		return "Invalid DateTime"
+	}
 }
 </script>

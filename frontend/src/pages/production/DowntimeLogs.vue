@@ -147,75 +147,85 @@ import { createListResource } from "frappe-ui"
 import { computed } from "vue"
 
 const downtimeLogs = createListResource({
-  doctype: "Downtime Log",
-  fields: [
-    "name",
-    "machine",
-    "start_date_time",
-    "end_date_time",
-    "duration",
-    "reason",
-    "status",
-    "creation"
-  ],
-  orderBy: "creation desc",
-  pageLength: 50,
-  auto: true,
+	doctype: "Downtime Log",
+	fields: [
+		"name",
+		"machine",
+		"start_date_time",
+		"end_date_time",
+		"duration",
+		"reason",
+		"status",
+		"creation",
+	],
+	orderBy: "creation desc",
+	pageLength: 50,
+	auto: true,
 })
 
 const activeDowntimeCount = computed(() => {
-  if (!downtimeLogs.data) return 0
-  return downtimeLogs.data.filter(log =>
-    log.status === 'Active' || log.status === 'Ongoing' || !log.end_date_time
-  ).length
+	if (!downtimeLogs.data) return 0
+	return downtimeLogs.data.filter(
+		(log) =>
+			log.status === "Active" || log.status === "Ongoing" || !log.end_date_time,
+	).length
 })
 
 const totalDowntimeHours = computed(() => {
-  if (!downtimeLogs.data) return 0
-  const totalSeconds = downtimeLogs.data.reduce((sum, log) => sum + (log.duration || 0), 0)
-  return Math.round(totalSeconds / 3600)
+	if (!downtimeLogs.data) return 0
+	const totalSeconds = downtimeLogs.data.reduce(
+		(sum, log) => sum + (log.duration || 0),
+		0,
+	)
+	return Math.round(totalSeconds / 3600)
 })
 
 const averageDowntimeMinutes = computed(() => {
-  if (!downtimeLogs.data || downtimeLogs.data.length === 0) return 0
-  const totalSeconds = downtimeLogs.data.reduce((sum, log) => sum + (log.duration || 0), 0)
-  return Math.round(totalSeconds / 60 / downtimeLogs.data.length)
+	if (!downtimeLogs.data || downtimeLogs.data.length === 0) return 0
+	const totalSeconds = downtimeLogs.data.reduce(
+		(sum, log) => sum + (log.duration || 0),
+		0,
+	)
+	return Math.round(totalSeconds / 60 / downtimeLogs.data.length)
 })
 
 const formatDateTime = (dateTimeString) => {
-  if (!dateTimeString) return "N/A"
-  try {
-    return new Date(dateTimeString).toLocaleString("en-GB")
-  } catch {
-    return "Invalid DateTime"
-  }
+	if (!dateTimeString) return "N/A"
+	try {
+		return new Date(dateTimeString).toLocaleString("en-GB")
+	} catch {
+		return "Invalid DateTime"
+	}
 }
 
 const formatDuration = (seconds) => {
-  if (!seconds || seconds === 0) return "N/A"
+	if (!seconds || seconds === 0) return "N/A"
 
-  const totalSeconds = Math.floor(seconds)
-  const hours = Math.floor(totalSeconds / 3600)
-  const minutes = Math.floor((totalSeconds % 3600) / 60)
+	const totalSeconds = Math.floor(seconds)
+	const hours = Math.floor(totalSeconds / 3600)
+	const minutes = Math.floor((totalSeconds % 3600) / 60)
 
-  if (hours > 0) {
-    return `${hours}h ${minutes}m`
-  } else if (minutes > 0) {
-    return `${minutes}m`
-  } else {
-    return "< 1m"
-  }
+	if (hours > 0) {
+		return `${hours}h ${minutes}m`
+	} else if (minutes > 0) {
+		return `${minutes}m`
+	} else {
+		return "< 1m"
+	}
 }
 
 const getStatusClass = (status) => {
-  if (!status) return "bg-gray-100 text-gray-800"
-  const statusLower = status.toLowerCase()
+	if (!status) return "bg-gray-100 text-gray-800"
+	const statusLower = status.toLowerCase()
 
-  if (statusLower.includes('active') || statusLower.includes('ongoing')) {
-    return "bg-red-100 text-red-800"
-  } else if (statusLower.includes('resolved') || statusLower.includes('closed')) {
-    return "bg-green-100 text-green-800"
-  }
-  return "bg-yellow-100 text-yellow-800"
+	if (statusLower.includes("active") || statusLower.includes("ongoing")) {
+		return "bg-red-100 text-red-800"
+	} else if (
+		statusLower.includes("resolved") ||
+		statusLower.includes("closed")
+	) {
+		return "bg-green-100 text-green-800"
+	}
+	return "bg-yellow-100 text-yellow-800"
 }
 </script>

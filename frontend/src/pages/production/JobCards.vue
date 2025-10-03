@@ -159,77 +159,85 @@ import { computed } from "vue"
 
 // Fetch job cards
 const jobCards = createListResource({
-  doctype: "Job Card",
-  fields: [
-    "name",
-    "machine",
-    "date",
-    "shift",
-    "status",
-    "target_quantity",
-    "completed_quantity",
-    "creation"
-  ],
-  orderBy: "creation desc",
-  pageLength: 100,
-  auto: true,
+	doctype: "Job Card",
+	fields: [
+		"name",
+		"machine",
+		"date",
+		"shift",
+		"status",
+		"target_quantity",
+		"completed_quantity",
+		"creation",
+	],
+	orderBy: "creation desc",
+	pageLength: 100,
+	auto: true,
 })
 
 // Computed properties for statistics
 const activeJobsCount = computed(() => {
-  if (!jobCards.data) return 0
-  return jobCards.data.filter(job =>
-    job.status === 'Active' ||
-    job.status === 'In Progress' ||
-    job.status === 'Running'
-  ).length
+	if (!jobCards.data) return 0
+	return jobCards.data.filter(
+		(job) =>
+			job.status === "Active" ||
+			job.status === "In Progress" ||
+			job.status === "Running",
+	).length
 })
 
 const pendingJobsCount = computed(() => {
-  if (!jobCards.data) return 0
-  return jobCards.data.filter(job =>
-    job.status === 'Draft' ||
-    job.status === 'Pending' ||
-    job.status === 'Ready'
-  ).length
+	if (!jobCards.data) return 0
+	return jobCards.data.filter(
+		(job) =>
+			job.status === "Draft" ||
+			job.status === "Pending" ||
+			job.status === "Ready",
+	).length
 })
 
 const completedJobsCount = computed(() => {
-  if (!jobCards.data) return 0
-  return jobCards.data.filter(job =>
-    job.status === 'Completed' ||
-    job.status === 'Done'
-  ).length
+	if (!jobCards.data) return 0
+	return jobCards.data.filter(
+		(job) => job.status === "Completed" || job.status === "Done",
+	).length
 })
 
 // Utility functions
 const formatDate = (dateString) => {
-  if (!dateString) return "N/A"
-  try {
-    return new Date(dateString).toLocaleDateString("en-GB")
-  } catch {
-    return "Invalid Date"
-  }
+	if (!dateString) return "N/A"
+	try {
+		return new Date(dateString).toLocaleDateString("en-GB")
+	} catch {
+		return "Invalid Date"
+	}
 }
 
 const getProgressPercentage = (job) => {
-  if (!job.target_quantity || job.target_quantity === 0) return 0
-  const completed = job.completed_quantity || 0
-  const target = job.target_quantity
-  return Math.round((completed / target) * 100)
+	if (!job.target_quantity || job.target_quantity === 0) return 0
+	const completed = job.completed_quantity || 0
+	const target = job.target_quantity
+	return Math.round((completed / target) * 100)
 }
 
 const getStatusClass = (status) => {
-  if (!status) return "bg-gray-100 text-gray-800"
-  const statusLower = status.toLowerCase()
+	if (!status) return "bg-gray-100 text-gray-800"
+	const statusLower = status.toLowerCase()
 
-  if (statusLower.includes('active') || statusLower.includes('progress') || statusLower.includes('running')) {
-    return "bg-green-100 text-green-800"
-  } else if (statusLower.includes('complete') || statusLower.includes('done')) {
-    return "bg-blue-100 text-blue-800"
-  } else if (statusLower.includes('cancelled') || statusLower.includes('failed')) {
-    return "bg-red-100 text-red-800"
-  }
-  return "bg-yellow-100 text-yellow-800"
+	if (
+		statusLower.includes("active") ||
+		statusLower.includes("progress") ||
+		statusLower.includes("running")
+	) {
+		return "bg-green-100 text-green-800"
+	} else if (statusLower.includes("complete") || statusLower.includes("done")) {
+		return "bg-blue-100 text-blue-800"
+	} else if (
+		statusLower.includes("cancelled") ||
+		statusLower.includes("failed")
+	) {
+		return "bg-red-100 text-red-800"
+	}
+	return "bg-yellow-100 text-yellow-800"
 }
 </script>

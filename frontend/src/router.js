@@ -28,6 +28,11 @@ const routes = [
 		component: () => import("@/pages/production/ShiftPlans.vue"),
 	},
 	{
+		path: "/production/shift-plans/:name",
+		name: "ShiftPlanDetail",
+		component: () => import("@/pages/production/ShiftPlanDetail.vue"),
+	},
+	{
 		path: "/production/job-cards",
 		name: "JobCards",
 		component: () => import("@/pages/production/JobCards.vue"),
@@ -99,22 +104,22 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-	let isLoggedIn = session.isLoggedIn;
-	console.log('isLoggedIn Init')
+	let isLoggedIn = session.isLoggedIn
+	console.log("isLoggedIn Init")
 	try {
-		await userResource.fetch();
+		await userResource.fetch()
 	} catch (error) {
-		isLoggedIn = false;
+		isLoggedIn = false
 	}
 	console.log(isLoggedIn)
 
 	if (to.name === "Login" && isLoggedIn) {
-		next({ name: "Home" });
+		next({ name: "Home" })
 	} else if (to.name !== "Login" && !isLoggedIn) {
 		window.location.href = "/login?redirect-to=/frontend"
 	} else {
-		next();
+		next()
 	}
-});
+})
 
 export default router

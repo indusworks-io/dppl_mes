@@ -171,60 +171,68 @@ import { createListResource } from "frappe-ui"
 import { computed } from "vue"
 
 const operators = createListResource({
-  doctype: "Operator",
-  fields: [
-    "name",
-    "operator_name",
-    "employee_id",
-    "department",
-    "skill_level",
-    "phone",
-    "email",
-    "is_active",
-    "creation"
-  ],
-  orderBy: "creation desc",
-  pageLength: 100,
-  auto: true,
+	doctype: "Operator",
+	fields: [
+		"name",
+		"operator_name",
+		"employee_id",
+		"department",
+		"skill_level",
+		"phone",
+		"email",
+		"is_active",
+		"creation",
+	],
+	orderBy: "creation desc",
+	pageLength: 100,
+	auto: true,
 })
 
 const activeOperatorsCount = computed(() => {
-  if (!operators.data) return 0
-  return operators.data.filter(operator => operator.is_active).length
+	if (!operators.data) return 0
+	return operators.data.filter((operator) => operator.is_active).length
 })
 
 const uniqueSkillLevels = computed(() => {
-  if (!operators.data) return 0
-  const skillLevels = [...new Set(operators.data.filter(o => o.skill_level).map(o => o.skill_level))]
-  return skillLevels.length
+	if (!operators.data) return 0
+	const skillLevels = [
+		...new Set(
+			operators.data.filter((o) => o.skill_level).map((o) => o.skill_level),
+		),
+	]
+	return skillLevels.length
 })
 
 const uniqueDepartments = computed(() => {
-  if (!operators.data) return 0
-  const departments = [...new Set(operators.data.filter(o => o.department).map(o => o.department))]
-  return departments.length
+	if (!operators.data) return 0
+	const departments = [
+		...new Set(
+			operators.data.filter((o) => o.department).map((o) => o.department),
+		),
+	]
+	return departments.length
 })
 
 const formatDate = (dateString) => {
-  if (!dateString) return "N/A"
-  try {
-    return new Date(dateString).toLocaleDateString("en-GB")
-  } catch {
-    return "Invalid Date"
-  }
+	if (!dateString) return "N/A"
+	try {
+		return new Date(dateString).toLocaleDateString("en-GB")
+	} catch {
+		return "Invalid Date"
+	}
 }
 
 const getSkillLevelClass = (skillLevel) => {
-  if (!skillLevel) return "bg-gray-100 text-gray-800"
-  const level = skillLevel.toLowerCase()
+	if (!skillLevel) return "bg-gray-100 text-gray-800"
+	const level = skillLevel.toLowerCase()
 
-  if (level.includes('expert') || level.includes('senior')) {
-    return "bg-green-100 text-green-800"
-  } else if (level.includes('intermediate') || level.includes('mid')) {
-    return "bg-blue-100 text-blue-800"
-  } else if (level.includes('junior') || level.includes('beginner')) {
-    return "bg-yellow-100 text-yellow-800"
-  }
-  return "bg-gray-100 text-gray-800"
+	if (level.includes("expert") || level.includes("senior")) {
+		return "bg-green-100 text-green-800"
+	} else if (level.includes("intermediate") || level.includes("mid")) {
+		return "bg-blue-100 text-blue-800"
+	} else if (level.includes("junior") || level.includes("beginner")) {
+		return "bg-yellow-100 text-yellow-800"
+	}
+	return "bg-gray-100 text-gray-800"
 }
 </script>

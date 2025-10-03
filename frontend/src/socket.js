@@ -13,7 +13,7 @@ export function initSocket() {
 		withCredentials: true,
 		reconnectionAttempts: 5,
 	})
-	
+
 	console.log("🔍 Socket Debug Info:")
 	console.log("host:", host)
 	console.log("siteName:", siteName)

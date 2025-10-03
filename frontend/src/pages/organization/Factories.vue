@@ -137,39 +137,41 @@ import { createListResource } from "frappe-ui"
 import { computed } from "vue"
 
 const factories = createListResource({
-  doctype: "Factory",
-  fields: [
-    "name",
-    "factory_name",
-    "location",
-    "contact_person",
-    "phone",
-    "email",
-    "is_active",
-    "creation"
-  ],
-  orderBy: "creation desc",
-  pageLength: 50,
-  auto: true,
+	doctype: "Factory",
+	fields: [
+		"name",
+		"factory_name",
+		"location",
+		"contact_person",
+		"phone",
+		"email",
+		"is_active",
+		"creation",
+	],
+	orderBy: "creation desc",
+	pageLength: 50,
+	auto: true,
 })
 
 const activeFactoriesCount = computed(() => {
-  if (!factories.data) return 0
-  return factories.data.filter(factory => factory.is_active).length
+	if (!factories.data) return 0
+	return factories.data.filter((factory) => factory.is_active).length
 })
 
 const uniqueLocations = computed(() => {
-  if (!factories.data) return 0
-  const locations = [...new Set(factories.data.filter(f => f.location).map(f => f.location))]
-  return locations.length
+	if (!factories.data) return 0
+	const locations = [
+		...new Set(factories.data.filter((f) => f.location).map((f) => f.location)),
+	]
+	return locations.length
 })
 
 const formatDate = (dateString) => {
-  if (!dateString) return "N/A"
-  try {
-    return new Date(dateString).toLocaleDateString("en-GB")
-  } catch {
-    return "Invalid Date"
-  }
+	if (!dateString) return "N/A"
+	try {
+		return new Date(dateString).toLocaleDateString("en-GB")
+	} catch {
+		return "Invalid Date"
+	}
 }
 </script>

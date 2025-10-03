@@ -126,37 +126,49 @@ import { createListResource } from "frappe-ui"
 import { computed } from "vue"
 
 const reasons = createListResource({
-  doctype: "Downtime Reason",
-  fields: ["name", "description", "category", "priority", "is_active", "usage_count", "creation"],
-  orderBy: "creation desc",
-  pageLength: 50,
-  auto: true,
+	doctype: "Downtime Reason",
+	fields: [
+		"name",
+		"description",
+		"category",
+		"priority",
+		"is_active",
+		"usage_count",
+		"creation",
+	],
+	orderBy: "creation desc",
+	pageLength: 50,
+	auto: true,
 })
 
 const activeReasonsCount = computed(() => {
-  if (!reasons.data) return 0
-  return reasons.data.filter(reason => reason.is_active).length
+	if (!reasons.data) return 0
+	return reasons.data.filter((reason) => reason.is_active).length
 })
 
 const uniqueCategories = computed(() => {
-  if (!reasons.data) return 0
-  const categories = [...new Set(reasons.data.map(reason => reason.category || 'Uncategorized'))]
-  return categories.length
+	if (!reasons.data) return 0
+	const categories = [
+		...new Set(
+			reasons.data.map((reason) => reason.category || "Uncategorized"),
+		),
+	]
+	return categories.length
 })
 
 const getPriorityClass = (priority) => {
-  if (!priority || priority === 'Medium') return "bg-yellow-100 text-yellow-800"
-  const priorityLower = priority.toLowerCase()
+	if (!priority || priority === "Medium") return "bg-yellow-100 text-yellow-800"
+	const priorityLower = priority.toLowerCase()
 
-  if (priorityLower === 'high' || priorityLower === 'critical') {
-    return "bg-red-100 text-red-800"
-  } else if (priorityLower === 'low') {
-    return "bg-green-100 text-green-800"
-  }
-  return "bg-yellow-100 text-yellow-800"
+	if (priorityLower === "high" || priorityLower === "critical") {
+		return "bg-red-100 text-red-800"
+	} else if (priorityLower === "low") {
+		return "bg-green-100 text-green-800"
+	}
+	return "bg-yellow-100 text-yellow-800"
 }
 
 const getStatusClass = (isActive) => {
-  return isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"
+	return isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"
 }
 </script>

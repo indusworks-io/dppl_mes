@@ -166,49 +166,52 @@ import { useRouter } from "vue-router"
 const router = useRouter()
 
 const machines = createListResource({
-  doctype: "Machine",
-  fields: [
-    "name",
-    "machine_name",
-    "area",
-    "sequence_number",
-    "machine_image",
-    "is_active",
-    "status",
-    "creation"
-  ],
-  orderBy: "sequence_number asc, creation desc",
-  pageLength: 100,
-  auto: true,
+	doctype: "Machine",
+	fields: [
+		"name",
+		"machine_name",
+		"area",
+		"sequence_number",
+		"machine_image",
+		"is_active",
+		"status",
+		"creation",
+	],
+	orderBy: "sequence_number asc, creation desc",
+	pageLength: 100,
+	auto: true,
 })
 
 const activeMachinesCount = computed(() => {
-  if (!machines.data) return 0
-  return machines.data.filter(machine => machine.is_active).length
+	if (!machines.data) return 0
+	return machines.data.filter((machine) => machine.is_active).length
 })
 
 const maintenanceMachinesCount = computed(() => {
-  if (!machines.data) return 0
-  return machines.data.filter(machine =>
-    machine.status && machine.status.toLowerCase().includes('maintenance')
-  ).length
+	if (!machines.data) return 0
+	return machines.data.filter(
+		(machine) =>
+			machine.status && machine.status.toLowerCase().includes("maintenance"),
+	).length
 })
 
 const uniqueAreas = computed(() => {
-  if (!machines.data) return 0
-  const areas = [...new Set(machines.data.filter(m => m.area).map(m => m.area))]
-  return areas.length
+	if (!machines.data) return 0
+	const areas = [
+		...new Set(machines.data.filter((m) => m.area).map((m) => m.area)),
+	]
+	return areas.length
 })
 
 const navigateToMachine = (machineId) => {
-  router.push(`/machine/${machineId}`)
+	router.push(`/machine/${machineId}`)
 }
 
 const getStatusClass = (isActive) => {
-  return isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"
+	return isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"
 }
 
 const handleImageError = (event) => {
-  event.target.style.display = 'none'
+	event.target.style.display = "none"
 }
 </script>

@@ -1,13 +1,14 @@
 import { createApp } from "vue"
 
-import { initSocket } from "./socket"
 import App from "./App.vue"
 import router from "./router"
+import { initSocket } from "./socket"
 
 import "./serviceWorkerRegister"
 
 import {
 	Alert,
+	Autocomplete,
 	Badge,
 	Button,
 	Dialog,
@@ -25,15 +26,16 @@ import {
 import "./index.css"
 
 const globalComponents = {
-	Button,
-	TextInput,
-	Input,
-	FormControl,
-	ErrorMessage,
-	Dialog,
 	Alert,
+	Autocomplete,
 	Badge,
+	Button,
+	Dialog,
+	ErrorMessage,
+	FormControl,
+	Input,
 	Sidebar,
+	TextInput,
 }
 
 const app = createApp(App)

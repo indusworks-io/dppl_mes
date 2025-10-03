@@ -24,6 +24,52 @@ def get_default_route():
 	return "/frontend"
 
 @frappe.whitelist()
+def get_current_user_details():
+	"""
+	Get details of the currently logged-in user.
+	Returns first_name, last_name, full_name, and email.
+	"""
+	try:
+		user = frappe.session.user
+
+		if not user or user == "Guest":
+			frappe.throw(_("No user is currently logged in"), frappe.PermissionError)
+
+		# Fetch user details from User doctype
+		user_details = frappe.get_value(
+			"User",
+			user,
+			["first_name", "last_name", "full_name", "email"],
+			as_dict=True
+		)
+
+		if not user_details:
+			frappe.throw(_("User details not found"), frappe.DoesNotExistError)
+
+		return {
+			"status": "success",
+			"data": {
+				"first_name": user_details.first_name or "",
+				"last_name": user_details.last_name or "",
+				"full_name": user_details.full_name or "",
+				"email": user_details.email or ""
+			}
+		}
+
+	except Exception as e:
+		frappe.log_error(frappe.get_traceback(), "Get Current User Details Error")
+		return {
+			"status": "error",
+			"message": str(e),
+			"data": {
+				"first_name": "",
+				"last_name": "",
+				"full_name": "",
+				"email": ""
+			}
+		}
+
+@frappe.whitelist()
 def create_telemetry():
     if frappe.request.method != "POST":
         frappe.throw(_("Only POST requests are allowed"), frappe.PermissionError)

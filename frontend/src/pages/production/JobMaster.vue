@@ -120,42 +120,46 @@ import { createListResource } from "frappe-ui"
 import { computed } from "vue"
 
 const jobs = createListResource({
-  doctype: "Job",
-  fields: ["name", "description", "priority", "status", "creation"],
-  orderBy: "creation desc",
-  pageLength: 50,
-  auto: true,
+	doctype: "Job",
+	fields: ["name", "description", "priority", "status", "creation"],
+	orderBy: "creation desc",
+	pageLength: 50,
+	auto: true,
 })
 
 const activeJobsCount = computed(() => {
-  if (!jobs.data) return 0
-  return jobs.data.filter(job => job.status !== 'Inactive' && job.status !== 'Cancelled').length
+	if (!jobs.data) return 0
+	return jobs.data.filter(
+		(job) => job.status !== "Inactive" && job.status !== "Cancelled",
+	).length
 })
 
 const uniqueJobTypes = computed(() => {
-  if (!jobs.data) return 0
-  const priorities = [...new Set(jobs.data.map(job => job.priority || 'Normal'))]
-  return priorities.length
+	if (!jobs.data) return 0
+	const priorities = [
+		...new Set(jobs.data.map((job) => job.priority || "Normal")),
+	]
+	return priorities.length
 })
 
 const formatDate = (dateString) => {
-  if (!dateString) return "N/A"
-  try {
-    return new Date(dateString).toLocaleDateString("en-GB")
-  } catch {
-    return "Invalid Date"
-  }
+	if (!dateString) return "N/A"
+	try {
+		return new Date(dateString).toLocaleDateString("en-GB")
+	} catch {
+		return "Invalid Date"
+	}
 }
 
 const getStatusClass = (status) => {
-  if (!status || status === 'Active') return "bg-green-100 text-green-800"
-  const statusLower = status.toLowerCase()
+	if (!status || status === "Active") return "bg-green-100 text-green-800"
+	const statusLower = status.toLowerCase()
 
-  if (statusLower.includes('inactive') || statusLower.includes('cancelled')) {
-    return "bg-red-100 text-red-800"
-  } else if (statusLower.includes('draft') || statusLower.includes('pending')) {
-    return "bg-yellow-100 text-yellow-800"
-  }
-  return "bg-blue-100 text-blue-800"
+	if (statusLower.includes("inactive") || statusLower.includes("cancelled")) {
+		return "bg-red-100 text-red-800"
+	} else if (statusLower.includes("draft") || statusLower.includes("pending")) {
+		return "bg-yellow-100 text-yellow-800"
+	}
+	return "bg-blue-100 text-blue-800"
 }
 </script>

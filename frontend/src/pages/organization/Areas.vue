@@ -125,38 +125,40 @@ import { createListResource } from "frappe-ui"
 import { computed } from "vue"
 
 const areas = createListResource({
-  doctype: "Area",
-  fields: [
-    "name",
-    "area_name",
-    "factory",
-    "sequence_number",
-    "description",
-    "is_active",
-    "creation"
-  ],
-  orderBy: "sequence_number asc, creation desc",
-  pageLength: 100,
-  auto: true,
+	doctype: "Area",
+	fields: [
+		"name",
+		"area_name",
+		"factory",
+		"sequence_number",
+		"description",
+		"is_active",
+		"creation",
+	],
+	orderBy: "sequence_number asc, creation desc",
+	pageLength: 100,
+	auto: true,
 })
 
 const activeAreasCount = computed(() => {
-  if (!areas.data) return 0
-  return areas.data.filter(area => area.is_active).length
+	if (!areas.data) return 0
+	return areas.data.filter((area) => area.is_active).length
 })
 
 const uniqueFactories = computed(() => {
-  if (!areas.data) return 0
-  const factories = [...new Set(areas.data.filter(a => a.factory).map(a => a.factory))]
-  return factories.length
+	if (!areas.data) return 0
+	const factories = [
+		...new Set(areas.data.filter((a) => a.factory).map((a) => a.factory)),
+	]
+	return factories.length
 })
 
 const formatDate = (dateString) => {
-  if (!dateString) return "N/A"
-  try {
-    return new Date(dateString).toLocaleDateString("en-GB")
-  } catch {
-    return "Invalid Date"
-  }
+	if (!dateString) return "N/A"
+	try {
+		return new Date(dateString).toLocaleDateString("en-GB")
+	} catch {
+		return "Invalid Date"
+	}
 }
 </script>

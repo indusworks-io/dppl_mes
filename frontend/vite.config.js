@@ -12,7 +12,8 @@ export default defineConfig({
 			manifest: {
 				name: "SoundSeal MES",
 				short_name: "SoundSeal MES",
-				description: "Manufacturing Execution System for factory floor monitoring and control",
+				description:
+					"Manufacturing Execution System for factory floor monitoring and control",
 				icons: [
 					{
 						src: "android/android-launchericon-512-512.png",
@@ -87,15 +88,15 @@ export default defineConfig({
 						sizes: "1905x967",
 						type: "image/png",
 						form_factor: "wide",
-						label: "Factory floor dashboard view"
+						label: "Factory floor dashboard view",
 					},
 					{
 						src: "screenshots/mobile-750x1334.png",
 						sizes: "415x899",
 						type: "image/png",
 						form_factor: "narrow",
-						label: "Mobile factory monitoring"
-					}
+						label: "Mobile factory monitoring",
+					},
 				],
 				start_url: "/frontend/",
 				scope: "/frontend/",
@@ -144,7 +145,12 @@ export default defineConfig({
 		},
 	},
 	optimizeDeps: {
-		include: ["feather-icons", "showdown", "highlight.js/lib/core", "interactjs",],
+		include: [
+			"feather-icons",
+			"showdown",
+			"highlight.js/lib/core",
+			"interactjs",
+		],
 	},
 	server: {
 		allowedHosts: true,

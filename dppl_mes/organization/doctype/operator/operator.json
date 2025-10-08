@@ -9,7 +9,8 @@
  "engine": "InnoDB",
  "field_order": [
   "operator_name",
-  "employee_code"
+  "employee_code",
+  "is_active"
  ],
  "fields": [
   {
@@ -28,13 +29,19 @@
    "in_list_view": 1,
    "label": "Employee Code",
    "unique": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Is Active?"
   }
  ],
  "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-26 14:51:36.651081",
+ "modified": "2025-10-08 16:05:58.635817",
  "modified_by": "Administrator",
  "module": "Organization",
  "name": "Operator",

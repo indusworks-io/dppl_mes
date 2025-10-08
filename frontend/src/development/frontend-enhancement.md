@@ -327,3 +327,127 @@ Produce a **fully working `DetailView.vue`**:
 * Clean, modular Vue 3 `<script setup>` code.
 
 ---
+
+
+In JobCards.vue, We need following columns in the List View:
+fieldname - label
+1. name - Job Card ID
+2. machine - Machine
+3. date - Date
+4. shift - Shift
+5. job_name - Job Name
+6. completed_quantity - Completed Quantity
+7. target_quantity - Target Quantity
+8. Progress - Computed Field Based on completed_quantity & target_quantity
+9. status - Status
+
+
+In OutputLogs.vue, We need following columns in the List View:
+fieldname - label
+1. name - Output Log ID
+2. timestamp - Timestamp
+3. job_card - Job Card
+4. machine - Machine
+5. output - Output
+
+In DowntimeLogs.vue, We need following columns in the List View:
+fieldname - label
+1. name - Downtime Log ID
+2. machine - Machine
+3. start_date_time - Start Date Time
+4. end_date_time - End Date Time
+5. duration - Duration
+6. reason - Reason
+7. status - Status
+
+In Jobs.vue, We need following columns in the List View:
+fieldname - label
+1. job_name - Job Name
+2. job_number - Job Number
+3. complexity_level - Complexity Level
+4. ideal_run_rate - Ideal Run Rate
+
+In DowntimeReasons.vue, We need following columns in the List View:
+fieldname - label
+1. downtime_reason - Downtime Reason
+2. category - Category
+3. is_active - Is Active?
+
+In Factories.vue, We need following columns in the List View:
+fieldname - label
+1. factory_name - Factory Name
+2. is_active - Is Active?
+
+In Areas.vue, We need following columns in the List View:
+fieldname - label
+1. area_name - Area Name
+2. factory - Factory
+3. is_active - Is Active?
+
+In Machines.vue, We need following columns in the List View:
+fieldname - label
+1. machine_name - Machine Name
+2. area - Area
+3. factory - Factory
+4. is_active - Is Active?
+
+In Operators.vue, We need following columns in the List View:
+fieldname - label
+1. operator_name - Operator Name
+2. employee_code - Employee Code
+
+
+Details Page:
+1. ShiftPlan.vue
+2. JobCard.vue
+3. OutputLog.vue
+4. DowntimeLog.vue
+5. Job.vue
+6. DowntimeReason.vue
+7. Factory.vue
+8. Area.vue
+9. Machine.vue
+10. Operator.vue
+
+We need to update ShiftPlan.vue page to handle following:
+1. Create New Shift Plan
+2. Update Existing Shift Plan
+Check the following files from backend:
+- shift_plan.json: dppl_mes/dppl_mes/manufacturing/doctype/shift_plan/shift_plan.json
+- shift_plan.js: dppl_mes/dppl_mes/manufacturing/doctype/shift_plan/shift_plan.js
+and implement same functionality in the frontend vue application
+
+Also, show 2 tabs: Overview & Job Cards
+In Overview tab show the fields & tables
+In Job Cards tab show list of connected job cards.
+
+Keep in mind:
+1. Use Frappe UI components as much as possible
+2. Use Create List Resource & Create Document Resource
+
+Make following updates to JobCard.vue:
+0. Add a Back Icon before the Shift Plan Name in Header Section. Clicking on back should take the user back to list view
+1. Fetch Factories from backend using create list resource and update Factory Field
+2. Fetch Shifts from backend using create list resource and update Shift Field
+3. Fetch Operators from backend using create list resource and update Operator Field
+4. Fetch Jobs from backend using create list resource and Update Job 1 & Job 2 Field
+5. Increase Job 1 qty & Job 2 qty Field With to match Job 1 & Job 2 Field
+6. The use should update the Job 1 Duration in hours and when we update the backend we convert to seconds
+7. Place add Row button at the bottom of the table 
+8. In Job Cards Tab remove the following:
+   - Header Section & Sub Header Section
+9. Job Cards are not showing in Job Cards Tab
+
+
+In ShiftPlan.vue: On saving the document the name of the shift plan did not get updated + I got following warning in console: [Vue warn]: Property "refreshing" was accessed during render but is not 
+defined on instance. 
+  at <ShiftPlan onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< 
+Proxy { <target>: Proxy, <handler>: {…} }
+ > > 
+  at <RouterView> 
+  at <App> runtime-core.esm-bundler.js:51:13
+
+Check why this is happening & plan to fix it... remember stick with standard frappe UI functionality...
+
+I have installed Frappe CRM app that uses vue js & Frappe UI... Please check how they are handling this... lets do similar functionality... 
+the app is in /home/navneetjain89/frappe-bench/apps/crm you can access files in it always.

@@ -1,7 +1,7 @@
 <template>
   <div class="p-6">
     <!-- Header Section -->
-    <div class="mb-6 flex items-center justify-between">
+    <div v-if="!hideHeader" class="mb-6 flex items-center justify-between">
       <div>
         <h1 class="text-2xl font-bold text-gray-900">{{ title }}</h1>
       </div>
@@ -17,7 +17,7 @@
     </div>
 
     <!-- Subheader Section -->
-    <div class="mb-4 flex items-center justify-between flex-wrap gap-4">
+    <div v-if="!hideSubheader" class="mb-4 flex items-center justify-between flex-wrap gap-4">
       <div class="flex items-center gap-2">
         <!-- Filter Dropdown -->
         <div class="relative" v-if="filterOptions && filterOptions.length > 0">
@@ -50,7 +50,8 @@
         <!-- Refresh Button -->
         <button
           @click="handleRefresh"
-          class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          @blur="removeButtonFocus"
+          class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"
           :disabled="listResource.loading"
         >
           <svg
@@ -211,36 +212,27 @@
         </div>
 
         <!-- Pagination Controls -->
-        <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+        <div class="px-6 py-4 border-t border-gray-200 flex flex-col items-center justify-center gap-3">
           <div class="text-sm text-gray-700">
             <span v-if="listResource.data && listResource.data.length > 0">
               Showing {{ listResource.data.length }} records
             </span>
           </div>
 
-          <div class="flex items-center gap-2">
-            <button
-              @click="handlePreviousPage"
-              :disabled="!listResource.hasPreviousPage"
-              class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          <button
+            v-if="listResource.hasNextPage && listResource.data && listResource.data.length > 0"
+            @click="handleLoadMore"
+            :disabled="listResource.loading"
+            class="inline-flex items-center px-6 py-2 border border-gray-300 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 bg-white hover:bg-gray-50 focus:outline-none transition-colors"
+          >
+            <span v-if="!listResource.loading">Load More</span>
+            <span v-else class="flex items-center">
+              <svg class="w-4 h-4 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
               </svg>
-              Previous
-            </button>
-
-            <button
-              @click="handleNextPage"
-              :disabled="!listResource.hasNextPage"
-              class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              Next
-              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </button>
-          </div>
+              Loading...
+            </span>
+          </button>
         </div>
       </div>
     </div>
@@ -302,6 +294,14 @@ const props = defineProps({
 	fields: {
 		type: Array,
 		default: null,
+	},
+	hideHeader: {
+		type: Boolean,
+		default: false,
+	},
+	hideSubheader: {
+		type: Boolean,
+		default: false,
 	},
 })
 
@@ -369,8 +369,16 @@ const handleCreate = () => {
 	}
 }
 
-const handleRefresh = () => {
+const handleRefresh = (event) => {
 	listResource.reload()
+	// Remove focus from button after click
+	if (event?.target) {
+		event.target.blur()
+	}
+}
+
+const removeButtonFocus = () => {
+	// Helper method for blur event
 }
 
 const handleRowClick = (row) => {
@@ -416,17 +424,10 @@ const toggleSortOrder = (order) => {
 	showSortDropdown.value = false
 }
 
-const handleNextPage = () => {
+const handleLoadMore = () => {
 	if (listResource.next) {
 		listResource.next()
-		emit("page-change", "next")
-	}
-}
-
-const handlePreviousPage = () => {
-	if (listResource.previous) {
-		listResource.previous()
-		emit("page-change", "previous")
+		emit("page-change", "load-more")
 	}
 }
 

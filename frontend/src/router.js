@@ -38,9 +38,19 @@ const routes = [
 		component: () => import("@/pages/production/JobCards.vue"),
 	},
 	{
+		path: "/production/job-cards/:id",
+		name: "JobCard",
+		component: () => import("@/pages/production/JobCard.vue"),
+	},
+	{
 		path: "/production/output-logs",
 		name: "OutputLogs",
 		component: () => import("@/pages/production/OutputLogs.vue"),
+	},
+	{
+		path: "/production/output-logs/:name",
+		name: "OutputLog",
+		component: () => import("@/pages/production/OutputLog.vue"),
 	},
 	{
 		path: "/production/downtime-logs",
@@ -48,14 +58,29 @@ const routes = [
 		component: () => import("@/pages/production/DowntimeLogs.vue"),
 	},
 	{
-		path: "/production/job-master",
+		path: "/production/downtime-logs/:id",
+		name: "DowntimeLog",
+		component: () => import("@/pages/production/DowntimeLog.vue"),
+	},
+	{
+		path: "/production/jobs",
 		name: "Jobs",
 		component: () => import("@/pages/production/Jobs.vue"),
+	},
+	{
+		path: "/production/jobs/:name",
+		name: "Job",
+		component: () => import("@/pages/production/Job.vue"),
 	},
 	{
 		path: "/production/downtime-reasons",
 		name: "DowntimeReasons",
 		component: () => import("@/pages/production/DowntimeReasons.vue"),
+	},
+	{
+		path: "/production/downtime-reasons/:name",
+		name: "DowntimeReason",
+		component: () => import("@/pages/production/DowntimeReason.vue"),
 	},
 
 	// Organization pages
@@ -65,9 +90,19 @@ const routes = [
 		component: () => import("@/pages/organization/Factories.vue"),
 	},
 	{
+		path: "/organization/factories/:name",
+		name: "Factory",
+		component: () => import("@/pages/organization/Factory.vue"),
+	},
+	{
 		path: "/organization/areas",
 		name: "Areas",
 		component: () => import("@/pages/organization/Areas.vue"),
+	},
+	{
+		path: "/organization/area/:name",
+		name: "Area",
+		component: () => import("@/pages/organization/Area.vue"),
 	},
 	{
 		path: "/organization/machines",
@@ -75,26 +110,19 @@ const routes = [
 		component: () => import("@/pages/organization/Machines.vue"),
 	},
 	{
+		path: "/organization/machine/:id",
+		name: "Machine",
+		component: () => import("@/pages/organization/Machine.vue"),
+	},
+	{
 		path: "/organization/operators",
 		name: "Operators",
 		component: () => import("@/pages/organization/Operators.vue"),
 	},
-
-	// Detail pages (existing)
 	{
-		path: "/machine/:id",
-		name: "Machine",
-		component: () => import("@/pages/Machine.vue"),
-	},
-	{
-		path: "/job-card/:id",
-		name: "JobCard",
-		component: () => import("@/pages/JobCard.vue"),
-	},
-	{
-		path: "/downtime-log/:id",
-		name: "DowntimeLog",
-		component: () => import("@/pages/DowntimeLog.vue"),
+		path: "/organization/operators/:name",
+		name: "Operator",
+		component: () => import("@/pages/organization/Operator.vue"),
 	},
 ]
 

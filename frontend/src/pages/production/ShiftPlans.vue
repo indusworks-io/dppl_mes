@@ -5,7 +5,7 @@
     :columns="columns"
     :filters="filters"
     orderBy="creation desc"
-    :pageLength="50"
+    :pageLength="100"
     :enableRouting="true"
     routePrefix="/production/shift-plans"
   >
@@ -30,11 +30,12 @@ const shiftPlans = createListResource({
 	orderBy: "creation desc",
 	pageLength: 1000,
 	auto: true,
+	realtime: true,
 })
 
 // Column definitions for ListView
 const columns = [
-	{ fieldname: "name", label: "Plan Name" },
+	{ fieldname: "name", label: "Plan ID" },
 	{
 		fieldname: "date",
 		label: "Date",

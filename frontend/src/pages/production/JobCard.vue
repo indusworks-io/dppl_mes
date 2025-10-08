@@ -237,7 +237,7 @@
 import { createDocumentResource, createListResource } from "frappe-ui"
 import { computed, onMounted, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import JobCardUpdateModal from "../components/JobCardUpdateModal.vue"
+import JobCardUpdateModal from "../../components/JobCardUpdateModal.vue"
 
 const route = useRoute()
 const router = useRouter()

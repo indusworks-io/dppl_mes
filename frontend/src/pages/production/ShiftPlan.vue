@@ -225,14 +225,16 @@
 
                       <!-- Machine -->
                       <td class="px-3 py-2">
-                        <input
+                        <Autocomplete
                           v-if="!docname || doc.doc.status === 'Draft'"
                           v-model="row.machine_name"
-                          type="text"
-                          placeholder="Machine"
-                          class="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500"
+                          :options="machineOptions"
+                          placeholder="Select Machine"
+                          :loading="machinesResource.loading"
+                          :compareFn="(a, b) => a?.value === b?.value"
+                          class="min-w-[150px]"
                         />
-                        <span v-else class="text-sm text-gray-900">{{ row.machine_name || '-' }}</span>
+                        <span v-else class="text-sm text-gray-900">{{ getFieldValue(row.machine_name) || '-' }}</span>
                       </td>
 
                       <!-- Operator -->
@@ -266,7 +268,7 @@
                       </td>
 
                       <!-- Job 1 Quantity -->
-                      <td class="px-3 py-2">
+                      <td class="px-3 py-2 w-32">
                         <input
                           v-if="!docname || doc.doc.status === 'Draft'"
                           v-model.number="row.job_one_quantity"
@@ -279,7 +281,7 @@
                       </td>
 
                       <!-- Job 1 Duration (input in hours, stored as seconds) -->
-                      <td class="px-3 py-2">
+                      <td class="px-3 py-2 w-32">
                         <input
                           v-if="!docname || doc.doc.status === 'Draft'"
                           :value="getDurationHours(row.job_one_duration)"
@@ -310,7 +312,7 @@
                       </td>
 
                       <!-- Job 2 Quantity -->
-                      <td class="px-3 py-2">
+                      <td class="px-3 py-2 w-32">
                         <input
                           v-if="!docname || doc.doc.status === 'Draft'"
                           v-model.number="row.job_two_quantity"
@@ -562,6 +564,20 @@ const jobOptions = computed(() => {
   }))
 })
 
+const machineOptions = computed(() => {
+  if (!machinesResource.data) return []
+  // Filter by selected factory if available
+  const factory = doc.value?.doc?.factory
+  const machines = factory
+    ? machinesResource.data.filter(m => m.factory === getFieldValue(factory))
+    : machinesResource.data
+
+  return machines.map(machine => ({
+    label: machine.machine_name || machine.name,
+    value: machine.machine_name
+  }))
+})
+
 // Helper function to extract value from Autocomplete option objects
 const getFieldValue = (value) => {
   if (!value) return null
@@ -692,6 +708,7 @@ const handleSave = async () => {
       job_plan_details: (doc.value.doc.job_plan_details || []).map(row => ({
         ...row,
         no_job: row.no_job ? 1 : 0,
+        machine_name: getFieldValue(row.machine_name),
         operator_name: getFieldValue(row.operator_name),
         job_one_name: getFieldValue(row.job_one_name),
         job_two_name: getFieldValue(row.job_two_name)

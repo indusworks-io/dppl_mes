@@ -165,7 +165,7 @@
 import { createDocumentResource } from "frappe-ui"
 import { ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import DowntimeLogUpdateModal from "../components/DowntimeLogUpdateModal.vue"
+import DowntimeLogUpdateModal from "../../components/DowntimeLogUpdateModal.vue"
 
 const route = useRoute()
 const router = useRouter()

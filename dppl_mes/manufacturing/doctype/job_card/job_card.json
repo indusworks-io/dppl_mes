@@ -48,8 +48,7 @@
    "fetch_from": "job_name.job_number",
    "fieldname": "job_number",
    "fieldtype": "Data",
-   "label": "Job Number",
-   "reqd": 1
+   "label": "Job Number"
   },
   {
    "fieldname": "job_name",
@@ -293,7 +292,7 @@
    "link_fieldname": "job_card"
   }
  ],
- "modified": "2025-09-07 11:40:10.981902",
+ "modified": "2025-10-09 12:57:36.715043",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Job Card",

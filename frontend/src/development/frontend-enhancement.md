@@ -451,3 +451,50 @@ Check why this is happening & plan to fix it... remember stick with standard fra
 
 I have installed Frappe CRM app that uses vue js & Frappe UI... Please check how they are handling this... lets do similar functionality... 
 the app is in /home/navneetjain89/frappe-bench/apps/crm you can access files in it always.
+
+
+We need to update JobCard.vue page to handle:
+- Create New Job Card
+- Update Existing Job Card
+Check the following files from backend to understand fields & layout:
+- job_card.json: dppl_mes/dppl_mes/manufacturing/doctype/job_card/job_card.json
+We need to do the following:
+- Use Frappe UI Components Only. Currently all fields are just text input within a span. It should be a frappe UI Component.
+- Use CreateDocumentResource for creating new document and updating existing document. Let CreateDocumentResource handle state & functions.
+- Use CreateListResource for fetching Related Records
+- Keep the current progress section & Job Card layout details grid as it is
+- Instead of edit button that opens a modal/popup the user should be able to update the fields directly from the page/form
+- While Creating a new document for the first time the user should only be able to edit/update following fields:
+    - machine
+    - date
+    - shift
+    - operator
+    - job_name
+    - target_quantity
+    - job_sequence_number
+    - planned_start_date_time
+    - planned_end_date_time
+- While updating a existing document the user should be able to edit/update the following:
+   - status
+   - completed_quantity
+   - machine_wastage
+   - job_setting_wastage
+   - roll_wastage
+   - printing_wastage
+   - barcode_wastage
+- Add following tabs:
+   - Output logs: Show list of output logs that are linked to this job card.
+   - Downtime Logs: Show list of Downtime logs that are linked to this job card.
+- Before implementing review how you created ShiftPlan.vue page. we need something similar to that.
+Understand all the requirements and create a to do on how to implement this.
+
+Lets have all the fields in single column with following sequence:
+- machine
+- date
+- shift
+- operator
+- job_name
+- target_quantity
+- job_sequence_number
+- planned_start_date_time
+- planned_end_date_time

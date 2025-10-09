@@ -472,6 +472,18 @@
               <template #cell-duration="{ value }">
                 {{ formatDowntimeDuration(value) }}
               </template>
+
+              <!-- Custom Actions Cell -->
+              <template #cell-actions="{ row }">
+                <button
+                  v-if="!row.reason"
+                  @click.stop="openUpdateReasonDialog(row.name)"
+                  class="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Update Reason
+                </button>
+                <span v-else class="text-xs text-gray-500">-</span>
+              </template>
             </ListView>
           </div>
         </div>
@@ -494,6 +506,14 @@
         @close="closeUpdateModal"
         @updated="handleJobCardUpdated"
       />
+
+      <!-- Update Reason Dialog -->
+      <UpdateReasonDialog
+        :visible="isReasonDialogVisible"
+        :downtimeId="selectedDowntimeId"
+        @update="handleReasonUpdated"
+        @cancel="closeReasonDialog"
+      />
     </div>
   </div>
 </template>
@@ -504,6 +524,7 @@ import { computed, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ListView from '../../components/ListView.vue'
 import JobCardUpdateModal from '../../components/JobCardUpdateModal.vue'
+import UpdateReasonDialog from '../../components/UpdateReasonDialog.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -512,6 +533,8 @@ const router = useRouter()
 const activeTab = ref('overview')
 const isUpdateModalVisible = ref(false)
 const successMessage = ref('')
+const isReasonDialogVisible = ref(false)
+const selectedDowntimeId = ref(null)
 
 // Compute docname from route
 const docname = computed(() => {
@@ -699,7 +722,8 @@ const downtimeLogColumns = [
   { fieldname: 'end_date_time', label: 'End' },
   { fieldname: 'duration', label: 'Duration' },
   { fieldname: 'reason', label: 'Reason' },
-  { fieldname: 'category', label: 'Category' }
+  { fieldname: 'category', label: 'Category' },
+  { fieldname: 'actions', label: 'Actions' }
 ]
 
 // Computed properties for downtime summary
@@ -958,6 +982,31 @@ const handleJobCardUpdated = () => {
   successMessage.value = 'Job card updated successfully!'
 
   // Clear success message after 3 seconds
+  setTimeout(() => {
+    successMessage.value = ''
+  }, 3000)
+}
+
+// Dialog handlers for Update Reason
+const openUpdateReasonDialog = (downtimeId) => {
+  selectedDowntimeId.value = downtimeId
+  isReasonDialogVisible.value = true
+}
+
+const closeReasonDialog = () => {
+  isReasonDialogVisible.value = false
+  selectedDowntimeId.value = null
+}
+
+const handleReasonUpdated = () => {
+  // Close the dialog
+  closeReasonDialog()
+  // Reload downtime logs data
+  if (downtimeLogsResource.value) {
+    downtimeLogsResource.value.reload()
+  }
+  // Show success message
+  successMessage.value = 'Downtime reason updated successfully!'
   setTimeout(() => {
     successMessage.value = ''
   }, 3000)

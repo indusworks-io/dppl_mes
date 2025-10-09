@@ -109,7 +109,7 @@ watch(
 				const downtimeResource = createDocumentResource({
 					doctype: "Downtime Log",
 					name: props.downtimeId,
-					fields: ["reaon"],
+					fields: ["reason"],
 					auto: false,
 				})
 				await downtimeResource.reload()
@@ -154,16 +154,22 @@ const handleUpdate = async () => {
 		console.log("Document resource:", downtimeResource)
 
 		await downtimeResource.setValue.submit({
-			reaon: selectedReason.value, // Corrected typo: reaon → reason
+			reason: selectedReason.value,
 		})
+
+		// Reload the document to get the auto-fetched category from reason
+		await downtimeResource.reload()
+
+		const updatedCategory = downtimeResource.doc.category
 
 		updateMessage.value = "Reason updated successfully!"
 		updateSuccess.value = true
 
-		// Emit update event to parent
+		// Emit update event to parent with both reason and category
 		emit("update", {
 			downtimeId: props.downtimeId,
 			reason: selectedReason.value,
+			category: updatedCategory,
 		})
 
 		// Clear selectedReason to reset the dropdown

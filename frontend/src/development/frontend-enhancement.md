@@ -528,3 +528,12 @@ You can refer to ShiftPlan.vue to see how you handled it earlier.
 We need to update the MachineCard.vue to make the UI similar to other pages like JobCard.vue
 - Update the page to make in consistent through out the app
 - Update the Job Cards & Downtime Logs Table with the ListView.vue
+
+We want to enable the user to update the downtime reason quickly In the application.
+Here is what needs to be done:
+- In DowntimeLogs.vue In the Table Add a Column Called Action
+- Wherever the reason is not updated show a Button called 'Update Reason'
+- When the user clicks on the button show UpdateReasonDialog.vue so that the user can update the reason.
+- When the user updates the reason send it to the backend and also update in the frontend for the record.
+- Show the same action button on Downtime Logs List in Downtime Log Tab in JobCard.vue and Machine.vue
+Create a To Do Before implementing this.

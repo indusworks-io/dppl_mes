@@ -190,10 +190,30 @@
             <template #cell-duration="{ value }">
               {{ formatDuration(value) }}
             </template>
+
+            <!-- Custom Actions Cell -->
+            <template #cell-actions="{ row }">
+              <button
+                v-if="!row.reason"
+                @click.stop="openUpdateReasonDialog(row.name)"
+                class="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Update Reason
+              </button>
+              <span v-else class="text-xs text-gray-500">-</span>
+            </template>
           </ListView>
         </div>
       </div>
     </div>
+
+    <!-- Update Reason Dialog -->
+    <UpdateReasonDialog
+      :visible="isReasonDialogVisible"
+      :downtimeId="selectedDowntimeId"
+      @update="handleReasonUpdated"
+      @cancel="closeReasonDialog"
+    />
   </div>
 </template>
 
@@ -203,6 +223,7 @@ import { computed, onMounted, onUnmounted, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { initSocket } from "../../socket.js"
 import ListView from "../../components/ListView.vue"
+import UpdateReasonDialog from "../../components/UpdateReasonDialog.vue"
 
 const route = useRoute()
 const router = useRouter()
@@ -214,6 +235,8 @@ const isLoading = ref(true)
 const error = ref("")
 const socket = ref(null)
 const activeTab = ref("overview")
+const isReasonDialogVisible = ref(false)
+const selectedDowntimeId = ref(null)
 
 // Tab definitions
 const tabs = ref([
@@ -249,7 +272,8 @@ const downtimeLogColumns = [
 	{ fieldname: 'end_date_time', label: 'End' },
 	{ fieldname: 'duration', label: 'Duration' },
 	{ fieldname: 'reason', label: 'Reason' },
-	{ fieldname: 'category', label: 'Category' }
+	{ fieldname: 'category', label: 'Category' },
+	{ fieldname: 'actions', label: 'Actions' }
 ]
 
 // Filters for Downtime Logs tab
@@ -398,6 +422,24 @@ const getDowntimeStatusClass = (status) => {
 		return 'bg-green-100 text-green-800'
 	}
 	return 'bg-gray-100 text-gray-800'
+}
+
+// Dialog handlers for Update Reason
+const openUpdateReasonDialog = (downtimeId) => {
+	selectedDowntimeId.value = downtimeId
+	isReasonDialogVisible.value = true
+}
+
+const closeReasonDialog = () => {
+	isReasonDialogVisible.value = false
+	selectedDowntimeId.value = null
+}
+
+const handleReasonUpdated = () => {
+	// Close the dialog
+	closeReasonDialog()
+	// Reload the page to refresh the data
+	window.location.reload()
 }
 
 // Lifecycle hooks

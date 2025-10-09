@@ -11,7 +11,7 @@
     <!-- Main Content -->
     <div v-else-if="doc.doc">
       <!-- Header Section -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4">
         <div class="flex items-center justify-between flex-wrap gap-4">
           <div class="flex items-center gap-3">
             <button
@@ -26,13 +26,6 @@
             <h1 class="text-2xl font-bold text-gray-900">
               {{ docname ? doc.doc.name : 'New Shift Plan' }}
             </h1>
-            <span
-              v-if="doc.doc.status"
-              :class="getStatusClass(doc.doc.status)"
-              class="inline-flex px-3 py-1 text-sm font-semibold rounded-full"
-            >
-              {{ doc.doc.status }}
-            </span>
           </div>
 
           <div class="flex items-center gap-2">

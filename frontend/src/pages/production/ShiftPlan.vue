@@ -106,6 +106,24 @@
         </div>
       </div>
 
+      <!-- Error Message Display -->
+      <div v-if="confirmError" class="bg-white rounded-lg shadow-sm border border-red-200 p-4 mb-6">
+        <div class="flex items-start">
+          <svg class="w-5 h-5 text-red-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+          <div class="flex-1">
+            <h3 class="text-sm font-medium text-red-800 mb-1">Error</h3>
+            <ErrorMessage :message="confirmError" />
+          </div>
+          <button @click="confirmError = null" class="text-red-600 hover:text-red-800">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
       <!-- Tab Navigation -->
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
         <div class="border-b border-gray-200">
@@ -420,7 +438,7 @@
 </template>
 
 <script setup>
-import { createDocumentResource, createResource, createListResource, Autocomplete, Checkbox, DatePicker, Select, toast } from 'frappe-ui'
+import { createDocumentResource, createResource, createListResource, Autocomplete, Checkbox, DatePicker, ErrorMessage, Select, toast } from 'frappe-ui'
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ListView from '../../components/ListView.vue'
@@ -433,6 +451,7 @@ const activeTab = ref('overview')
 const confirming = ref(false)
 const cancelling = ref(false)
 const refreshing = ref(false)
+const confirmError = ref(null)
 
 // Compute docname from route
 const docname = computed(() => {
@@ -775,6 +794,8 @@ const handleConfirm = async () => {
     return
   }
 
+  // Clear any previous errors
+  confirmError.value = null
   confirming.value = true
 
   try {
@@ -793,7 +814,10 @@ const handleConfirm = async () => {
       await doc.value.reload()
     }
   } catch (err) {
-    toast.error(err.messages?.join(', ') || err.message || 'Failed to confirm shift plan')
+    // Store error for display in UI
+    confirmError.value = err.messages?.join(', ') || err.message || 'Failed to confirm shift plan'
+    // Also show toast for immediate feedback
+    toast.error(confirmError.value)
   } finally {
     confirming.value = false
   }
@@ -805,6 +829,8 @@ const handleCancelPlan = async () => {
     return
   }
 
+  // Clear any previous errors
+  confirmError.value = null
   cancelling.value = true
 
   try {
@@ -812,7 +838,10 @@ const handleCancelPlan = async () => {
     await doc.value.reload()
     toast.success('Shift Plan cancelled successfully')
   } catch (err) {
-    toast.error(err.message || 'Failed to cancel shift plan')
+    // Store error for display in UI
+    confirmError.value = err.messages?.join(', ') || err.message || 'Failed to cancel shift plan'
+    // Also show toast for immediate feedback
+    toast.error(confirmError.value)
   } finally {
     cancelling.value = false
   }

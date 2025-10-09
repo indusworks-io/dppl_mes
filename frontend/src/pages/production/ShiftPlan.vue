@@ -38,7 +38,7 @@
           <div class="flex items-center gap-2">
             <!-- View Mode Actions -->
             <template v-if="docname">
-              <button
+              <!-- <button
                 @click="handleRefresh"
                 :disabled="doc.loading"
                 class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none disabled:opacity-50"
@@ -47,6 +47,19 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                 </svg>
                 Refresh
+              </button> -->
+
+              <!-- Save Button (Draft only) -->
+              <button
+                v-if="doc.doc.status === 'Draft'"
+                @click="handleSave"
+                :disabled="doc.setValue.loading"
+                class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 focus:outline-none disabled:opacity-50"
+              >
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                {{ doc.setValue.loading ? 'Saving...' : 'Save' }}
               </button>
 
               <!-- Confirm Shift Plan Button (Draft only) -->
@@ -56,10 +69,7 @@
                 :disabled="confirming"
                 class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 focus:outline-none disabled:opacity-50"
               >
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-                {{ confirming ? 'Confirming...' : 'Confirm Shift Plan' }}
+                {{ confirming ? 'Confirming...' : 'Confirm Plan' }}
               </button>
 
               <!-- Cancel Shift Plan Button (Draft only) -->
@@ -137,11 +147,11 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                   Date <span class="text-red-500">*</span>
                 </label>
-                <input
+                <DatePicker
                   v-model="doc.doc.date"
-                  type="date"
                   :disabled="docname && doc.doc.status !== 'Draft'"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
+                  placeholder="Select Date"
+                  variant="outline"
                 />
               </div>
 
@@ -181,11 +191,12 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                   Status
                 </label>
-                <input
-                  :value="doc.doc.status || 'Draft'"
-                  type="text"
+                <Select
+                  :model-value="doc.doc.status || 'Draft'"
+                  :options="['Draft', 'Confirmed', 'Cancelled']"
                   disabled
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+                  variant="outline"
+                  size="md"
                 />
               </div>
             </div>
@@ -200,14 +211,14 @@
                 <table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
                   <thead class="bg-gray-50">
                     <tr>
-                      <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">No Job</th>
+                      <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No Job</th>
                       <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Machine</th>
                       <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Operator</th>
                       <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Job 1</th>
-                      <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Job 1 Qty</th>
-                      <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Job 1 Duration</th>
+                      <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Job 1 Qty</th>
+                      <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Job 1 Duration</th>
                       <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Job 2</th>
-                      <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Job 2 Qty</th>
+                      <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Job 2 Qty</th>
                       <th v-if="!docname || doc.doc.status === 'Draft'" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Action</th>
                     </tr>
                   </thead>
@@ -215,11 +226,10 @@
                     <tr v-for="(row, index) in doc.doc.job_plan_details" :key="row.id || `row-${index}`">
                       <!-- No Job Checkbox -->
                       <td class="px-3 py-2 text-center">
-                        <input
+                        <Checkbox
                           v-model="row.no_job"
-                          type="checkbox"
                           :disabled="docname && doc.doc.status !== 'Draft'"
-                          class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                          size="md"
                         />
                       </td>
 
@@ -275,7 +285,7 @@
                           type="number"
                           min="0"
                           :disabled="!!row.no_job"
-                          class="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500 disabled:bg-gray-50"
+                          class="min-w-[150px] w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500 disabled:bg-gray-50"
                         />
                         <span v-else class="text-sm text-gray-900">{{ row.job_one_quantity || '-' }}</span>
                       </td>
@@ -291,7 +301,7 @@
                           step="0.5"
                           placeholder="Hours"
                           :disabled="!!row.no_job"
-                          class="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500 disabled:bg-gray-50"
+                          class="min-w-[150px] w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500 disabled:bg-gray-50"
                         />
                         <span v-else class="text-sm text-gray-900">{{ formatDuration(row.job_one_duration) }}</span>
                       </td>
@@ -319,7 +329,7 @@
                           type="number"
                           min="0"
                           :disabled="!!row.no_job"
-                          class="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500 disabled:bg-gray-50"
+                          class="min-w-[150px] w-full px-2 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500 disabled:bg-gray-50"
                         />
                         <span v-else class="text-sm text-gray-900">{{ row.job_two_quantity || '-' }}</span>
                       </td>
@@ -410,7 +420,7 @@
 </template>
 
 <script setup>
-import { createDocumentResource, createResource, createListResource, Autocomplete, toast } from 'frappe-ui'
+import { createDocumentResource, createResource, createListResource, Autocomplete, Checkbox, DatePicker, Select, toast } from 'frappe-ui'
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ListView from '../../components/ListView.vue'
@@ -438,11 +448,12 @@ const doc = computed(() => docResource.value)
 
 // Function to initialize/reinitialize document resource
 const initializeDoc = () => {
-  if (docname.value) {
+  const name = docname.value
+  if (name && name !== 'new') {
     // Existing document - use createDocumentResource
     docResource.value = createDocumentResource({
       doctype: 'Shift Plan',
-      name: docname.value,
+      name: name,
       auto: true,
       setValue: {
         onSuccess: () => {
@@ -572,7 +583,14 @@ const machineOptions = computed(() => {
     ? machinesResource.data.filter(m => m.factory === getFieldValue(factory))
     : machinesResource.data
 
-  return machines.map(machine => ({
+  // Sort by sequence_number in ascending order
+  const sortedMachines = machines.sort((a, b) => {
+    const seqA = a.sequence_number ?? Infinity
+    const seqB = b.sequence_number ?? Infinity
+    return seqA - seqB
+  })
+
+  return sortedMachines.map(machine => ({
     label: machine.machine_name || machine.name,
     value: machine.machine_name
   }))
@@ -622,8 +640,14 @@ const populateMachinesTable = (factory) => {
     return
   }
 
-  // Filter machines by selected factory
-  const factoryMachines = machinesResource.data.filter(machine => machine.factory === factory)
+  // Filter machines by selected factory and sort by sequence_number
+  const factoryMachines = machinesResource.data
+    .filter(machine => machine.factory === factory)
+    .sort((a, b) => {
+      const seqA = a.sequence_number ?? Infinity
+      const seqB = b.sequence_number ?? Infinity
+      return seqA - seqB
+    })
 
   // Clear existing rows
   doc.value.doc.job_plan_details = []

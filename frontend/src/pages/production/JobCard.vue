@@ -970,15 +970,6 @@ const handleJobCardUpdated = () => {
   background-color: #f8f9fa;
 }
 
-/* Ensure consistent white background for all form inputs */
-:deep(.form-control),
-:deep(input),
-:deep(select),
-:deep(.input),
-:deep(.autocomplete-input),
-:deep(.date-picker-input) {
-  background-color: white !important;
-}
 
 /* Animation for success message */
 @keyframes fade-in {

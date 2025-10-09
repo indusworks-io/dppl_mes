@@ -104,7 +104,7 @@ const sidebarSections = computed(() => [
 	},
 	{
 		label: "Production",
-		collapsible: true,
+		collapsible: false,
 		items: [
 			{
 				label: "Shift Plans",
@@ -117,6 +117,12 @@ const sidebarSections = computed(() => [
 				icon: LucideClipboardList,
 				to: "/production/job-cards",
 				isActive: router.currentRoute.value.path === "/production/job-cards",
+			},
+			{
+				label: "Output Logs",
+				icon: LucidePackage,
+				to: "/production/output-logs",
+				isActive: router.currentRoute.value.path === "/production/output-logs",
 			},
 			{
 				label: "Downtime Logs",
@@ -142,20 +148,8 @@ const sidebarSections = computed(() => [
 	},
 	{
 		label: "Organization",
-		collapsible: true,
+		collapsible: false,
 		items: [
-			{
-				label: "Factories",
-				icon: LucideBuilding2,
-				to: "/organization/factories",
-				isActive: router.currentRoute.value.path === "/organization/factories",
-			},
-			{
-				label: "Areas",
-				icon: LucideMap,
-				to: "/organization/areas",
-				isActive: router.currentRoute.value.path === "/organization/areas",
-			},
 			{
 				label: "Machines",
 				icon: LucideSettings,

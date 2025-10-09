@@ -8,6 +8,7 @@
     :pageLength="50"
     :enableRouting="true"
     routePrefix="/production/output-logs"
+    :hideCreateButton="true"
   >
     <!-- Custom DateTime Cell -->
     <template #cell-timestamp="{ value }">

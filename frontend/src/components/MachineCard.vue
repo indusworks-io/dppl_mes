@@ -136,7 +136,7 @@ const titleColorClass = computed(() => {
 // Methods
 const handleClick = () => {
 	emit("card-clicked", props.machine.name)
-	router.push(`/machine/${props.machine.name}`)
+	router.push(`organization/machines/${props.machine.name}`)
 }
 
 const handleImageError = (event) => {

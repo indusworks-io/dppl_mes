@@ -110,7 +110,7 @@ const routes = [
 		component: () => import("@/pages/organization/Machines.vue"),
 	},
 	{
-		path: "/organization/machine/:id",
+		path: "/organization/machines/:id",
 		name: "Machine",
 		component: () => import("@/pages/organization/Machine.vue"),
 	},

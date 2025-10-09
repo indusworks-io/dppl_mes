@@ -7,7 +7,8 @@
     orderBy="sequence_number asc, creation desc"
     :pageLength="100"
     :enableRouting="true"
-    routePrefix="/organization/machine"
+    routePrefix="/organization/machines"
+    :hideCreateButton="true"
   >
     <!-- Custom Machine Name Cell -->
     <template #cell-machine_name="{ value, row }">

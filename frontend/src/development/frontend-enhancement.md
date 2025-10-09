@@ -498,3 +498,33 @@ Lets have all the fields in single column with following sequence:
 - job_sequence_number
 - planned_start_date_time
 - planned_end_date_time
+
+We need to update OutputLog.vue page to handle viewing of a Output log Document.
+Check the following files from backend to understand fields & layout:
+- output_log.json: dppl_mes/dppl_mes/manufacturing/doctype/output_log/output_log.json
+We need to do the following:
+- Use Frappe UI Components Only.
+- Use CreateDocumentResource
+- The user can only view the record. No fields are editable. The user cannot create a new output log.
+
+
+We need to now handle creating & updating following documents:
+1. Jobs
+2. Downtime Reasons
+3. Factories
+4. Areas
+5. Operators
+Each document has a .json file inside the dppl folder.
+Update the corrosponding page to handle create & Update.
+Keep in mind:
+1. Use Frappe UI Component
+2. Use a simple Single Column Format
+3. Use CreateDocumentResource to handle create & update
+4. Use Save Button to handle create & update
+5. Use CreateListResource to fetch related links.
+This is a big task. Create a detailed to plan before executing.
+You can refer to ShiftPlan.vue to see how you handled it earlier.
+
+We need to update the MachineCard.vue to make the UI similar to other pages like JobCard.vue
+- Update the page to make in consistent through out the app
+- Update the Job Cards & Downtime Logs Table with the ListView.vue

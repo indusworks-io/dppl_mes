@@ -6,6 +6,7 @@
         <h1 class="text-2xl font-bold text-gray-900">{{ title }}</h1>
       </div>
       <button
+        v-if="!hideCreateButton"
         @click="handleCreate"
         class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
       >
@@ -300,6 +301,10 @@ const props = defineProps({
 		default: false,
 	},
 	hideSubheader: {
+		type: Boolean,
+		default: false,
+	},
+	hideCreateButton: {
 		type: Boolean,
 		default: false,
 	},

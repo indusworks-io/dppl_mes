@@ -8,6 +8,7 @@
     :pageLength="50"
     :enableRouting="true"
     routePrefix="/production/downtime-logs"
+    :hideCreateButton="true"
   >
     <!-- Custom DateTime Cells -->
     <template #cell-start_date_time="{ value }">

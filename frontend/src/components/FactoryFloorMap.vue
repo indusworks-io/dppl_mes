@@ -502,7 +502,7 @@ const closeOverlay = () => {
 
 const goToMachineDetails = () => {
 	if (selectedMachine.value) {
-		router.push(`/machine/${selectedMachine.value.name}`)
+		router.push(`organization/machines/${selectedMachine.value.name}`)
 	}
 }
 

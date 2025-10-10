@@ -57,8 +57,7 @@
    "fieldname": "end_date_time",
    "fieldtype": "Datetime",
    "in_list_view": 1,
-   "label": "End Date Time",
-   "read_only": 1
+   "label": "End Date Time"
   },
   {
    "fieldname": "duration",
@@ -101,7 +100,7 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-02 15:45:23.458784",
+ "modified": "2025-10-10 12:48:55.586468",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Downtime Log",

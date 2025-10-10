@@ -26,3 +26,11 @@ class DowntimeLog(Document):
 			
 			if in_progress_job_cards:
 				self.job_card = in_progress_job_cards[0].name
+		
+		if self.status == 'Closed' and not self.reason:
+			print('Checking for Minor Stops')
+			downtime_settings = frappe.get_doc('Downtime Settings')
+			if downtime_settings.enable_automatic_reason_update_for_minor_stops:
+				minor_stop_threshold = int(downtime_settings.minor_stop_threshold)
+				if self.duration <= minor_stop_threshold:
+					self.reason = downtime_settings.minor_stop_downtime_reason

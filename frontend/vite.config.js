@@ -115,6 +115,8 @@ export default defineConfig({
 						options: { cacheName: "api-cache" },
 					},
 				],
+				// Import custom push notification handlers
+				importScripts: ["sw-push.js"],
 			},
 		}),
 		frappeui({

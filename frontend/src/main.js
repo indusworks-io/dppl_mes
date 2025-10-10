@@ -54,3 +54,23 @@ for (const key in globalComponents) {
 }
 
 app.mount("#app")
+
+// Handle navigation messages from service worker (push notification clicks)
+if ("serviceWorker" in navigator) {
+	navigator.serviceWorker.addEventListener("message", (event) => {
+		const { action, url } = event.data || {}
+
+		if (action === "navigate" && url) {
+			console.log("📍 Navigating from push notification to:", url)
+
+			// Navigate using Vue Router
+			// Remove /frontend prefix if present as router is already scoped to /frontend
+			const routePath = url.replace(/^\/frontend/, "") || "/"
+			router.push(routePath).catch((err) => {
+				console.error("Navigation error:", err)
+			})
+		}
+	})
+
+	console.log("✅ Service worker message listener registered")
+}

@@ -167,6 +167,11 @@ scheduler_events = {
 	# "monthly": [
 	# 	"dppl_mes.tasks.monthly"
 	# ],
+	"cron": {
+		"*/5 * * * *": [
+			"dppl_mes.utils.downtime_log_notification"
+		]
+	}
 }
 
 # Testing

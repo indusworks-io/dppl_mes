@@ -537,3 +537,5 @@ Here is what needs to be done:
 - When the user updates the reason send it to the backend and also update in the frontend for the record.
 - Show the same action button on Downtime Logs List in Downtime Log Tab in JobCard.vue and Machine.vue
 Create a To Do Before implementing this.
+
+

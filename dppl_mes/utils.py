@@ -96,3 +96,266 @@ def delete_old_telemetry_records(days=60, batch_size=1000):
 			"message": error_message
 		}
 
+
+def get_supervisors_from_area(area_name):
+	"""
+	Retrieve list of supervisor users for a given area.
+
+	Args:
+		area_name (str): Name of the Area
+
+	Returns:
+		list: List of user email addresses who are supervisors for this area
+	"""
+	if not area_name:
+		return []
+
+	try:
+		# Get the Area document
+		area = frappe.get_doc("Area", area_name)
+
+		# Extract supervisors from the child table
+		supervisors = []
+		if hasattr(area, 'supervisors') and area.supervisors:
+			for supervisor_row in area.supervisors:
+				if hasattr(supervisor_row, 'user') and supervisor_row.user:
+					supervisors.append(supervisor_row.user)
+
+		return supervisors
+	except Exception as e:
+		frappe.log_error(
+			f"Error fetching supervisors for area {area_name}: {str(e)}",
+			"Get Supervisors Error"
+		)
+		return []
+
+
+def get_push_subscriptions(user):
+	"""
+	Retrieve all active push subscriptions for a given user.
+
+	Args:
+		user (str): User email address
+
+	Returns:
+		list: List of subscription dictionaries with endpoint and keys
+	"""
+	if not user:
+		return []
+
+	try:
+		subscriptions = frappe.get_all(
+			"Push Subscription",
+			filters={"user": user, "enabled": 1},
+			fields=["name", "endpoint", "p256dh", "auth"]
+		)
+
+		return subscriptions
+	except Exception as e:
+		frappe.log_error(
+			f"Error fetching push subscriptions for user {user}: {str(e)}",
+			"Get Push Subscriptions Error"
+		)
+		return []
+
+
+def send_push_notification(subscription, payload, settings):
+	"""
+	Send a web push notification to a single subscription endpoint.
+
+	Args:
+		subscription (dict): Subscription info with endpoint, p256dh, auth
+		payload (dict): Notification payload with title, body, url, etc.
+		settings: Downtime Settings document with VAPID keys
+
+	Returns:
+		bool: True if successful, False otherwise
+	"""
+	try:
+		# Build subscription info object for pywebpush
+		sub_info = {
+			"endpoint": subscription.get("endpoint"),
+			"keys": {
+				"p256dh": subscription.get("p256dh"),
+				"auth": subscription.get("auth")
+			}
+		}
+
+		# Build VAPID claims
+		vapid_claims = {
+			"sub": f"mailto:{settings.contact_email}" if settings.contact_email else "mailto:noreply@example.com"
+		}
+
+		# Send the push notification
+		webpush(
+			subscription_info=sub_info,
+			data=json.dumps(payload),
+			vapid_private_key=settings.vapid_private_key,
+			vapid_claims=vapid_claims
+		)
+
+		return True
+
+	except Exception as e:
+		# Log error but don't crash - subscription might be expired/invalid
+		frappe.log_error(
+			f"Push notification failed for subscription {subscription.get('name', 'unknown')}: {str(e)}",
+			"Push Notification Error"
+		)
+		return False
+
+
+def downtime_log_notification():
+	"""
+	Send web push notifications to area supervisors for open downtime logs.
+
+	This function is designed to run as a Frappe scheduler job. It:
+	1. Checks if downtime notifications are enabled in Downtime Settings
+	2. Queries for open downtime logs that haven't been notified yet
+	3. Applies threshold logic based on settings (immediate or after threshold)
+	4. Sends push notifications to all supervisors of the affected area
+	5. Updates the notified flag after successful processing
+
+	Configuration in Downtime Settings:
+	- enable_downtime_notification_to_supervisors: Enable/disable notifications
+	- when_to_notify: "Immediately" or "After Minor Stop Threshold"
+	- minor_stop_threshold: Duration threshold in seconds
+	- vapid_public_key, vapid_private_key: VAPID keys for web push
+	- contact_email: Contact email for VAPID claims
+
+	Usage:
+		# Add to hooks.py under scheduler_events
+		"cron": {
+			"*/5 * * * *": [  # Every 5 minutes
+				"dppl_mes.utils.downtime_log_notification"
+			]
+		}
+	"""
+	try:
+		frappe.logger().info("Running downtime notification job")
+
+		# Step 1: Get Downtime Settings
+		settings = frappe.get_single("Downtime Settings")
+
+		# Early exit if notifications are disabled
+		if not settings.enable_downtime_notification_to_supervisors:
+			frappe.logger().info("Downtime notifications are disabled in settings")
+			return
+
+		# Validate required settings
+		if not settings.vapid_private_key:
+			frappe.log_error("VAPID private key not configured in Downtime Settings", "Downtime Notification Error")
+			return
+
+		# Step 2: Query open downtime logs that haven't been notified
+		open_logs = frappe.get_all(
+			"Downtime Log",
+			filters={"status": "Open", "notified": 0},
+			fields=["name", "machine", "start_date_time", "reason", "category"]
+		)
+
+		if not open_logs:
+			frappe.logger().info("No open unnotified downtime logs found")
+			return
+
+		frappe.logger().info(f"Found {len(open_logs)} open unnotified downtime logs")
+
+		# Step 3: Apply threshold logic based on when_to_notify setting
+		qualifying_logs = []
+		current_time = frappe.utils.now_datetime()
+
+		if settings.when_to_notify == "After Minor Stop Threshold":
+			# Filter logs that have exceeded the threshold
+			threshold_seconds = settings.minor_stop_threshold or 0
+
+			for log in open_logs:
+				if not log.start_date_time:
+					continue
+
+				# Calculate duration in seconds
+				start_dt = frappe.utils.get_datetime(log.start_date_time)
+				duration_seconds = (current_time - start_dt).total_seconds()
+
+				# Only include logs that exceed threshold
+				if duration_seconds >= threshold_seconds:
+					qualifying_logs.append(log)
+
+			frappe.logger().info(
+				f"{len(qualifying_logs)} logs exceed threshold of {threshold_seconds} seconds"
+			)
+		else:
+			# when_to_notify == "Immediately" - use all open logs
+			qualifying_logs = open_logs
+
+		if not qualifying_logs:
+			frappe.logger().info("No downtime logs qualify for notification")
+			return
+
+		# Step 4: Process each qualifying downtime log
+		for log in qualifying_logs:
+			try:
+				# Get the machine's area
+				machine_doc = frappe.get_doc("Machine", log.machine)
+				area_name = machine_doc.area
+
+				if not area_name:
+					frappe.logger().warning(f"Machine {log.machine} has no area assigned")
+					continue
+
+				# Get supervisors for this area
+				supervisors = get_supervisors_from_area(area_name)
+
+				if not supervisors:
+					frappe.logger().warning(f"No supervisors found for area {area_name}")
+					continue
+
+				# Prepare notification payload
+				payload = {
+					"title": f"Open Downtime: {log.machine}",
+					"body": f"Started at {log.start_date_time} — Reason: {log.reason or 'Not specified'}",
+					"url": f"/frontend/production/downtime-logs/{log.name}",
+					"downtime_log": log.name
+				}
+
+				# Send notification to each supervisor
+				notification_sent = False
+				for supervisor in supervisors:
+					# Get all active subscriptions for this supervisor
+					subscriptions = get_push_subscriptions(supervisor)
+
+					if not subscriptions:
+						frappe.logger().info(f"No active subscriptions for supervisor {supervisor}")
+						continue
+
+					# Send to each subscription
+					for subscription in subscriptions:
+						success = send_push_notification(subscription, payload, settings)
+						if success:
+							notification_sent = True
+							frappe.logger().info(
+								f"Notification sent to {supervisor} for downtime {log.name}"
+							)
+
+				# Step 5: Mark log as notified after processing
+				if notification_sent:
+					frappe.db.set_value("Downtime Log", log.name, "notified", 1)
+					frappe.db.commit()
+					frappe.logger().info(f"Marked downtime log {log.name} as notified")
+
+			except Exception as log_error:
+				# Log error but continue processing other logs
+				frappe.log_error(
+					f"Error processing downtime log {log.name}: {str(log_error)}\n{frappe.get_traceback()}",
+					"Downtime Notification Processing Error"
+				)
+				continue
+
+		frappe.logger().info("Downtime notification job completed successfully")
+
+	except Exception as e:
+		# Log overall errors
+		frappe.log_error(
+			f"Error in downtime_log_notification: {str(e)}\n{frappe.get_traceback()}",
+			"Downtime Notification Job Error"
+		)
+		frappe.logger().error(f"Downtime notification job failed: {str(e)}")

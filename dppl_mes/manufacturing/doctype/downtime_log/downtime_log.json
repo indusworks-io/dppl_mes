@@ -16,7 +16,8 @@
   "reason",
   "category",
   "remarks",
-  "job_card"
+  "job_card",
+  "notified"
  ],
  "fields": [
   {
@@ -94,13 +95,20 @@
    "fieldtype": "Link",
    "label": "Job Card",
    "options": "Job Card"
+  },
+  {
+   "default": "0",
+   "fieldname": "notified",
+   "fieldtype": "Check",
+   "label": "Notified?",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-10 12:48:55.586468",
+ "modified": "2025-10-10 15:51:07.686859",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Downtime Log",

@@ -8,7 +8,12 @@
  "field_order": [
   "enable_automatic_reason_update_for_minor_stops",
   "minor_stop_downtime_reason",
-  "minor_stop_threshold"
+  "minor_stop_threshold",
+  "enable_downtime_notification_to_supervisors",
+  "when_to_notify",
+  "vapid_public_key",
+  "vapid_private_key",
+  "contact_email"
  ],
  "fields": [
   {
@@ -32,6 +37,41 @@
    "hide_days": 1,
    "label": "Minor Stop Threshold",
    "mandatory_depends_on": "eval: doc.enable_automatic_reason_update_for_minor_stops == '1';"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_downtime_notification_to_supervisors",
+   "fieldtype": "Check",
+   "label": "Enable Downtime Notification To Supervisors?"
+  },
+  {
+   "depends_on": "eval: doc.enable_downtime_notification_to_supervisors == '1';",
+   "fieldname": "when_to_notify",
+   "fieldtype": "Select",
+   "label": "When To Notify?",
+   "mandatory_depends_on": "eval: doc.enable_downtime_notification_to_supervisors == '1';",
+   "options": "\nImmediately\nAfter Minor Stop Threshold"
+  },
+  {
+   "depends_on": "eval: doc.enable_downtime_notification_to_supervisors == '1';",
+   "fieldname": "vapid_public_key",
+   "fieldtype": "Data",
+   "label": "Vapid Public Key",
+   "mandatory_depends_on": "eval: doc.enable_downtime_notification_to_supervisors == '1';"
+  },
+  {
+   "depends_on": "eval: doc.enable_downtime_notification_to_supervisors == '1';",
+   "fieldname": "vapid_private_key",
+   "fieldtype": "Data",
+   "label": "Vapid Private Key",
+   "mandatory_depends_on": "eval: doc.enable_downtime_notification_to_supervisors == '1';"
+  },
+  {
+   "depends_on": "eval: doc.enable_downtime_notification_to_supervisors == '1';",
+   "fieldname": "contact_email",
+   "fieldtype": "Data",
+   "label": "Contact Email",
+   "mandatory_depends_on": "eval: doc.enable_downtime_notification_to_supervisors == '1';"
   }
  ],
  "grid_page_length": 50,
@@ -39,7 +79,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-06-25 17:48:58.898581",
+ "modified": "2025-10-10 15:49:09.700223",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Downtime Settings",

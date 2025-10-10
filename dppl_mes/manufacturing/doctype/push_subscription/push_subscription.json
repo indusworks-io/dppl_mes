@@ -1,0 +1,74 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-10-10 16:09:14.064653",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "endpoint",
+  "p256dh",
+  "auth",
+  "device_label",
+  "enabled"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "User"
+  },
+  {
+   "fieldname": "endpoint",
+   "fieldtype": "Data",
+   "label": "Endpoint"
+  },
+  {
+   "fieldname": "p256dh",
+   "fieldtype": "Data",
+   "label": "P256dh"
+  },
+  {
+   "fieldname": "auth",
+   "fieldtype": "Data",
+   "label": "Auth"
+  },
+  {
+   "fieldname": "device_label",
+   "fieldtype": "Data",
+   "label": "Device Label"
+  },
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled?"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-10-10 16:11:08.861192",
+ "modified_by": "Administrator",
+ "module": "Manufacturing",
+ "name": "Push Subscription",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

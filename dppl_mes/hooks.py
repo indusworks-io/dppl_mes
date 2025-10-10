@@ -151,23 +151,23 @@ app_license = "mit"
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"dppl_mes.tasks.all"
-# 	],
-# 	"daily": [
-# 		"dppl_mes.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"dppl_mes.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"dppl_mes.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"dppl_mes.tasks.monthly"
-# 	],
-# }
+scheduler_events = {
+	# "all": [
+	# 	"dppl_mes.tasks.all"
+	# ],
+	"daily": [
+		"dppl_mes.utils.delete_old_telemetry_records"
+	],
+	# "hourly": [
+	# 	"dppl_mes.tasks.hourly"
+	# ],
+	# "weekly": [
+	# 	"dppl_mes.tasks.weekly"
+	# ],
+	# "monthly": [
+	# 	"dppl_mes.tasks.monthly"
+	# ],
+}
 
 # Testing
 # -------

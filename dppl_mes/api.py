@@ -521,3 +521,33 @@ def create_energy_log():
             "error_type": "server_error",
             "message": "Internal server error occurred"
         }
+
+
+@frappe.whitelist(allow_guest=False)
+def save_push_subscription(subscription_json, device_label=None):
+    import json
+    sub = json.loads(subscription_json)
+    user = frappe.session.user
+    endpoint = sub["endpoint"]
+    keys = sub["keys"]
+
+    existing = frappe.get_all("Push Subscription", filters={"endpoint": endpoint}, fields=["name"])
+    if existing:
+        doc = frappe.get_doc("Push Subscription", existing[0].name)
+        doc.db_set("enabled", 1)
+    else:
+        frappe.get_doc({
+            "doctype": "Push Subscription",
+            "user": user,
+            "endpoint": endpoint,
+            "p256dh": keys.get("p256dh"),
+            "auth": keys.get("auth"),
+            "device_label": device_label,
+            "enabled": 1
+        }).insert(ignore_permissions=True)
+
+
+
+@frappe.whitelist()
+def get_vapid_public_key():
+    return frappe.get_single("Downtime Settings").vapid_public_key

@@ -89,18 +89,18 @@ const sidebarSections = computed(() => [
 				to: "/",
 				isActive: router.currentRoute.value.path === "/",
 			},
-			{
-				label: "Notifications",
-				icon: LucideBell,
-				to: "/notifications",
-				isActive: router.currentRoute.value.path === "/notifications",
-			},
-			{
-				label: "Reports",
-				icon: LucideBarChart3,
-				to: "/reports",
-				isActive: router.currentRoute.value.path === "/reports",
-			},
+			// {
+			// 	label: "Notifications",
+			// 	icon: LucideBell,
+			// 	to: "/notifications",
+			// 	isActive: router.currentRoute.value.path === "/notifications",
+			// },
+			// {
+			// 	label: "Reports",
+			// 	icon: LucideBarChart3,
+			// 	to: "/reports",
+			// 	isActive: router.currentRoute.value.path === "/reports",
+			// },
 		],
 	},
 	{

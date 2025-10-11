@@ -38,6 +38,7 @@ async function subscribeToPushNotifications(registration) {
 		// Fetch VAPID public key from backend
 		console.log("📡 Fetching VAPID public key...")
 		const vapidPublicKey = await call("dppl_mes.api.get_vapid_public_key")
+		console.log(vapidPublicKey)
 
 		if (!vapidPublicKey) {
 			console.error("❌ Failed to fetch VAPID public key")

@@ -22,7 +22,8 @@
   {
    "fieldname": "endpoint",
    "fieldtype": "Data",
-   "label": "Endpoint"
+   "label": "Endpoint",
+   "length": 512
   },
   {
    "fieldname": "p256dh",
@@ -49,7 +50,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-10 16:11:08.861192",
+ "modified": "2025-10-11 15:39:55.662999",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Push Subscription",

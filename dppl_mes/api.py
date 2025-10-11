@@ -550,4 +550,6 @@ def save_push_subscription(subscription_json, device_label=None):
 
 @frappe.whitelist()
 def get_vapid_public_key():
-    return frappe.get_single("Downtime Settings").vapid_public_key
+    key = frappe.get_single("Downtime Settings").vapid_public_key
+    print(key)
+    return key

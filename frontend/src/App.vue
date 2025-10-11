@@ -45,6 +45,7 @@ import LucideMap from "~icons/lucide/map"
 import LucidePackage from "~icons/lucide/package"
 import LucideSettings from "~icons/lucide/settings"
 import LucideUsers from "~icons/lucide/users"
+import logoUrl from "@/assets/soundseal-favicon.png"
 
 const router = useRouter()
 const sidebarCollapsed = ref(false)
@@ -75,7 +76,7 @@ const userDisplayName = computed(() => {
 })
 
 // Logo URL
-const logoUrl = "/soundseal-favicon.png"
+// const logoUrl = "/soundseal-favicon.png"
 
 // Sidebar sections configuration
 const sidebarSections = computed(() => [

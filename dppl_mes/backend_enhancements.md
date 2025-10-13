@@ -71,3 +71,30 @@ Before writing any code, do the following:
    - Assume the function will be registered in `hooks.py` under `scheduler_events`.
 
 After inspecting the JSON files and confirming actual fieldnames, write the final code following these requirements.
+
+# Telmetery Creation Logic:
+Create Telemtery API
+- Handle Incoming Telemetery
+- Validate Timestamp, Device, Machine, Message
+- Create Telemetery
+- Calculate Progress
+- Return Progress
+
+before_save Function:
+- Intercept timestamp, machine, data_str
+- If output > 0 then run handle_output function
+- If status then run downtime_checker function
+
+handle_output Function:
+- Get Active Job
+- If Active Job
+  - if output_value < job_completed_qty
+    - Complete Job
+    - Start New Job
+  - - Creta Output Log
+  - if output_value > job_completed_qty
+    - Creta Output Log
+Else:
+  - Find New Job
+  - Start New Job
+  - Create Output Log

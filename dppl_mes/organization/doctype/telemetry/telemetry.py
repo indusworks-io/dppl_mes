@@ -27,7 +27,11 @@ class Telemetry(Document):
 					return
 				output_value = int(output_raw)
 				run_rate_value = float(data["run_rate"])
-				self.handle_output(output_value, run_rate_value, timestamp, machine)
+				if output_value == 0:
+					print('Output is zero. Do Nothing')
+				if output_value != 0:
+					print('Output is not zero. Running handle_output function')
+					self.handle_output(output_value, run_rate_value, timestamp, machine)
 			except Exception as e:
 				frappe.log_error(frappe.get_traceback(), "Output Parsing Error")
 		
@@ -40,97 +44,16 @@ class Telemetry(Document):
 				frappe.log_error(frappe.get_traceback(), "Status Parsing Error")
 
 	def handle_output(self, output_value, run_rate_value, timestamp, machine):
-		"""
-		Requirements:
-		1. Get Active Job
-		2. If Active Job Exisits then run Job Complete Checker Function
-		"""
 		try:
 			active_job = self.get_active_job(machine)
-
 			if active_job:
 				print(f'Active Job Found: {active_job}')
 				active_job_doc = frappe.get_doc("Job Card", active_job)
 				job_completed_qty = active_job_doc.completed_quantity
-				if job_completed_qty > 0 and output_value < job_completed_qty:
-
-					# Output dropped - check if we have a stored checker value
-					if active_job_doc.completed_quantity_checker is None or active_job_doc.completed_quantity_checker == 0:
-
-						# First time seeing a drop - store the current value for verification
-						print(f'First drop detected: {job_completed_qty} -> {output_value}. Storing checker value.')
-						active_job_doc.completed_quantity_checker = job_completed_qty
-						active_job_doc.save()
-						
-						# Creating output log
-						output_log = frappe.new_doc("Output Log")
-						output_log.machine = machine
-						output_log.job_card = active_job
-						output_log.output = output_value
-						output_log.run_rate = run_rate_value
-						output_log.timestamp = timestamp
-						output_log.save()
-						print('Output Log Created')
-					
-					else:
-						# We have a previous checker value - analyze the pattern
-						checker_value = active_job_doc.completed_quantity_checker
-						
-						if output_value >= checker_value:
-							# Output recovered to previous level or higher - false drop confirmed
-							print(f'False drop confirmed. Output recovered: {output_value} >= {checker_value}')
-							active_job_doc.completed_quantity = output_value
-							active_job_doc.completed_quantity_checker = 0
-							active_job_doc.save()
-
-							# Creating output log
-							output_log = frappe.new_doc("Output Log")
-							output_log.machine = machine
-							output_log.job_card = active_job
-							output_log.output = output_value
-							output_log.run_rate = run_rate_value
-							output_log.timestamp = timestamp
-							output_log.save()
-							print('Output Log Created')
-						
-						else:
-							# Output still below checker value - genuine reset confirmed
-							print(f'Genuine reset confirmed: {output_value} < {checker_value}. Completing job.')
-							active_job_doc.completed_quantity = checker_value
-							active_job_doc.completed_quantity_checker = 0
-							active_job_doc.status = 'Completed'
-							active_job_doc.actual_end_date_time = now()
-							active_job_doc.save()
-							if output_value > 0:
-								print('Output Value Detected, Checking Previous Job Completion')
-								previous_job_counter_reset = previous_job_counter_reset_function(machine, output_value)
-								if previous_job_counter_reset == False:
-									print('Counter of Previous Job Still Coming. Not Starting New Job')
-								else:
-									new_job = self.start_job(machine)
-									if new_job:
-										print(f'New Job Started: {new_job}')
-										new_job_doc = frappe.get_doc("Job Card", new_job)
-										new_job_doc.completed_quantity = output_value
-										new_job_doc.save()
-										# Creating output log for new job
-										output_log = frappe.new_doc("Output Log")
-										output_log.machine = machine
-										output_log.job_card = new_job
-										output_log.output = output_value
-										output_log.run_rate = run_rate_value
-										output_log.timestamp = timestamp
-										output_log.save()
-										print('Output Log Created for New Job')
-									else:
-										print('No New Job Started')
-				elif job_completed_qty > 0 and output_value >= job_completed_qty:
-					if active_job_doc.completed_quantity_checker:
-						active_job_doc.completed_quantity_checker = 0 
+				
+				if output_value > job_completed_qty:
 					active_job_doc.completed_quantity = output_value
 					active_job_doc.save()
-
-					# Creating output log
 					output_log = frappe.new_doc("Output Log")
 					output_log.machine = machine
 					output_log.job_card = active_job
@@ -139,35 +62,49 @@ class Telemetry(Document):
 					output_log.timestamp = timestamp
 					output_log.save()
 					print('Output Log Created')
+				
+				elif output_value < job_completed_qty:
+					# Complete Existing Job
+					active_job_doc.status = 'Completed'
+					active_job_doc.actual_end_date_time = now()
+					active_job_doc.save()
+
+					# Try To Start New Job
+					new_job = self.start_job(machine)
+					if new_job:
+						# if New Job Started
+						print(f'New Job Started: {new_job}')
+						new_job_doc = frappe.get_doc("Job Card", new_job)
+						new_job_doc.completed_quantity = output_value
+						new_job_doc.save()
+						# Creating output log for new job
+						output_log = frappe.new_doc("Output Log")
+						output_log.machine = machine
+						output_log.job_card = new_job
+						output_log.output = output_value
+						output_log.run_rate = run_rate_value
+						output_log.timestamp = timestamp
+						output_log.save()
+						print('Output Log Created for New Job')
 			else:
 				print('No Active Job Found, Starting New Job')
 				if output_value > 0:
-					print('Output Value Detected, Checking Previous Job Completion')
-					previous_job_counter_reset = previous_job_counter_reset_function(machine, output_value)
-					if previous_job_counter_reset == False:
-						print('Counter of Previous Job Still Coming. Not Starting New Job')
-					else:
-						new_job = self.start_job(machine)
+					new_job = self.start_job(machine)	
+					if new_job:
+						print(f'New Job Started: {new_job}')
+						new_job_doc = frappe.get_doc("Job Card", new_job)
+						new_job_doc.completed_quantity = output_value
+						new_job_doc.save()
 						
-						if new_job:
-							print(f'New Job Started: {new_job}')
-							new_job_doc = frappe.get_doc("Job Card", new_job)
-							new_job_doc.completed_quantity = output_value
-							new_job_doc.save()
-							# Creating output log for new job
-							output_log = frappe.new_doc("Output Log")
-							output_log.machine = machine
-							output_log.job_card = new_job
-							output_log.output = output_value
-							output_log.run_rate = run_rate_value
-							output_log.timestamp = timestamp
-							output_log.save()
-							print('Output Log Created for New Job')
-						else:
-							print('No New Job Started')
-				else:
-					print('No Output Value Detected, Not Starting New Job')
-					return None
+						# Creating output log for new job
+						output_log = frappe.new_doc("Output Log")
+						output_log.machine = machine
+						output_log.job_card = new_job
+						output_log.output = output_value
+						output_log.run_rate = run_rate_value
+						output_log.timestamp = timestamp
+						output_log.save()
+						print('Output Log Created for New Job')
 		except Exception as e:
 			frappe.log_error(frappe.get_traceback(), "Handle Output Error")
 
@@ -467,3 +404,139 @@ def previous_job_counter_reset_function(machine, output_value):
 	except Exception as e:
 		frappe.log_error(frappe.get_traceback(), "Previous Job Counter Reset Function Error")
 		return True
+	
+
+
+	# def handle_output_old(self, output_value, run_rate_value, timestamp, machine):
+	# 	try:
+	# 		active_job = self.get_active_job(machine)
+
+	# 		if active_job:
+	# 			print(f'Active Job Found: {active_job}')
+	# 			active_job_doc = frappe.get_doc("Job Card", active_job)
+	# 			job_completed_qty = active_job_doc.completed_quantity
+	# 			if output_value > job_completed_qty:
+	# 				pass
+
+	# 			elif output_value < job_completed_qty:
+	# 				pass
+
+
+	# 			if job_completed_qty > 0 and output_value < job_completed_qty:
+
+	# 				# Output dropped - check if we have a stored checker value
+	# 				if active_job_doc.completed_quantity_checker is None or active_job_doc.completed_quantity_checker == 0:
+
+	# 					# First time seeing a drop - store the current value for verification
+	# 					print(f'First drop detected: {job_completed_qty} -> {output_value}. Storing checker value.')
+	# 					active_job_doc.completed_quantity_checker = job_completed_qty
+	# 					active_job_doc.save()
+						
+	# 					# Creating output log
+	# 					output_log = frappe.new_doc("Output Log")
+	# 					output_log.machine = machine
+	# 					output_log.job_card = active_job
+	# 					output_log.output = output_value
+	# 					output_log.run_rate = run_rate_value
+	# 					output_log.timestamp = timestamp
+	# 					output_log.save()
+	# 					print('Output Log Created')
+					
+	# 				else:
+	# 					# We have a previous checker value - analyze the pattern
+	# 					checker_value = active_job_doc.completed_quantity_checker
+						
+	# 					if output_value >= checker_value:
+	# 						# Output recovered to previous level or higher - false drop confirmed
+	# 						print(f'False drop confirmed. Output recovered: {output_value} >= {checker_value}')
+	# 						active_job_doc.completed_quantity = output_value
+	# 						active_job_doc.completed_quantity_checker = 0
+	# 						active_job_doc.save()
+
+	# 						# Creating output log
+	# 						output_log = frappe.new_doc("Output Log")
+	# 						output_log.machine = machine
+	# 						output_log.job_card = active_job
+	# 						output_log.output = output_value
+	# 						output_log.run_rate = run_rate_value
+	# 						output_log.timestamp = timestamp
+	# 						output_log.save()
+	# 						print('Output Log Created')
+						
+	# 					else:
+	# 						# Output still below checker value - genuine reset confirmed
+	# 						print(f'Genuine reset confirmed: {output_value} < {checker_value}. Completing job.')
+	# 						active_job_doc.completed_quantity = checker_value
+	# 						active_job_doc.completed_quantity_checker = 0
+	# 						active_job_doc.status = 'Completed'
+	# 						active_job_doc.actual_end_date_time = now()
+	# 						active_job_doc.save()
+	# 						if output_value > 0:
+	# 							print('Output Value Detected, Checking Previous Job Completion')
+	# 							previous_job_counter_reset = previous_job_counter_reset_function(machine, output_value)
+	# 							if previous_job_counter_reset == False:
+	# 								print('Counter of Previous Job Still Coming. Not Starting New Job')
+	# 							else:
+	# 								new_job = self.start_job(machine)
+	# 								if new_job:
+	# 									print(f'New Job Started: {new_job}')
+	# 									new_job_doc = frappe.get_doc("Job Card", new_job)
+	# 									new_job_doc.completed_quantity = output_value
+	# 									new_job_doc.save()
+	# 									# Creating output log for new job
+	# 									output_log = frappe.new_doc("Output Log")
+	# 									output_log.machine = machine
+	# 									output_log.job_card = new_job
+	# 									output_log.output = output_value
+	# 									output_log.run_rate = run_rate_value
+	# 									output_log.timestamp = timestamp
+	# 									output_log.save()
+	# 									print('Output Log Created for New Job')
+	# 								else:
+	# 									print('No New Job Started')
+	# 			elif job_completed_qty > 0 and output_value >= job_completed_qty:
+	# 				if active_job_doc.completed_quantity_checker:
+	# 					active_job_doc.completed_quantity_checker = 0 
+	# 				active_job_doc.completed_quantity = output_value
+	# 				active_job_doc.save()
+
+	# 				# Creating output log
+	# 				output_log = frappe.new_doc("Output Log")
+	# 				output_log.machine = machine
+	# 				output_log.job_card = active_job
+	# 				output_log.output = output_value
+	# 				output_log.run_rate = run_rate_value
+	# 				output_log.timestamp = timestamp
+	# 				output_log.save()
+	# 				print('Output Log Created')
+	# 		else:
+	# 			print('No Active Job Found, Starting New Job')
+	# 			if output_value > 0:
+	# 				print('Output Value Detected, Checking Previous Job Completion')
+	# 				previous_job_counter_reset = previous_job_counter_reset_function(machine, output_value)
+	# 				if previous_job_counter_reset == False:
+	# 					print('Counter of Previous Job Still Coming. Not Starting New Job')
+	# 				else:
+	# 					new_job = self.start_job(machine)
+						
+	# 					if new_job:
+	# 						print(f'New Job Started: {new_job}')
+	# 						new_job_doc = frappe.get_doc("Job Card", new_job)
+	# 						new_job_doc.completed_quantity = output_value
+	# 						new_job_doc.save()
+	# 						# Creating output log for new job
+	# 						output_log = frappe.new_doc("Output Log")
+	# 						output_log.machine = machine
+	# 						output_log.job_card = new_job
+	# 						output_log.output = output_value
+	# 						output_log.run_rate = run_rate_value
+	# 						output_log.timestamp = timestamp
+	# 						output_log.save()
+	# 						print('Output Log Created for New Job')
+	# 					else:
+	# 						print('No New Job Started')
+	# 			else:
+	# 				print('No Output Value Detected, Not Starting New Job')
+	# 				return None
+	# 	except Exception as e:
+	# 		frappe.log_error(frappe.get_traceback(), "Handle Output Error")

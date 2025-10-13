@@ -60,6 +60,11 @@ const sidebarHeader = computed(() => ({
 			icon: LucideLogOut,
 			onClick: handleLogout,
 		},
+		{
+			label: "Desk",
+			icon: LucideBuilding2,
+			onClick: handleNavigateToDesk,
+		},
 	],
 }))
 
@@ -176,6 +181,11 @@ const handleLogout = async () => {
 		console.error("Logout failed:", error)
 		window.location.href = "/login?redirect-to=/frontend"
 	}
+}
+
+// Navigate to Desk handler
+const handleNavigateToDesk = () => {
+	window.location.href = "/app"
 }
 
 // Handle logo error

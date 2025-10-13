@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"_swq7_SQLT\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Shortcuts</b></span>\",\"col\":12}},{\"id\":\"K7DeRrUL--\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create New Shift Plan\",\"col\":6}},{\"id\":\"8v5IGcMRSh\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Update Downtime Log Reasons\",\"col\":6}},{\"id\":\"CXkzktyanN\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"WOT7C4XIUI\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Data</b></span>\",\"col\":12}},{\"id\":\"jlEAl5QRr5\",\"type\":\"card\",\"data\":{\"card_name\":\"Transactions\",\"col\":6}},{\"id\":\"vDRblxUFZy\",\"type\":\"card\",\"data\":{\"card_name\":\"Masters\",\"col\":6}},{\"id\":\"dk6JjK0YNq\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"gPDgOTaROf\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Analytics</span>\",\"col\":12}},{\"id\":\"ocC7-BOuzr\",\"type\":\"card\",\"data\":{\"card_name\":\"Job Reports\",\"col\":4}}]",
+ "content": "[{\"id\":\"_swq7_SQLT\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Shortcuts</b></span>\",\"col\":12}},{\"id\":\"K7DeRrUL--\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create New Shift Plan\",\"col\":4}},{\"id\":\"8v5IGcMRSh\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Update Downtime Log Reasons\",\"col\":4}},{\"id\":\"tiuFsOJawD\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Visit Frontend App\",\"col\":4}},{\"id\":\"CXkzktyanN\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"WOT7C4XIUI\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Data</b></span>\",\"col\":12}},{\"id\":\"jlEAl5QRr5\",\"type\":\"card\",\"data\":{\"card_name\":\"Transactions\",\"col\":6}},{\"id\":\"vDRblxUFZy\",\"type\":\"card\",\"data\":{\"card_name\":\"Masters\",\"col\":6}},{\"id\":\"dk6JjK0YNq\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"gPDgOTaROf\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Analytics</span>\",\"col\":12}},{\"id\":\"ocC7-BOuzr\",\"type\":\"card\",\"data\":{\"card_name\":\"Job Reports\",\"col\":4}}]",
  "creation": "2025-06-25 17:50:55.611137",
  "custom_blocks": [],
  "docstatus": 0,
@@ -121,7 +121,7 @@
    "type": "Link"
   }
  ],
- "modified": "2025-10-10 12:35:50.251578",
+ "modified": "2025-10-13 13:30:43.423941",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Manufacturing",
@@ -140,6 +140,13 @@
    "link_to": "Downtime Log",
    "stats_filter": "[[\"Downtime Log\",\"reason\",\"is\",\"not set\",false]]",
    "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Visit Frontend App",
+   "type": "URL",
+   "url": "http://dppl.localhost:8080/frontend/"
   },
   {
    "color": "Grey",

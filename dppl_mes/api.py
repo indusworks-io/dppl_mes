@@ -198,6 +198,8 @@ def get_job_metrics_internal_function(machine=None):
                     "completed_quantity": 0,
                     "balance_quantity": 0,
                     "run_rate_indicator": 0,
+                    "current_run_rate": 0,
+                    "required_run_rate": 0,
                     "current_time": now()
                 }
             }
@@ -210,7 +212,7 @@ def get_job_metrics_internal_function(machine=None):
         else:
             time_spent_in_seconds = time_diff_in_seconds(current_time, planned_start_time)
 
-        total_time = job_card.planned_duration or 0
+        total_time = job_card.planned_duration or 0  # in seconds
         target_qty = job_card.target_quantity or 0
         actual_quantity = job_card.completed_quantity or 0
         balance_quantity = max(target_qty - actual_quantity, 0)
@@ -218,8 +220,20 @@ def get_job_metrics_internal_function(machine=None):
         ideal_quantity = (time_spent_in_seconds / total_time) * target_qty if total_time else 0
         ideal_quantity = min(ideal_quantity, target_qty)
 
+        # --- Run Rate Calculations (in units per minute) ---
+        current_run_rate = (actual_quantity / time_spent_in_seconds * 60) if time_spent_in_seconds > 0 else 0
+
+        remaining_time = max(total_time - time_spent_in_seconds, 0)
+        required_run_rate = (balance_quantity / remaining_time * 60) if remaining_time > 0 else 0
+
+        # --- Run Rate Indicator (1 = On Target, 0 = Below Target) ---
         run_rate_indicator = 1 if actual_quantity >= ideal_quantity else 0
-        print(f'Machine {machine}: Actual {actual_quantity}/{target_qty}, Run Rate: {run_rate_indicator}')
+
+        print(
+            f"Machine {machine}: Actual {actual_quantity}/{target_qty}, "
+            f"Run Rate Indicator: {run_rate_indicator}, "
+            f"Current RR: {current_run_rate:.2f}/min, Required RR: {required_run_rate:.2f}/min"
+        )
 
         return {
             "status": "success",
@@ -230,6 +244,8 @@ def get_job_metrics_internal_function(machine=None):
                 "completed_quantity": actual_quantity,
                 "balance_quantity": balance_quantity,
                 "run_rate_indicator": run_rate_indicator,
+                "current_run_rate": round(current_run_rate, 2),
+                "required_run_rate": round(required_run_rate, 2),
                 "current_time": now()
             }
         }
@@ -243,7 +259,9 @@ def get_job_metrics_internal_function(machine=None):
                 "job_number": "",
                 "target_quantity": 0,
                 "completed_quantity": 0,
-                "run_rate_indicator": 0
+                "run_rate_indicator": 0,
+                "current_run_rate": 0,
+                "required_run_rate": 0
             }
         }
 

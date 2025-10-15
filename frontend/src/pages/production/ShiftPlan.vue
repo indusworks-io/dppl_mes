@@ -523,6 +523,7 @@ const factoriesResource = createListResource({
   doctype: 'Factory',
   fields: ['name', 'factory_name'],
   filters: { is_active: 1 },
+  pageLength: '*',
   auto: true,
 })
 
@@ -536,12 +537,14 @@ const operatorsResource = createListResource({
   doctype: 'Operator',
   fields: ['name', 'operator_name'],
   filters: { is_active: 1 },
+  pageLength: '*',
   auto: true,
 })
 
 const jobsResource = createListResource({
   doctype: 'Job',
   fields: ['name', 'job_name'],
+  pageLength: '*',
   auto: true,
 })
 
@@ -551,6 +554,7 @@ const machinesResource = createListResource({
   fields: ['name', 'machine_name', 'factory', 'sequence_number'],
   filters: { is_active: 1 },
   order_by: 'sequence_number asc',
+  pageLength: '*',
   auto: true,
 })
 

@@ -138,6 +138,7 @@ const formData = ref({
 const downtimeReasonsResource = createListResource({
 	doctype: "Downtime Reason",
 	fields: ["name", "category"],
+  pageLength: '*',
 	filters: {
 		is_active: 1,
 	},

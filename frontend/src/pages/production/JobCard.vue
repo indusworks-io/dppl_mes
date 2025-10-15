@@ -611,12 +611,14 @@ const machinesResource = createListResource({
   fields: ['name', 'machine_name'],
   filters: { is_active: 1 },
   auto: true,
+  pageLength: '*',
 })
 
 const shiftsResource = createListResource({
   doctype: 'Shift Type',
   fields: ['name', 'shift_type'],
   auto: true,
+  pageLength: '*',
 })
 
 const operatorsResource = createListResource({
@@ -624,12 +626,14 @@ const operatorsResource = createListResource({
   fields: ['name', 'operator_name'],
   filters: { is_active: 1 },
   auto: true,
+  pageLength: '*',
 })
 
 const jobsResource = createListResource({
   doctype: 'Job',
   fields: ['name', 'job_name', 'job_number'],
   auto: true,
+  pageLength: '*',
 })
 
 // List resources for related records (only for existing documents)

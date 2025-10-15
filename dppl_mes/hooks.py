@@ -256,5 +256,6 @@ scheduler_events = {
 # In hooks.py
 website_route_rules = [
     {'from_route': '/frontend', 'to_route': 'frontend'}, # Add this line for the base path
+    {'from_route': '/frontend/', 'to_route': 'frontend'},
     {'from_route': '/frontend/<path:app_path>', 'to_route': 'frontend'},
 ]

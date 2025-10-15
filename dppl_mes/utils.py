@@ -266,7 +266,7 @@ def downtime_log_notification():
 
 		if settings.when_to_notify == "After Minor Stop Threshold":
 			# Filter logs that have exceeded the threshold
-			threshold_seconds = settings.minor_stop_threshold or 0
+			threshold_seconds = int(settings.minor_stop_threshold or 0)
 
 			for log in open_logs:
 				if not log.start_date_time:
@@ -274,7 +274,7 @@ def downtime_log_notification():
 
 				# Calculate duration in seconds
 				start_dt = frappe.utils.get_datetime(log.start_date_time)
-				duration_seconds = (current_time - start_dt).total_seconds()
+				duration_seconds = int((current_time - start_dt).total_seconds())
 
 				# Only include logs that exceed threshold
 				if duration_seconds >= threshold_seconds:

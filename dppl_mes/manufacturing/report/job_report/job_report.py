@@ -35,7 +35,8 @@ def get_columns():
         {'fieldname': 'job_name_one', 'label': 'Job Name', 'fieldtype': 'Link', 'options': 'Job', 'width': 200},
         {'fieldname': 'job_number_one', 'label': 'Job No.', 'fieldtype': 'Data', 'width': 150},
         {'fieldname': 'target_quantity_one', 'label': 'Target Quantity', 'fieldtype': 'Int', 'width': 150},
-        {'fieldname': 'completed_quantity_one', 'label': 'Completed Quantity', 'fieldtype': 'Int', 'width': 150},
+        {'fieldname': 'completed_quantity_one_default_uom', 'label': 'Completed Quantity In Default Units', 'fieldtype': 'Int', 'width': 150},
+        {'fieldname': 'completed_quantity_one_alternate_uom', 'label': 'Completed Quantity In Alternate Units', 'fieldtype': 'Float', 'width': 150},
         {'fieldname': 'efficiency_one_percent', 'label': 'Efficiency (%)', 'fieldtype': 'Percent', 'width': 150},
         {'fieldname': 'machine_wastage_one', 'label': 'Machine Wastage', 'fieldtype': 'Float', 'width': 150},
         {'fieldname': 'job_setting_wastage_one', 'label': 'Job Setting Wastage', 'fieldtype': 'Float', 'width': 150},
@@ -46,7 +47,8 @@ def get_columns():
         {'fieldname': 'job_name_two', 'label': 'Job Name', 'fieldtype': 'Link', 'options': 'Job', 'width': 200},
         {'fieldname': 'job_number_two', 'label': 'Job No.', 'fieldtype': 'Data', 'width': 150},
         {'fieldname': 'target_quantity_two', 'label': 'Target Quantity', 'fieldtype': 'Int', 'width': 150},
-        {'fieldname': 'completed_quantity_two', 'label': 'Completed Quantity', 'fieldtype': 'Int', 'width': 150},
+        {'fieldname': 'completed_quantity_two_default_uom', 'label': 'Completed Quantity In Default Units', 'fieldtype': 'Int', 'width': 150},
+        {'fieldname': 'completed_quantity_two_alternate_uom', 'label': 'Completed Quantity In Alternate Units', 'fieldtype': 'Float', 'width': 150},
         {'fieldname': 'efficiency_two_percent', 'label': 'Efficiency (%)', 'fieldtype': 'Percent', 'width': 150},
         {'fieldname': 'machine_wastage_two', 'label': 'Machine Wastage', 'fieldtype': 'Float', 'width': 150},
         {'fieldname': 'job_setting_wastage_two', 'label': 'Job Setting Wastage', 'fieldtype': 'Float', 'width': 150},
@@ -73,21 +75,20 @@ def get_data(from_date, to_date):
     date_list = [(start + datetime.timedelta(days=x)).strftime("%Y-%m-%d")
                  for x in range((end - start).days + 1)]
 
-    # fetch job cards once
-    job_cards = frappe.get_all(
-        "Job Card",
-        filters=[
-            ["date", ">=", from_date],
-            ["date", "<=", to_date]
-        ],
-        fields=[
-            "machine", "date", "shift", "operator",
-            "job_name", "job_number", "job_sequence_number",
-            "target_quantity", "completed_quantity",
-            "machine_wastage", "job_setting_wastage", "roll_wastage",
-            "printing_wastage", "barcode_wastage", "total_wastage"
-        ]
-    )
+    # fetch job cards once with conversion_factor from Job DocType
+    job_cards_query = """
+        SELECT
+            jc.machine, jc.date, jc.shift, jc.operator,
+            jc.job_name, jc.job_number, jc.job_sequence_number,
+            jc.target_quantity, jc.completed_quantity,
+            jc.machine_wastage, jc.job_setting_wastage, jc.roll_wastage,
+            jc.printing_wastage, jc.barcode_wastage, jc.total_wastage,
+            j.conversion_factor
+        FROM `tabJob Card` jc
+        LEFT JOIN `tabJob` j ON jc.job_name = j.name
+        WHERE jc.date >= %s AND jc.date <= %s
+    """
+    job_cards = frappe.db.sql(job_cards_query, (from_date, to_date), as_dict=True)
 
     # Group by (machine, date_str, shift) and by sequence number
     grouped = {}
@@ -132,6 +133,20 @@ def get_data(from_date, to_date):
                 elif job2 and job2.get("operator"):
                     operator = job2.get("operator")
 
+                # Calculate alternate UOM quantities
+                # Get conversion factors, default to 1 if not available
+                conv_factor_1 = job1.get("conversion_factor") if job1 and job1.get("conversion_factor") else 1
+                conv_factor_2 = job2.get("conversion_factor") if job2 and job2.get("conversion_factor") else 1
+
+                # Calculate completed quantities in alternate UOM
+                completed_qty_one_alt = 0
+                if job1 and job1.get("completed_quantity") is not None:
+                    completed_qty_one_alt = job1.get("completed_quantity") / conv_factor_1
+
+                completed_qty_two_alt = 0
+                if job2 and job2.get("completed_quantity") is not None:
+                    completed_qty_two_alt = job2.get("completed_quantity") / conv_factor_2
+
                 row = {
                     "machine": machine_name,
                     "date": date,
@@ -140,7 +155,8 @@ def get_data(from_date, to_date):
                     "job_name_one": job1.get("job_name") if job1 else "",
                     "job_number_one": job1.get("job_number") if job1 else "",
                     "target_quantity_one": job1.get("target_quantity") if job1 and job1.get("target_quantity") is not None else "",
-                    "completed_quantity_one": job1.get("completed_quantity") if job1 and job1.get("completed_quantity") is not None else "",
+                    "completed_quantity_one_default_uom": job1.get("completed_quantity") if job1 and job1.get("completed_quantity") is not None else "",
+                    "completed_quantity_one_alternate_uom": completed_qty_one_alt if job1 else 0,
                     "efficiency_one_percent": (
                         (job1.get("completed_quantity") / job1.get("target_quantity") * 100) if job1 and job1.get("target_quantity") else 0
                     ) if job1 else 0,
@@ -153,7 +169,8 @@ def get_data(from_date, to_date):
                     "job_name_two": job2.get("job_name") if job2 else "",
                     "job_number_two": job2.get("job_number") if job2 else "",
                     "target_quantity_two": job2.get("target_quantity") if job2 and job2.get("target_quantity") is not None else "",
-                    "completed_quantity_two": job2.get("completed_quantity") if job2 and job2.get("completed_quantity") is not None else "",
+                    "completed_quantity_two_default_uom": job2.get("completed_quantity") if job2 and job2.get("completed_quantity") is not None else "",
+                    "completed_quantity_two_alternate_uom": completed_qty_two_alt if job2 else 0,
                     "efficiency_two_percent": (
                         (job2.get("completed_quantity") / job2.get("target_quantity") * 100) if job2 and job2.get("target_quantity") else 0
                     ) if job2 else 0,

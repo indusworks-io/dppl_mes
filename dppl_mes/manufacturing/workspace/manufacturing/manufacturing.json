@@ -85,7 +85,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Masters",
-   "link_count": 3,
+   "link_count": 4,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -96,6 +96,16 @@
    "label": "Jobs",
    "link_count": 0,
    "link_to": "Job",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "UOM",
+   "link_count": 0,
+   "link_to": "UOM",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -121,7 +131,7 @@
    "type": "Link"
   }
  ],
- "modified": "2025-10-13 13:30:43.423941",
+ "modified": "2025-11-17 18:39:40.200888",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Manufacturing",

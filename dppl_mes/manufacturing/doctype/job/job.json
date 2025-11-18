@@ -8,10 +8,15 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "basic_information_section",
   "job_name",
   "job_number",
   "complexity_level",
-  "ideal_run_rate"
+  "ideal_run_rate",
+  "unit_of_measure_section",
+  "default_uom",
+  "alternate_uom",
+  "conversion_factor"
  ],
  "fields": [
   {
@@ -50,13 +55,49 @@
    "label": "Ideal Run Rate",
    "non_negative": 1,
    "reqd": 1
+  },
+  {
+   "fieldname": "basic_information_section",
+   "fieldtype": "Section Break",
+   "label": "Basic Information"
+  },
+  {
+   "fieldname": "unit_of_measure_section",
+   "fieldtype": "Section Break",
+   "label": "Unit of Measure"
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "fieldname": "default_uom",
+   "fieldtype": "Link",
+   "label": "Default UOM",
+   "options": "UOM",
+   "reqd": 1
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "fieldname": "alternate_uom",
+   "fieldtype": "Link",
+   "label": "Alternate UOM",
+   "options": "UOM",
+   "reqd": 1
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "description": "Value needed to convert default UOM into alternate UOM.",
+   "fieldname": "conversion_factor",
+   "fieldtype": "Float",
+   "label": "Conversion Factor",
+   "non_negative": 1,
+   "precision": "2",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-04 21:23:26.431195",
+ "modified": "2025-11-17 18:37:16.759058",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Job",

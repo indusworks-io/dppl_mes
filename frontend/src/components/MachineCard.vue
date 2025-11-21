@@ -102,14 +102,20 @@ const machineImageUrl = computed(() => {
 const cardColorClass = computed(() => {
 	// If machine is inactive (is_active = 0), show gray
 	if (props.machine.is_active === 0) {
-		return "bg-gray-50 border-gray-300"
+		return "bg-gray-50 border-2 border-gray-400"
 	}
 
-	// If machine is active, check run_rate_indicator from jobMetrics
-	if (props.jobMetrics && props.jobMetrics.run_rate_indicator !== undefined) {
+	// If machine is active, check if job is running
+	if (!props.jobMetrics || props.jobMetrics.job_name === "No Job Running") {
+		// Active with no job running
+		return "bg-yellow-50 border-2 border-yellow-400"
+	}
+
+	// If machine is active with job running, check run_rate_indicator from jobMetrics
+	if (props.jobMetrics.run_rate_indicator !== undefined) {
 		return props.jobMetrics.run_rate_indicator === 1
-			? "bg-green-50 border-2 border-green-600"
-			: "bg-red-50 border-2 border-red-600"
+			? "bg-green-50 border-2 border-green-500"
+			: "bg-red-50 border-2 border-red-500"
 	}
 
 	// Default: if no job metrics available but machine is active
@@ -122,11 +128,17 @@ const titleColorClass = computed(() => {
 		return "text-gray-600"
 	}
 
-	// If machine is active, check run_rate_indicator from jobMetrics
-	if (props.jobMetrics && props.jobMetrics.run_rate_indicator !== undefined) {
+	// If machine is active, check if job is running
+	if (!props.jobMetrics || props.jobMetrics.job_name === "No Job Running") {
+		// Active with no job running
+		return "text-yellow-700"
+	}
+
+	// If machine is active with job running, check run_rate_indicator from jobMetrics
+	if (props.jobMetrics.run_rate_indicator !== undefined) {
 		return props.jobMetrics.run_rate_indicator === 1
-			? "text-green-900"
-			: "text-red-900"
+			? "text-green-700"
+			: "text-red-700"
 	}
 
 	// Default: if no job metrics available but machine is active

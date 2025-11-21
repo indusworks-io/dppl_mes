@@ -124,12 +124,12 @@ const sidebarSections = computed(() => [
 				to: "/production/job-cards",
 				isActive: router.currentRoute.value.path === "/production/job-cards",
 			},
-			{
-				label: "Output Logs",
-				icon: LucidePackage,
-				to: "/production/output-logs",
-				isActive: router.currentRoute.value.path === "/production/output-logs",
-			},
+			// {
+			// 	label: "Output Logs",
+			// 	icon: LucidePackage,
+			// 	to: "/production/output-logs",
+			// 	isActive: router.currentRoute.value.path === "/production/output-logs",
+			// },
 			{
 				label: "Downtime Logs",
 				icon: LucideClock,

@@ -321,13 +321,13 @@ const updateMachineColors = () => {
 			let color
 
 			if (machine.is_active === 0) {
-				color = "#FFFFFF" // White for inactive
-			} else if (machineMetrics && machineMetrics.run_rate_indicator === 1) {
-				color = "#00FF00" // Green for running efficiently
-			} else if (machineMetrics) {
-				color = "#FF0000" // Red for behind schedule
+				color = "#9CA3AF" // Gray-400 for inactive
+			} else if (!machineMetrics || machineMetrics.job_name === "No Job Running") {
+				color = "#FACC15" // Yellow-400 for active with no job running
+			} else if (machineMetrics.run_rate_indicator === 1) {
+				color = "#22C55E" // Green-500 for job running on schedule
 			} else {
-				color = "#808080" // Gray for no job data
+				color = "#EF4444" // Red-500 for job running behind schedule
 			}
 
 			updateMachineColor(machine.name, color)
@@ -354,12 +354,19 @@ const handleJobMetricsUpdate = (data) => {
 		// Update machine job metrics (always store this even if floor plan isn't loaded yet)
 		machineJobMetrics.value[machineName] = jobMetrics
 
-		// Update the color for this specific machine
+		// Find the machine data to check if it's active
+		const machineData = props.machines?.find((m) => m.name === machineName)
+
+		// Update the color for this specific machine based on the same logic as updateMachineColors
 		let color
-		if (jobMetrics.run_rate_indicator === 1) {
-			color = "#00FF00" // Green for running efficiently
+		if (machineData && machineData.is_active === 0) {
+			color = "#9CA3AF" // Gray-400 for inactive
+		} else if (!jobMetrics || jobMetrics.job_name === "No Job Running") {
+			color = "#FACC15" // Yellow-400 for active with no job running
+		} else if (jobMetrics.run_rate_indicator === 1) {
+			color = "#22C55E" // Green-500 for job running on schedule
 		} else {
-			color = "#FF0000" // Red for behind schedule
+			color = "#EF4444" // Red-500 for job running behind schedule
 		}
 
 		// Try to update color immediately

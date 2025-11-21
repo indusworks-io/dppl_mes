@@ -38,17 +38,7 @@ self.addEventListener('push', (event) => {
 		tag: data.downtime_log || undefined, // Group notifications by downtime log
 		renotify: true, // Alert user even if notification with same tag exists
 		requireInteraction: false, // Notification auto-dismisses
-		vibrate: [200, 100, 200], // Vibration pattern for mobile devices
-		actions: data.url ? [
-			{
-				action: 'open',
-				title: 'View Details'
-			},
-			{
-				action: 'close',
-				title: 'Dismiss'
-			}
-		] : undefined
+		vibrate: [200, 100, 200] // Vibration pattern for mobile devices
 	}
 
 	event.waitUntil(
@@ -73,15 +63,8 @@ self.addEventListener('notificationclick', (event) => {
 	// Close the notification
 	event.notification.close()
 
-	const { url, action } = event
 	const notificationData = event.notification.data || {}
 	const targetUrl = notificationData.url || '/frontend/'
-
-	// Handle action buttons
-	if (event.action === 'close') {
-		// User clicked dismiss - just close notification
-		return
-	}
 
 	// Open or focus the app window
 	event.waitUntil(

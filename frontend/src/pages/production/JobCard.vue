@@ -74,7 +74,7 @@
             >
               Overview
             </button>
-            <button
+            <!-- <button
               v-if="docname"
               @click="activeTab = 'outputlogs'"
               :class="[
@@ -85,7 +85,7 @@
               ]"
             >
               Output Logs
-            </button>
+            </button> -->
             <button
               v-if="docname"
               @click="activeTab = 'downtimelogs'"

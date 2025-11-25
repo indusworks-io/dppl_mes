@@ -75,7 +75,7 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-25 14:03:52.632690",
+ "modified": "2025-11-25 12:26:07.352709",
  "modified_by": "Administrator",
  "module": "Organization",
  "name": "Area",
@@ -95,11 +95,28 @@
    "write": 1
   },
   {
+   "read": 1,
    "role": "Area Supervisor",
-   "select": 1
+   "select": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Factory Head",
+   "select": 1,
+   "share": 1,
+   "write": 1
   }
  ],
  "quick_entry": 1,
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
  "search_fields": "factory",
  "sort_field": "modified",
  "sort_order": "DESC",

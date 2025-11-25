@@ -1,6 +1,7 @@
 {
+ "app": "dppl_mes",
  "charts": [],
- "content": "[{\"id\":\"8oGiEMwPq1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Energy</span>\",\"col\":12}},{\"id\":\"b8NjtTJBLf\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"nQxcnGOcz9\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Energy Meters\",\"col\":12}},{\"id\":\"BBpNuQTvPT\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Energy Logs\",\"col\":12}}]",
+ "content": "[{\"id\":\"b8NjtTJBLf\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"nQxcnGOcz9\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Energy Meters\",\"col\":12}},{\"id\":\"BBpNuQTvPT\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Energy Logs\",\"col\":12}}]",
  "creation": "2025-09-21 18:32:23.821005",
  "custom_blocks": [],
  "docstatus": 0,
@@ -11,12 +12,12 @@
  "idx": 0,
  "indicator_color": "green",
  "is_hidden": 0,
- "label": "Energy",
+ "label": "Energy Monitoring",
  "links": [],
- "modified": "2025-10-29 17:58:14.792067",
+ "modified": "2025-11-25 13:05:43.440228",
  "modified_by": "Administrator",
  "module": "Energy",
- "name": "Energy",
+ "name": "Energy Monitoring",
  "number_cards": [],
  "owner": "Administrator",
  "parent_page": "",
@@ -42,5 +43,6 @@
    "type": "DocType"
   }
  ],
- "title": "Energy"
+ "title": "Energy Monitoring",
+ "type": "Workspace"
 }

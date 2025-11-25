@@ -1,0 +1,20 @@
+{
+ "app": "dppl_mes",
+ "creation": "2025-11-24 16:47:52.170541",
+ "docstatus": 0,
+ "doctype": "Desktop Icon",
+ "hidden": 0,
+ "icon": "star",
+ "icon_type": "Link",
+ "idx": 0,
+ "label": "Energy",
+ "link_to": "Energy",
+ "link_type": "Workspace",
+ "modified": "2025-11-25 13:17:59.309394",
+ "modified_by": "Administrator",
+ "name": "Energy",
+ "owner": "Administrator",
+ "roles": [],
+ "sidebar": "Energy",
+ "standard": 1
+}

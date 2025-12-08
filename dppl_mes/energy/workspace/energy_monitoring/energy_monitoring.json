@@ -1,5 +1,4 @@
 {
- "app": "dppl_mes",
  "charts": [],
  "content": "[{\"id\":\"b8NjtTJBLf\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"nQxcnGOcz9\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Energy Meters\",\"col\":12}},{\"id\":\"BBpNuQTvPT\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Energy Logs\",\"col\":12}}]",
  "creation": "2025-09-21 18:32:23.821005",
@@ -14,7 +13,7 @@
  "is_hidden": 0,
  "label": "Energy Monitoring",
  "links": [],
- "modified": "2025-11-25 13:05:43.440228",
+ "modified": "2025-12-08 15:58:38.338853",
  "modified_by": "Administrator",
  "module": "Energy",
  "name": "Energy Monitoring",
@@ -24,7 +23,7 @@
  "public": 1,
  "quick_lists": [],
  "roles": [],
- "sequence_id": 3.0,
+ "sequence_id": 4.0,
  "shortcuts": [
   {
    "color": "Grey",
@@ -43,6 +42,5 @@
    "type": "DocType"
   }
  ],
- "title": "Energy Monitoring",
- "type": "Workspace"
+ "title": "Energy Monitoring"
 }

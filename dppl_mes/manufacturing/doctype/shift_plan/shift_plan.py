@@ -3,20 +3,12 @@
 
 import frappe
 from frappe.model.document import Document
-from frappe.utils import now, time_diff_in_seconds, add_to_date, get_time, get_datetime, get_time_str
+from frappe.utils import now, get_time_str
 import datetime
 
 
 class ShiftPlan(Document):
-    def before_save(self):
-        """
-        Set the creation date and time to the current time if not already set.
-        """
-        for row in self.job_plan_details:
-            if row.job_one_duration == '':
-                print(f"Job One Duration is empty for machine {row.machine_name}. Setting it to 0.")
-                row.job_one_duration = 0
-
+    pass
 
 @frappe.whitelist()
 def create_job_cards(docname):
@@ -38,19 +30,6 @@ def create_job_cards(docname):
                 )
 
     """
-    job_one_duration Validation Requirement:
-    1. if in Job Plan Details Table the no_job checkbox is unchecked
-    2. If job_two_name is not empty
-    3. job_one_duration is empty
-    Then throw an error message indicating that for the row with machine {machine_name}, Job 1 Duration is required. 
-    """
-    for item in doc.job_plan_details:
-        if not item.no_job and item.job_two_name and not item.job_one_duration:
-            frappe.throw(
-                f"For machine {item.machine_name}, Job 1 Duration is required."
-            )
-    
-    """
     Shift start & end time requirements:
     From the Factory Doctype, fetch the Shift Timing for the  doc.factory and doc.shift.
 
@@ -67,7 +46,7 @@ def create_job_cards(docname):
             shift_start = timing.start_time
             shift_end = timing.end_time
             break
-    
+
     # Combine date and time to get full datetime objects
     if isinstance(doc.date, str):
         shift_date = datetime.datetime.strptime(doc.date, "%Y-%m-%d").date()
@@ -90,17 +69,12 @@ def create_job_cards(docname):
         today_shift_end_date_time += datetime.timedelta(days=1)
 
     print(f"Shift Start: {today_shift_start_date_time}, Shift End: {today_shift_end_date_time}")
-    
-    
+
     created_count = 0
 
     for row in doc.job_plan_details:
         if row.no_job:
             continue
-
-        if row.job_one_duration == '':
-            print(f"Job One Duration is empty for machine {row.machine_name}. Setting it to 0.")
-            row.job_one_duration = 0
 
         base_fields = {
             "date": doc.date,
@@ -110,47 +84,56 @@ def create_job_cards(docname):
             "machine": row.machine_name,
         }
 
-        if row.job_one_name and not row.job_two_name:
-            job_card_1 = frappe.new_doc("Job Card")
-            job_card_1.update(base_fields)
-            job_card_1.update({
-                "job_name": row.job_one_name,
-                "target_quantity": row.job_one_quantity,
-                "job_sequence_number": 1,
-                "planned_start_date_time": today_shift_start_date_time,
-                "planned_end_date_time": today_shift_end_date_time,
-                "planned_duration": abs(time_diff_in_seconds(today_shift_start_date_time, today_shift_end_date_time))
+        # Define job fields mapping
+        job_fields = [
+            {"name_field": "job_one_name", "quantity_field": "job_one_quantity", "sequence": 1},
+            {"name_field": "job_two_name", "quantity_field": "job_two_quantity", "sequence": 2},
+            {"name_field": "job_three_name", "quantity_field": "job_three_target_quantity", "sequence": 3},
+            {"name_field": "job_four_name", "quantity_field": "job_four_target_quantity", "sequence": 4},
+            {"name_field": "job_five_name", "quantity_field": "job_five_target_quantity", "sequence": 5},
+        ]
+
+        # Track the previous job's end time
+        previous_job_end_time = today_shift_start_date_time
+
+        # Create job cards for each job
+        for job_info in job_fields:
+            job_name = getattr(row, job_info["name_field"], None)
+            job_quantity = getattr(row, job_info["quantity_field"], None)
+
+            # Skip if job name or quantity is not provided
+            if not job_name or not job_quantity:
+                continue
+
+            # Fetch ideal_run_rate from Job DocType
+            job_doc = frappe.get_doc("Job", job_name)
+            # ideal_run_rate is output per minute (units per minute)
+            # Calculate how many minutes needed for the job quantity
+            minutes_needed = job_quantity / job_doc.ideal_run_rate
+            # Convert to seconds
+            planned_duration = minutes_needed * 60
+
+            # Calculate start and end times
+            planned_start_date_time = previous_job_end_time
+            planned_end_date_time = planned_start_date_time + datetime.timedelta(seconds=planned_duration)
+
+            # Create job card
+            job_card = frappe.new_doc("Job Card")
+            job_card.update(base_fields)
+            job_card.update({
+                "job_name": job_name,
+                "target_quantity": job_quantity,
+                "job_sequence_number": job_info["sequence"],
+                "planned_start_date_time": planned_start_date_time,
+                "planned_end_date_time": planned_end_date_time,
+                "planned_duration": int(planned_duration)
             })
-            job_card_1.save()
-            created_count += 1
-        elif row.job_one_name and row.job_two_name:
-            job_one_end_time_str = add_to_date(today_shift_start_date_time, seconds=row.job_one_duration)
-            job_card_1 = frappe.new_doc("Job Card")
-            job_card_1.update(base_fields)
-            job_card_1.update({
-                "job_name": row.job_one_name,
-                "target_quantity": row.job_one_quantity,
-                "job_sequence_number": 1,
-                "planned_start_date_time": today_shift_start_date_time,
-                "planned_end_date_time": job_one_end_time_str,
-                "planned_duration": int(abs(time_diff_in_seconds(today_shift_start_date_time, job_one_end_time_str)))
-            })
-            job_card_1.save()
+            job_card.save()
             created_count += 1
 
-            job_card_2 = frappe.new_doc("Job Card")
-            job_card_2.update(base_fields)
-            job_card_2.update({
-                "job_name": row.job_two_name,
-                "target_quantity": row.job_two_quantity,
-                "job_sequence_number": 2,
-                "planned_start_date_time": job_one_end_time_str,
-                "planned_end_date_time": today_shift_end_date_time,
-                "planned_duration": int(abs(time_diff_in_seconds(job_one_end_time_str, today_shift_end_date_time)))
-            })
-            job_card_2.save()
-            created_count += 1
-        
+            # Update previous job end time for next iteration
+            previous_job_end_time = planned_end_date_time
+
     doc.status = "Confirmed"
     doc.save()
     return {"status": "success", "created": created_count}

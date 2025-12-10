@@ -89,22 +89,24 @@ class Telemetry(Document):
 			else:
 				print('No Active Job Found, Starting New Job')
 				if output_value > 0:
-					new_job = self.start_job(machine)	
-					if new_job:
-						print(f'New Job Started: {new_job}')
-						new_job_doc = frappe.get_doc("Job Card", new_job)
-						new_job_doc.completed_quantity = output_value
-						new_job_doc.save()
-						
-						# Creating output log for new job
-						output_log = frappe.new_doc("Output Log")
-						output_log.machine = machine
-						output_log.job_card = new_job
-						output_log.output = output_value
-						output_log.run_rate = run_rate_value
-						output_log.timestamp = timestamp
-						output_log.save()
-						print('Output Log Created for New Job')
+					output_value_is_of_previous_job = previous_job_counter_reset_function(machine, output_value)
+					if output_value_is_of_previous_job is False:
+						new_job = self.start_job(machine)	
+						if new_job:
+							print(f'New Job Started: {new_job}')
+							new_job_doc = frappe.get_doc("Job Card", new_job)
+							new_job_doc.completed_quantity = output_value
+							new_job_doc.save()
+							
+							# Creating output log for new job
+							output_log = frappe.new_doc("Output Log")
+							output_log.machine = machine
+							output_log.job_card = new_job
+							output_log.output = output_value
+							output_log.run_rate = run_rate_value
+							output_log.timestamp = timestamp
+							output_log.save()
+							print('Output Log Created for New Job')
 		except Exception as e:
 			frappe.log_error(frappe.get_traceback(), "Handle Output Error")
 

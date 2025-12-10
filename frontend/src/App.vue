@@ -112,12 +112,12 @@ const sidebarSections = computed(() => [
 		label: "Production",
 		collapsible: false,
 		items: [
-			{
-				label: "Shift Plans",
-				icon: LucideCalendar,
-				to: "/production/shift-plans",
-				isActive: router.currentRoute.value.path === "/production/shift-plans",
-			},
+			// {
+			// 	label: "Shift Plans",
+			// 	icon: LucideCalendar,
+			// 	to: "/production/shift-plans",
+			// 	isActive: router.currentRoute.value.path === "/production/shift-plans",
+			// },
 			{
 				label: "Job Cards",
 				icon: LucideClipboardList,

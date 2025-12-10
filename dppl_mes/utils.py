@@ -359,3 +359,10 @@ def downtime_log_notification():
 			"Downtime Notification Job Error"
 		)
 		frappe.logger().error(f"Downtime notification job failed: {str(e)}")
+
+def close_open_job_cards():
+	"""
+	
+	
+	"""
+	pass

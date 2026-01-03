@@ -1,5 +1,5 @@
 <template>
-  <div class="p-6">
+  <div class="p-2">
     <!-- Header Section -->
     <div v-if="!hideHeader" class="mb-6 flex items-center justify-between">
       <div>

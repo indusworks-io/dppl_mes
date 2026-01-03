@@ -261,14 +261,28 @@ const setupMachineElements = async (retryCount = 0) => {
 		return
 	}
 
+	// Create a set of valid machine names from props.machines
+	const validMachineNames = new Set(
+		props.machines?.map((m) => m.name) || []
+	)
+
 	const paths = svgElement.querySelectorAll("path[id]")
 	const machines = {}
+	let skippedCount = 0
 
 	paths.forEach((path) => {
 		const machineName = path.id
+
+		// Only process elements that correspond to actual machines
+		if (!validMachineNames.has(machineName)) {
+			skippedCount++
+			console.log(`⏭️ Skipping non-machine element: ${machineName}`)
+			return
+		}
+
 		machines[machineName] = {
 			element: path,
-			originalColor: path.style.fill || path.getAttribute("fill") || "#808080",
+			originalColor: path.style.fill || path.getAttribute("fill") || "#000080",
 		}
 
 		// Add interactivity
@@ -286,7 +300,7 @@ const setupMachineElements = async (retryCount = 0) => {
 
 	machineStates.value = machines
 	console.log(
-		`🏗️ Floor plan loaded with ${Object.keys(machines).length} machines`,
+		`🏗️ Floor plan loaded: ${Object.keys(machines).length} machines found, ${skippedCount} non-machine elements skipped`,
 	)
 
 	// Apply any stored job metrics that arrived before floor plan was loaded

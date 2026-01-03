@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="p-6">
+  <div id="app">
     <HomePageControls
       :factory-options="factoryOptions"
       :selected-factory="selectedFactory"

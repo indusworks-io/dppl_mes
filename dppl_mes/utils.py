@@ -197,9 +197,29 @@ def send_push_notification(subscription, payload, settings):
 		return True
 
 	except Exception as e:
-		# Log error but don't crash - subscription might be expired/invalid
+		error_str = str(e)
+		subscription_name = subscription.get('name', 'unknown')
+
+		# Check if this is a permanent error (subscription no longer valid)
+		if '410' in error_str or 'Gone' in error_str or 'Unregistered' in error_str:
+			frappe.logger().warning(
+				f"Subscription {subscription_name} is no longer valid (410 Gone). Disabling it."
+			)
+
+			# Disable the invalid subscription to prevent future errors
+			try:
+				frappe.db.set_value("Push Subscription", subscription_name, "enabled", 0)
+				frappe.db.commit()
+				frappe.logger().info(f"Disabled invalid push subscription {subscription_name}")
+			except Exception as db_error:
+				frappe.logger().error(f"Failed to disable subscription {subscription_name}: {db_error}")
+
+			# Only log critical errors, not routine subscription cleanup
+			return False
+
+		# For other errors, log them but keep subscription active
 		frappe.log_error(
-			f"Push notification failed for subscription {subscription.get('name', 'unknown')}: {str(e)}",
+			f"Push notification failed for subscription {subscription_name}: {error_str}",
 			"Push Notification Error"
 		)
 		return False
@@ -360,9 +380,80 @@ def downtime_log_notification():
 		)
 		frappe.logger().error(f"Downtime notification job failed: {str(e)}")
 
+def cleanup_invalid_push_subscriptions():
+	"""
+	Cleanup disabled push subscriptions that have been invalid for a long time.
+
+	This function should be run periodically (e.g., weekly) as a scheduled job
+	to remove old disabled subscriptions and keep the database clean.
+
+	Subscriptions that have been disabled for more than 30 days will be permanently deleted.
+
+	Usage:
+		# Add to hooks.py under scheduler_events
+		"cron": {
+			"0 0 * * 0": [  # Every Sunday at midnight
+				"dppl_mes.utils.cleanup_invalid_push_subscriptions"
+			]
+		}
+	"""
+	try:
+		frappe.logger().info("Starting cleanup of invalid push subscriptions")
+
+		# Find subscriptions that have been disabled for more than 30 days
+		cutoff_date = add_days(now(), -30)
+
+		old_disabled_subscriptions = frappe.get_all(
+			"Push Subscription",
+			filters={
+				"enabled": 0,
+				"modified": ["<", cutoff_date]
+			},
+			fields=["name", "user", "endpoint"]
+		)
+
+		if not old_disabled_subscriptions:
+			frappe.logger().info("No old disabled subscriptions found for cleanup")
+			return
+
+		frappe.logger().info(
+			f"Found {len(old_disabled_subscriptions)} old disabled subscriptions to delete"
+		)
+
+		deleted_count = 0
+		for subscription in old_disabled_subscriptions:
+			try:
+				frappe.delete_doc(
+					"Push Subscription",
+					subscription.name,
+					force=1,
+					ignore_permissions=True
+				)
+				deleted_count += 1
+				frappe.logger().info(
+					f"Deleted old subscription {subscription.name} for user {subscription.user}"
+				)
+			except Exception as e:
+				frappe.logger().error(
+					f"Failed to delete subscription {subscription.name}: {str(e)}"
+				)
+
+		frappe.db.commit()
+		frappe.logger().info(
+			f"Cleanup completed: Successfully deleted {deleted_count} old push subscriptions"
+		)
+
+	except Exception as e:
+		frappe.log_error(
+			f"Error in cleanup_invalid_push_subscriptions: {str(e)}\n{frappe.get_traceback()}",
+			"Push Subscription Cleanup Error"
+		)
+		frappe.logger().error(f"Push subscription cleanup job failed: {str(e)}")
+
+
 def close_open_job_cards():
 	"""
-	
-	
+
+
 	"""
 	pass

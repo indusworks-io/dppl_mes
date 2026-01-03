@@ -170,7 +170,10 @@ scheduler_events = {
 	"cron": {
 		"*/5 * * * *": [
 			"dppl_mes.utils.downtime_log_notification"
-		]
+		],
+        "0 0 * * 0": [
+            "dppl_mes.utils.cleanup_invalid_push_subscriptions"
+          ]
 	}
 }
 

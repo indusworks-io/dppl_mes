@@ -74,7 +74,8 @@
    "in_standard_filter": 1,
    "label": "Machine",
    "options": "Machine",
-   "reqd": 1
+   "reqd": 1,
+   "search_index": 1
   },
   {
    "fieldname": "shift",
@@ -112,16 +113,18 @@
   },
   {
    "fieldname": "target_quantity",
-   "fieldtype": "Int",
+   "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Target Quantity",
+   "precision": "0",
    "reqd": 1
   },
   {
    "fieldname": "completed_quantity",
-   "fieldtype": "Int",
+   "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Completed Quantity"
+   "label": "Completed Quantity",
+   "precision": "2"
   },
   {
    "fieldname": "shift_plan",
@@ -129,7 +132,8 @@
    "hidden": 1,
    "label": "Shift Plan",
    "options": "Shift Plan",
-   "read_only": 1
+   "read_only": 1,
+   "search_index": 1
   },
   {
    "fieldname": "column_break_bhfg",
@@ -155,9 +159,10 @@
    "description": "Output per minute.",
    "fetch_if_empty": 1,
    "fieldname": "actual_run_rate",
-   "fieldtype": "Int",
+   "fieldtype": "Float",
    "label": "Actual Run Rate",
-   "non_negative": 1
+   "non_negative": 1,
+   "precision": "2"
   },
   {
    "fieldname": "overview_section",
@@ -210,17 +215,19 @@
    "fetch_from": "job_name.ideal_run_rate",
    "fetch_if_empty": 1,
    "fieldname": "planned_run_rate",
-   "fieldtype": "Int",
+   "fieldtype": "Float",
    "label": "Planned Run Rate",
-   "non_negative": 1
+   "non_negative": 1,
+   "precision": "2"
   },
   {
    "description": "This field is for development purpose.",
    "fieldname": "completed_quantity_checker",
-   "fieldtype": "Int",
+   "fieldtype": "Float",
    "hidden": 1,
    "label": "Completed Quantity Checker",
    "non_negative": 1,
+   "precision": "2",
    "print_hide": 1,
    "read_only": 1
   },
@@ -292,7 +299,7 @@
    "link_fieldname": "job_card"
   }
  ],
- "modified": "2025-10-09 12:57:36.715043",
+ "modified": "2026-01-03 13:14:07.274626",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Job Card",
@@ -312,6 +319,8 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

@@ -25,7 +25,7 @@ class Telemetry(Document):
 				if output_raw is None or output_raw == '' or str(output_raw).strip() == '':
 					print('Empty or invalid output value detected, skipping output processing')
 					return
-				output_value = int(output_raw)
+				output_value = float(output_raw)
 				run_rate_value = float(data["run_rate"])
 				if output_value == 0:
 					print('Output is zero. Do Nothing')

@@ -58,10 +58,11 @@
   {
    "columns": 1,
    "fieldname": "job_one_quantity",
-   "fieldtype": "Int",
+   "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Job 1 Target",
-   "non_negative": 1
+   "non_negative": 1,
+   "precision": "0"
   },
   {
    "columns": 1,
@@ -74,10 +75,11 @@
   {
    "columns": 1,
    "fieldname": "job_two_quantity",
-   "fieldtype": "Int",
+   "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Job 2 Target",
-   "non_negative": 1
+   "non_negative": 1,
+   "precision": "0"
   },
   {
    "columns": 1,
@@ -90,10 +92,11 @@
   {
    "columns": 1,
    "fieldname": "job_three_target_quantity",
-   "fieldtype": "Int",
+   "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Job 3 Target",
-   "non_negative": 1
+   "non_negative": 1,
+   "precision": "0"
   },
   {
    "columns": 1,
@@ -106,10 +109,11 @@
   {
    "columns": 1,
    "fieldname": "job_four_target_quantity",
-   "fieldtype": "Int",
+   "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Job 4 Target",
-   "non_negative": 1
+   "non_negative": 1,
+   "precision": "0"
   },
   {
    "columns": 1,
@@ -122,17 +126,18 @@
   {
    "columns": 1,
    "fieldname": "job_five_target_quantity",
-   "fieldtype": "Int",
+   "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Job 5 Target",
-   "non_negative": 1
+   "non_negative": 1,
+   "precision": "0"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-12-08 16:14:43.667906",
+ "modified": "2026-01-03 13:11:41.936216",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Job Plan Details",

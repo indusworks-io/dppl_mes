@@ -50,10 +50,11 @@
    "allow_in_quick_entry": 1,
    "description": "Output per minute",
    "fieldname": "ideal_run_rate",
-   "fieldtype": "Int",
+   "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Ideal Run Rate",
    "non_negative": 1,
+   "precision": "2",
    "reqd": 1
   },
   {
@@ -97,7 +98,7 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-17 18:37:16.759058",
+ "modified": "2026-01-03 13:08:26.726325",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Job",
@@ -118,6 +119,7 @@
   }
  ],
  "quick_entry": 1,
+ "row_format": "Dynamic",
  "search_fields": "job_number",
  "sort_field": "modified",
  "sort_order": "DESC",

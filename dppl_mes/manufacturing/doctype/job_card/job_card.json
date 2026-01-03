@@ -22,6 +22,7 @@
   "status",
   "job_sequence_number",
   "shift_plan",
+  "area",
   "section_break_lcjb",
   "plan_column",
   "planned_start_date_time",
@@ -129,7 +130,6 @@
   {
    "fieldname": "shift_plan",
    "fieldtype": "Link",
-   "hidden": 1,
    "label": "Shift Plan",
    "options": "Shift Plan",
    "read_only": 1,
@@ -288,6 +288,18 @@
   {
    "fieldname": "column_break_lswu",
    "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "machine.area",
+   "fetch_if_empty": 1,
+   "fieldname": "area",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Area",
+   "options": "Area",
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "grid_page_length": 50,
@@ -299,7 +311,7 @@
    "link_fieldname": "job_card"
   }
  ],
- "modified": "2026-01-03 13:14:07.274626",
+ "modified": "2026-01-03 14:22:45.883197",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Job Card",

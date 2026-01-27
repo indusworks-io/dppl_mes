@@ -15,20 +15,19 @@
   "total_missing_barcodes",
   "starting_barcode_information_section",
   "starting_barcode",
+  "ending_barcode",
   "column_break_yhba",
   "starting_barcode_number",
-  "ending_barcode_information_section",
-  "ending_barcode",
-  "column_break_aeap",
   "ending_barcode_number",
   "missing_barcode_information_section",
+  "scan_missing_barcode",
+  "message",
   "missing_barcode_list"
  ],
  "fields": [
   {
    "fieldname": "basic_information_section",
-   "fieldtype": "Section Break",
-   "label": "Basic Information"
+   "fieldtype": "Section Break"
   },
   {
    "default": "Today",
@@ -58,6 +57,7 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Starting Barcode",
+   "options": "Barcode",
    "reqd": 1
   },
   {
@@ -72,19 +72,12 @@
    "read_only": 1
   },
   {
-   "fieldname": "ending_barcode_information_section",
-   "fieldtype": "Section Break"
-  },
-  {
    "fieldname": "ending_barcode",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Ending Barcode",
+   "options": "Barcode",
    "reqd": 1
-  },
-  {
-   "fieldname": "column_break_aeap",
-   "fieldtype": "Column Break"
   },
   {
    "fieldname": "ending_barcode_number",
@@ -97,7 +90,6 @@
    "fieldtype": "Section Break"
   },
   {
-   "allow_bulk_edit": 1,
    "fieldname": "missing_barcode_list",
    "fieldtype": "Table",
    "label": "Missing Barcode List",
@@ -115,13 +107,24 @@
    "label": "Total Missing Barcodes",
    "non_negative": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "scan_missing_barcode",
+   "fieldtype": "Data",
+   "label": "Scan Missing Barcode",
+   "options": "Barcode"
+  },
+  {
+   "fieldname": "message",
+   "fieldtype": "HTML",
+   "label": "Message"
   }
  ],
  "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-27 16:25:06.336380",
+ "modified": "2026-01-27 17:50:03.640961",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Missing Barcode",

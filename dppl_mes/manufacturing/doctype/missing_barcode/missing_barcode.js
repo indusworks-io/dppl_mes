@@ -2,6 +2,20 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Missing Barcode", {
+	onload: function(frm) {
+		if (
+			frm.doc.missing_barcode_list &&
+			frm.doc.missing_barcode_list.length === 1
+		) {
+			const row = frm.doc.missing_barcode_list[0];
+
+			// Check if barcode field is empty
+			if (!row.barcode) {
+				frm.clear_table('missing_barcode_list');
+				frm.refresh_field('missing_barcode_list');
+			}
+		}
+	},
 	refresh: function(frm) {
 		// Message persists until next scan - don't clear here
 	},
@@ -61,7 +75,7 @@ frappe.ui.form.on("Missing Barcode", {
 		}
 
 		// All validations passed - add to list
-		add_missing_barcode(frm, barcode_value);
+		add_missing_barcode(frm, barcode_value, barcode_number);
 		show_message(frm, "Missing Barcode Added Successfully", false);
 		frm.set_value("scan_missing_barcode", "");
 	}
@@ -69,6 +83,12 @@ frappe.ui.form.on("Missing Barcode", {
 
 /**
  * Extract numeric portion from barcode string using regex
+ * Handles various barcode formats:
+ * - Trailing numbers: "XX00012345" -> 12345
+ * - Leading numbers: "00012345XX" -> 12345
+ * - Mixed: "AB00012345XX" -> 12345
+ * - X in middle: "AB000XX12345" -> 12345
+ *
  * @param {string} barcode - The barcode string (e.g., "FSBU00002928659")
  * @returns {number|null} - Extracted number as integer, or null if not found
  */
@@ -77,11 +97,14 @@ function extract_barcode_number(barcode) {
 		return null;
 	}
 
-	// Regex to match trailing digits (handles leading zeros in the number portion)
-	const match = barcode.match(/[0-9]+$/);
+	// Find all sequences of digits in the barcode
+	const matches = barcode.match(/\d+/g);
 
-	if (match) {
-		return parseInt(match[0], 10);
+	if (matches && matches.length > 0) {
+		// Take the last (rightmost) sequence of digits
+		// This handles cases like "AB000XX12345" where we want "12345"
+		const lastSequence = matches[matches.length - 1];
+		return parseInt(lastSequence, 10);
 	}
 
 	return null;
@@ -128,9 +151,10 @@ function is_out_of_range(frm, barcode_number) {
  * @param {object} frm - The form object
  * @param {string} barcode_value - The barcode value to add
  */
-function add_missing_barcode(frm, barcode_value) {
+function add_missing_barcode(frm, barcode_value, barcode_number) {
 	frm.add_child("missing_barcode_list", {
-		barcode: barcode_value
+		barcode: barcode_value,
+		barcode_number: barcode_number
 	});
 	frm.refresh_field("missing_barcode_list");
 }

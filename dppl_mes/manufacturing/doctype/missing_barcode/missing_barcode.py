@@ -7,7 +7,7 @@ from frappe.model.document import Document
 class MissingBarcode(Document):
 	def on_update(self):
 		"""
-		Calculate and update the total number of missing barcodes
+		Calculate and update total_barcodes and total_missing_barcodes
 		This is called when the document is saved
 		"""
 		# Count the number of records in the child table
@@ -15,7 +15,9 @@ class MissingBarcode(Document):
 
 		# Update the total_missing_barcodes field
 		self.total_missing_barcodes = total_count
-
-		# Update the database directly to ensure the value is persisted
-		# (since on_update is called after the main document save)
 		self.db_set("total_missing_barcodes", total_count)
+
+		# Calculate and update total_barcodes
+		# Formula: total_barcodes = ending_barcode_number - starting_barcode_number - total_missing_barcodes
+		self.total_barcodes = self.ending_barcode_number - self.starting_barcode_number - self.total_missing_barcodes
+		self.db_set("total_barcodes", self.total_barcodes)

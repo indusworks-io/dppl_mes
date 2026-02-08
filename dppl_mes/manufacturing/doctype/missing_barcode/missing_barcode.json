@@ -21,8 +21,8 @@
   "starting_barcode_number",
   "ending_barcode_number",
   "missing_barcode_information_section",
-  "scan_missing_barcode",
   "bulk_add_missing_barcodes",
+  "scan_missing_barcode",
   "message",
   "missing_barcode_list"
  ],
@@ -139,7 +139,7 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-08 12:32:54.664223",
+ "modified": "2026-02-08 13:21:18.952431",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Missing Barcode",

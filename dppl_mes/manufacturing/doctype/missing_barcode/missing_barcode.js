@@ -78,6 +78,67 @@ frappe.ui.form.on("Missing Barcode", {
 		add_missing_barcode(frm, barcode_value, barcode_number);
 		show_message(frm, "Missing Barcode Added Successfully", false);
 		frm.set_value("scan_missing_barcode", "");
+	},
+
+	bulk_add_missing_barcodes: function(frm) {
+		// Check if document has starting and ending barcodes set
+		if (!frm.doc.starting_barcode || !frm.doc.ending_barcode) {
+			show_message(frm, "Please set Starting Barcode and Ending Barcode first", true);
+			return;
+		}
+
+		// Show dialog for bulk add
+		frappe.prompt(
+			[
+				{
+					fieldname: "starting_missing_barcode",
+					label: __("Starting Missing Barcode"),
+					fieldtype: "Data",
+					reqd: 1,
+					description: __("Enter the first barcode of the missing range")
+				},
+				{
+					fieldname: "ending_missing_barcode",
+					label: __("Ending Missing Barcode"),
+					fieldtype: "Data",
+					reqd: 1,
+					description: __("Enter the last barcode of the missing range")
+				}
+			],
+			function(values) {
+				// Extract existing barcodes for duplicate check
+				const existing_barcodes = (frm.doc.missing_barcode_list || [])
+					.map(function(row) { return row.barcode; });
+
+				// Call server-side method
+				frappe.call({
+					method: "dppl_mes.manufacturing.doctype.missing_barcode.missing_barcode.bulk_add_missing_barcode_range",
+					args: {
+						start_barcode: values.starting_missing_barcode,
+						end_barcode: values.ending_missing_barcode,
+						starting_barcode_number: frm.doc.starting_barcode_number,
+						ending_barcode_number: frm.doc.ending_barcode_number,
+						existing_barcodes: existing_barcodes
+					},
+					callback: function(r) {
+						if (r.message) {
+							if (r.message.success && r.message.barcodes && r.message.barcodes.length > 0) {
+								// Add barcodes to child table
+								add_barcodes_to_table(frm, r.message.barcodes);
+								show_message(frm, r.message.message, false);
+							} else {
+								// Show error or info message
+								show_message(frm, r.message.message, true);
+							}
+						}
+					},
+					freeze: true,
+					freeze_message: __("Processing barcode range...")
+				});
+			},
+			__("Bulk Add Missing Barcodes"),
+			__("Add Barcodes")
+		);
 	}
 });
 
@@ -155,6 +216,21 @@ function add_missing_barcode(frm, barcode_value, barcode_number) {
 	frm.add_child("missing_barcode_list", {
 		barcode: barcode_value,
 		barcode_number: barcode_number
+	});
+	frm.refresh_field("missing_barcode_list");
+}
+
+/**
+ * Add multiple barcodes to the missing_barcode_list child table
+ * @param {object} frm - The form object
+ * @param {array} barcodes - Array of barcode objects with barcode and barcode_number properties
+ */
+function add_barcodes_to_table(frm, barcodes) {
+	barcodes.forEach(function(item) {
+		frm.add_child("missing_barcode_list", {
+			barcode: item.barcode,
+			barcode_number: item.barcode_number
+		});
 	});
 	frm.refresh_field("missing_barcode_list");
 }

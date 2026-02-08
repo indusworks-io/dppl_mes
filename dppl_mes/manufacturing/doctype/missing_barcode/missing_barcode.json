@@ -22,6 +22,7 @@
   "ending_barcode_number",
   "missing_barcode_information_section",
   "scan_missing_barcode",
+  "bulk_add_missing_barcodes",
   "message",
   "missing_barcode_list"
  ],
@@ -127,13 +128,18 @@
    "in_list_view": 1,
    "label": "Total Barcodes",
    "read_only": 1
+  },
+  {
+   "fieldname": "bulk_add_missing_barcodes",
+   "fieldtype": "Button",
+   "label": "Bulk Add Missing Barcodes"
   }
  ],
  "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-07 10:35:36.524700",
+ "modified": "2026-02-08 12:32:54.664223",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Missing Barcode",

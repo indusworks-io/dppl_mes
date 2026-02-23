@@ -93,6 +93,19 @@ def create_job_cards(docname):
             {"name_field": "job_five_name", "quantity_field": "job_five_target_quantity", "sequence": 5},
         ]
 
+        # Count how many jobs are in this row
+        jobs_in_row = []
+        for job_info in job_fields:
+            job_name = getattr(row, job_info["name_field"], None)
+            job_quantity = getattr(row, job_info["quantity_field"], None)
+            if job_name and job_quantity:
+                jobs_in_row.append(job_info)
+
+        jobs_count = len(jobs_in_row)
+
+        # Calculate full shift duration in seconds
+        full_shift_duration = int((today_shift_end_date_time - today_shift_start_date_time).total_seconds())
+
         # Track the previous job's end time
         previous_job_end_time = today_shift_start_date_time
 
@@ -105,17 +118,24 @@ def create_job_cards(docname):
             if not job_name or not job_quantity:
                 continue
 
-            # Fetch ideal_run_rate from Job DocType
-            job_doc = frappe.get_doc("Job", job_name)
-            # ideal_run_rate is output per minute (units per minute)
-            # Calculate how many minutes needed for the job quantity
-            minutes_needed = job_quantity / job_doc.ideal_run_rate
-            # Convert to seconds
-            planned_duration = minutes_needed * 60
+            # Check if this is the only job in the row
+            if jobs_count == 1:
+                # Single job gets full shift duration
+                planned_duration = full_shift_duration
+                planned_start_date_time = today_shift_start_date_time
+                planned_end_date_time = today_shift_end_date_time
+            else:
+                # Multiple jobs - use existing logic based on ideal_run_rate
+                job_doc = frappe.get_doc("Job", job_name)
+                # ideal_run_rate is output per minute (units per minute)
+                # Calculate how many minutes needed for the job quantity
+                minutes_needed = job_quantity / job_doc.ideal_run_rate
+                # Convert to seconds
+                planned_duration = minutes_needed * 60
 
-            # Calculate start and end times
-            planned_start_date_time = previous_job_end_time
-            planned_end_date_time = planned_start_date_time + datetime.timedelta(seconds=planned_duration)
+                # Calculate start and end times
+                planned_start_date_time = previous_job_end_time
+                planned_end_date_time = planned_start_date_time + datetime.timedelta(seconds=planned_duration)
 
             # Create job card
             job_card = frappe.new_doc("Job Card")
@@ -131,8 +151,9 @@ def create_job_cards(docname):
             job_card.save()
             created_count += 1
 
-            # Update previous job end time for next iteration
-            previous_job_end_time = planned_end_date_time
+            # Update previous job end time for next iteration (only for multiple jobs)
+            if jobs_count > 1:
+                previous_job_end_time = planned_end_date_time
 
     doc.status = "Confirmed"
     doc.save()

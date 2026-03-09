@@ -7,22 +7,37 @@ import re
 
 
 class MissingBarcodeLog(Document):
+	def validate(self):
+		"""
+		Validate and calculate ending_barcode_number based on batch_size and starting_barcode_number.
+		Formula: ending_barcode_number = starting_barcode_number + batch_size - 1
+		This is called before the document is saved.
+		"""
+		if self.batch_size and self.starting_barcode_number:
+			# Calculate ending barcode number
+			self.ending_barcode_number = self.starting_barcode_number + self.batch_size - 1
+
+		# Calculate total packs
+		if self.batch_size and self.pack_size:
+			self.total_packs = int(self.batch_size / self.pack_size) if self.pack_size > 0 else 0
+
 	def on_update(self):
 		"""
 		Calculate and update total_barcodes and total_missing_barcode_logs
 		This is called when the document is saved
 		"""
 		# Count the number of records in the child table
-		total_count = len(self.missing_barcode_log_list) if self.missing_barcode_log_list else 0
+		total_count = len(self.missing_barcode_list) if self.missing_barcode_list else 0
 
-		# Update the total_missing_barcode_logs field
-		self.total_missing_barcode_logs = total_count
-		self.db_set("total_missing_barcode_logs", total_count)
+		# Update the total_missing_barcodes field
+		self.total_missing_barcodes = total_count
+		self.db_set("total_missing_barcodes", total_count)
 
 		# Calculate and update total_barcodes
-		# Formula: total_barcodes = ending_barcode_number - starting_barcode_number - total_missing_barcode_logs
-		self.total_barcodes = self.ending_barcode_number - self.starting_barcode_number - self.total_missing_barcode_logs
-		self.db_set("total_barcodes", self.total_barcodes)
+		# Formula: total_barcodes = ending_barcode_number - starting_barcode_number + 1 - total_missing_barcodes
+		if self.ending_barcode_number and self.starting_barcode_number:
+			self.total_barcodes = self.ending_barcode_number - self.starting_barcode_number + 1 - self.total_missing_barcodes
+			self.db_set("total_barcodes", self.total_barcodes)
 
 
 @frappe.whitelist()
@@ -167,3 +182,126 @@ def _parse_barcode_format(barcode):
 		"number": int(last_sequence),
 		"suffix": barcode[last_match_pos + len(last_sequence):]
 	}
+
+
+@frappe.whitelist()
+def generate_missing_barcode_labels(docname, batch_size, pack_size, starting_barcode_number,
+                                 ending_barcode_number, job_name, missing_barcode_list):
+	"""
+	Generate Missing Barcode Label documents for each pack in the production run.
+
+	Args:
+		docname: Name of the parent Missing Barcode Log document
+		batch_size: Total number of barcodes in the production run
+		pack_size: Number of barcodes per pack
+		starting_barcode_number: Starting barcode number of the production run
+		ending_barcode_number: Ending barcode number of the production run
+		job_name: Name of the Job
+		missing_barcode_list: List of missing barcodes [{barcode_number: int}, ...]
+
+	Returns:
+		dict: {
+			'success': True/False,
+			'message': 'Success/Error message',
+			'labels_created': int
+		}
+	"""
+	try:
+		# Get parent document
+		parent_doc = frappe.get_doc("Missing Barcode Log", docname)
+
+		# Check if labels already generated
+		if parent_doc.labels_generated:
+			return {
+				"success": False,
+				"message": "Labels have already been generated for this document."
+			}
+
+		# Convert to integers
+		batch_size = int(batch_size) if batch_size else 0
+		pack_size = int(pack_size) if pack_size else 0
+		starting_barcode_number = int(starting_barcode_number) if starting_barcode_number else 0
+		ending_barcode_number = int(ending_barcode_number) if ending_barcode_number else 0
+
+		# Validate required fields
+		if not batch_size or not pack_size or not starting_barcode_number or not ending_barcode_number:
+			return {
+				"success": False,
+				"message": "Missing required fields: batch_size, pack_size, starting_barcode_number, ending_barcode_number"
+			}
+
+		# Calculate total packs
+		total_packs = int(batch_size / pack_size) if pack_size > 0 else 0
+
+		if total_packs == 0:
+			return {
+				"success": False,
+				"message": "Invalid pack size calculation. Total packs is 0."
+			}
+
+		# Extract barcode numbers from missing_barcode_list
+		missing_barcode_numbers = set()
+		if missing_barcode_list:
+			for item in missing_barcode_list:
+				if isinstance(item, dict) and "barcode_number" in item:
+					missing_barcode_numbers.add(item["barcode_number"])
+				elif isinstance(item, int):
+					missing_barcode_numbers.add(item)
+
+		# Create Missing Barcode Label for each pack
+		labels_created = 0
+		for serial_number in range(1, total_packs + 1):
+			# Calculate pack's barcode range
+			pack_start = starting_barcode_number + ((serial_number - 1) * pack_size)
+			pack_end = pack_start + pack_size - 1
+
+			# Filter missing barcodes for this pack
+			pack_missing_barcodes = [
+				{"barcode_number": bc} for bc in sorted(missing_barcode_numbers)
+				if pack_start <= bc <= pack_end
+			]
+
+			# Calculate totals for this pack
+			total_missing_barcodes = len(pack_missing_barcodes)
+			total_barcodes = pack_size - total_missing_barcodes
+
+			# Create Missing Barcode Label document
+			# Initialize child table data
+			missing_barcode_list_data = [
+				{"barcode_number": bc} for bc in sorted(missing_barcode_numbers)
+				if pack_start <= bc <= pack_end
+			]
+
+			label_doc = frappe.get_doc({
+				"doctype": "Missing Barcode Label",
+				"date": frappe.utils.today(),
+				"job": job_name,
+				"pack_size": pack_size,
+				"missing_barcode_log": docname,
+				"serial_number": serial_number,
+				"starting_barcode_number": pack_start,
+				"ending_barcode_number": pack_end,
+				"total_barcodes": total_barcodes,
+				"total_missing_barcodes": total_missing_barcodes,
+				"missing_barcode_list": missing_barcode_list_data  # Include child table data directly
+			})
+
+			label_doc.insert()
+			labels_created += 1
+
+		# Update parent document - set labels_generated flag
+		parent_doc.labels_generated = 1
+		parent_doc.save(ignore_permissions=True)
+
+		return {
+			"success": True,
+			"message": f"Successfully created {labels_created} Missing Barcode Label documents.",
+			"labels_created": labels_created
+		}
+
+	except Exception as e:
+		frappe.log_error(f"Error generating missing barcode labels: {str(e)}")
+		return {
+			"success": False,
+			"message": f"Error: {str(e)}"
+		}

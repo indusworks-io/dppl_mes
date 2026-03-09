@@ -1,6 +1,5 @@
 {
  "actions": [],
- "allow_copy": 1,
  "allow_import": 1,
  "allow_rename": 1,
  "autoname": "MB-.#####",
@@ -14,8 +13,10 @@
   "batch_size",
   "column_break_rxwh",
   "pack_size",
+  "total_packs",
   "total_barcodes",
   "total_missing_barcodes",
+  "labels_generated",
   "starting_barcode_information_section",
   "starting_barcode_number",
   "column_break_txbd",
@@ -89,15 +90,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "default": "0",
-   "fieldname": "total_missing_barcodes",
-   "fieldtype": "Int",
-   "in_list_view": 1,
-   "label": "Total Missing Barcodes",
-   "non_negative": 1,
-   "read_only": 1
-  },
-  {
    "fieldname": "scan_missing_barcode",
    "fieldtype": "Data",
    "label": "Scan Missing Barcode",
@@ -148,6 +140,28 @@
    "fieldtype": "Tab Break",
    "label": "Connections",
    "show_dashboard": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_missing_barcodes",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Total Missing Barcodes",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_packs",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Total Packs",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "labels_generated",
+   "fieldtype": "Check",
+   "label": "Labels Generated?"
   }
  ],
  "grid_page_length": 50,
@@ -159,7 +173,7 @@
    "link_fieldname": "missing_barcode_log"
   }
  ],
- "modified": "2026-03-09 18:13:25.104449",
+ "modified": "2026-03-09 22:54:51.768913",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Missing Barcode Log",

@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"2SSBJqhFv1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Missing Barcode</span>\",\"col\":12}},{\"id\":\"epieMyWwjs\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create New Missing Barcode Log\",\"col\":12}},{\"id\":\"JUHtoT9prm\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"_ACS1pbGwY\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"View Missing Barcodes\",\"col\":12}}]",
+ "content": "[{\"id\":\"2SSBJqhFv1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Missing Barcode</span>\",\"col\":12}},{\"id\":\"epieMyWwjs\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create New Missing Barcode Log\",\"col\":12}},{\"id\":\"JUHtoT9prm\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"_ACS1pbGwY\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"View Missing Barcode Logs\",\"col\":12}},{\"id\":\"oxWgmmJHpz\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"View Missing Barcode Labels\",\"col\":12}}]",
  "creation": "2026-01-27 16:03:34.241890",
  "custom_blocks": [],
  "docstatus": 0,
@@ -13,7 +13,7 @@
  "is_hidden": 0,
  "label": "Missing Barcode Tracker",
  "links": [],
- "modified": "2026-01-27 16:21:46.605539",
+ "modified": "2026-03-09 22:37:00.773707",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Missing Barcode Tracker",
@@ -29,15 +29,23 @@
    "color": "Green",
    "doc_view": "New",
    "label": "Create New Missing Barcode Log",
-   "link_to": "Missing Barcode",
+   "link_to": "Missing Barcode Log",
    "stats_filter": "[]",
    "type": "DocType"
   },
   {
    "color": "Grey",
    "doc_view": "List",
-   "label": "View Missing Barcodes",
-   "link_to": "Missing Barcode",
+   "label": "View Missing Barcode Logs",
+   "link_to": "Missing Barcode Log",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "View Missing Barcode Labels",
+   "link_to": "Missing Barcode Label",
    "stats_filter": "[]",
    "type": "DocType"
   }

@@ -6,27 +6,27 @@ from frappe.model.document import Document
 import re
 
 
-class MissingBarcode(Document):
+class MissingBarcodeLog(Document):
 	def on_update(self):
 		"""
-		Calculate and update total_barcodes and total_missing_barcodes
+		Calculate and update total_barcodes and total_missing_barcode_logs
 		This is called when the document is saved
 		"""
 		# Count the number of records in the child table
-		total_count = len(self.missing_barcode_list) if self.missing_barcode_list else 0
+		total_count = len(self.missing_barcode_log_list) if self.missing_barcode_log_list else 0
 
-		# Update the total_missing_barcodes field
-		self.total_missing_barcodes = total_count
-		self.db_set("total_missing_barcodes", total_count)
+		# Update the total_missing_barcode_logs field
+		self.total_missing_barcode_logs = total_count
+		self.db_set("total_missing_barcode_logs", total_count)
 
 		# Calculate and update total_barcodes
-		# Formula: total_barcodes = ending_barcode_number - starting_barcode_number - total_missing_barcodes
-		self.total_barcodes = self.ending_barcode_number - self.starting_barcode_number - self.total_missing_barcodes
+		# Formula: total_barcodes = ending_barcode_number - starting_barcode_number - total_missing_barcode_logs
+		self.total_barcodes = self.ending_barcode_number - self.starting_barcode_number - self.total_missing_barcode_logs
 		self.db_set("total_barcodes", self.total_barcodes)
 
 
 @frappe.whitelist()
-def bulk_add_missing_barcode_range(start_barcode, end_barcode, starting_barcode_number, ending_barcode_number, existing_barcodes):
+def bulk_add_missing_barcode_log_range(start_barcode, end_barcode, starting_barcode_number, ending_barcode_number, existing_barcodes):
 	"""
 	Generate and validate missing barcodes in a range.
 
@@ -35,7 +35,7 @@ def bulk_add_missing_barcode_range(start_barcode, end_barcode, starting_barcode_
 		end_barcode: Ending barcode of missing range
 		starting_barcode_number: Document's starting barcode number (for validation)
 		ending_barcode_number: Document's ending barcode number (for validation)
-		existing_barcodes: List of barcodes already in missing_barcode_list
+		existing_barcodes: List of barcodes already in missing_barcode_log_list
 
 	Returns:
 		dict: {

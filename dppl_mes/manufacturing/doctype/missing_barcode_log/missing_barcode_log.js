@@ -1,7 +1,7 @@
 // Copyright (c) 2026, IndusWorks and contributors
 // For license information, please see license.txt
 
-frappe.ui.form.on("Missing Barcode", {
+frappe.ui.form.on("Missing Barcode Log", {
 	onload: function(frm) {
 		if (
 			frm.doc.missing_barcode_list &&
@@ -76,7 +76,7 @@ frappe.ui.form.on("Missing Barcode", {
 
 		// All validations passed - add to list
 		add_missing_barcode(frm, barcode_value, barcode_number);
-		show_message(frm, "Missing Barcode Added Successfully", false);
+		show_message(frm, "Missing Barcode Log Added Successfully", false);
 		frm.set_value("scan_missing_barcode", "");
 	},
 
@@ -92,14 +92,14 @@ frappe.ui.form.on("Missing Barcode", {
 			[
 				{
 					fieldname: "starting_missing_barcode",
-					label: __("Starting Missing Barcode"),
+					label: __("Starting Missing Barcode Log"),
 					fieldtype: "Data",
 					reqd: 1,
 					description: __("Enter the first barcode of the missing range")
 				},
 				{
 					fieldname: "ending_missing_barcode",
-					label: __("Ending Missing Barcode"),
+					label: __("Ending Missing Barcode Log"),
 					fieldtype: "Data",
 					reqd: 1,
 					description: __("Enter the last barcode of the missing range")
@@ -136,7 +136,7 @@ frappe.ui.form.on("Missing Barcode", {
 					freeze_message: __("Processing barcode range...")
 				});
 			},
-			__("Bulk Add Missing Barcodes"),
+			__("Bulk Add Missing Barcode Logs"),
 			__("Add Barcodes")
 		);
 	}

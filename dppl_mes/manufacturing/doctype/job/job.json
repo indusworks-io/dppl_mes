@@ -13,6 +13,8 @@
   "job_number",
   "complexity_level",
   "ideal_run_rate",
+  "contains_barcode",
+  "pack_size",
   "unit_of_measure_section",
   "default_uom",
   "alternate_uom",
@@ -92,13 +94,28 @@
    "non_negative": 1,
    "precision": "2",
    "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "contains_barcode",
+   "fieldtype": "Check",
+   "label": "Contains Barcode?"
+  },
+  {
+   "depends_on": "eval: doc.contains_barcode == '1';",
+   "description": "Number of bags/pouches in each box.",
+   "fieldname": "pack_size",
+   "fieldtype": "Int",
+   "label": "Pack Size",
+   "mandatory_depends_on": "eval: doc.contains_barcode == '1';",
+   "non_negative": 1
   }
  ],
  "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-03 13:08:26.726325",
+ "modified": "2026-03-09 17:37:55.484879",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Job",

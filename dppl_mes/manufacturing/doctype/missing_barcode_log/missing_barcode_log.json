@@ -11,20 +11,21 @@
   "basic_information_section",
   "date",
   "job_name",
+  "batch_size",
   "column_break_rxwh",
+  "pack_size",
   "total_barcodes",
   "total_missing_barcodes",
   "starting_barcode_information_section",
-  "starting_barcode",
-  "ending_barcode",
-  "column_break_yhba",
   "starting_barcode_number",
+  "column_break_txbd",
   "ending_barcode_number",
   "missing_barcode_information_section",
-  "bulk_add_missing_barcodes",
   "scan_missing_barcode",
+  "bulk_add_missing_barcodes",
   "message",
-  "missing_barcode_list"
+  "missing_barcode_list",
+  "connections"
  ],
  "fields": [
   {
@@ -47,6 +48,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Job Name",
+   "link_filters": "[[\"Job\",\"contains_barcode\",\"=\",1]]",
    "options": "Job",
    "reqd": 1
   },
@@ -55,37 +57,22 @@
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "starting_barcode",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Starting Barcode",
-   "options": "Barcode",
-   "reqd": 1
-  },
-  {
-   "fieldname": "column_break_yhba",
-   "fieldtype": "Column Break"
-  },
-  {
+   "description": "Starting barcode number of this production run.",
    "fieldname": "starting_barcode_number",
    "fieldtype": "Int",
    "label": "Starting Barcode Number",
    "non_negative": 1,
-   "read_only": 1
-  },
-  {
-   "fieldname": "ending_barcode",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Ending Barcode",
-   "options": "Barcode",
    "reqd": 1
   },
   {
+   "description": "Ending barcode number of this production run.",
    "fieldname": "ending_barcode_number",
    "fieldtype": "Int",
+   "in_list_view": 1,
    "label": "Ending Barcode Number",
-   "read_only": 1
+   "non_negative": 1,
+   "read_only": 1,
+   "reqd": 1
   },
   {
    "fieldname": "missing_barcode_information_section",
@@ -133,16 +120,49 @@
    "fieldname": "bulk_add_missing_barcodes",
    "fieldtype": "Button",
    "label": "Bulk Add Missing Barcodes"
+  },
+  {
+   "fetch_from": "job_name.pack_size",
+   "fetch_if_empty": 1,
+   "fieldname": "pack_size",
+   "fieldtype": "Int",
+   "label": "Pack Size",
+   "non_negative": 1,
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "description": "Total number of bags/pouches in this production run.",
+   "fieldname": "batch_size",
+   "fieldtype": "Int",
+   "label": "Batch Size",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_txbd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "connections",
+   "fieldtype": "Tab Break",
+   "label": "Connections",
+   "show_dashboard": 1
   }
  ],
  "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2026-02-08 13:21:18.952431",
+ "links": [
+  {
+   "link_doctype": "Missing Barcode Label",
+   "link_fieldname": "missing_barcode_log"
+  }
+ ],
+ "modified": "2026-03-09 18:13:25.104449",
  "modified_by": "Administrator",
  "module": "Manufacturing",
- "name": "Missing Barcode",
+ "name": "Missing Barcode Log",
  "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [

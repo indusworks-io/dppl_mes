@@ -1,0 +1,184 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "autoname": "MBL-.#####",
+ "creation": "2026-03-09 17:54:59.964576",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "date",
+  "job",
+  "pack_size",
+  "column_break_ozqf",
+  "missing_barcode_log",
+  "serial_number",
+  "total_barcodes",
+  "total_missing_barcodes",
+  "section_break_ikfp",
+  "starting_barcode_number",
+  "column_break_dfns",
+  "ending_barcode_number",
+  "section_break_rkro",
+  "scan_missing_barcode",
+  "bulk_add_missing_barcodes",
+  "message",
+  "section_break_pcdz",
+  "missing_barcode_list"
+ ],
+ "fields": [
+  {
+   "default": "Today",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Date",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "job",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Job",
+   "link_filters": "[[\"Job\",\"contains_barcode\",\"=\",1]]",
+   "options": "Job",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "job.pack_size",
+   "fetch_if_empty": 1,
+   "fieldname": "pack_size",
+   "fieldtype": "Int",
+   "label": "Pack Size",
+   "non_negative": 1,
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_ozqf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "serial_number",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Serial Number",
+   "non_negative": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_rkro",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "scan_missing_barcode",
+   "fieldtype": "Data",
+   "label": "Scan Missing Barcode"
+  },
+  {
+   "fieldname": "bulk_add_missing_barcodes",
+   "fieldtype": "Button",
+   "label": "Bulk Add Missing Barcodes"
+  },
+  {
+   "fieldname": "message",
+   "fieldtype": "HTML",
+   "label": "Message"
+  },
+  {
+   "fieldname": "section_break_pcdz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "missing_barcode_list",
+   "fieldtype": "Table",
+   "label": "Missing Barcode List",
+   "options": "Barcode List"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_barcodes",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Total Barcodes",
+   "non_negative": 1,
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_missing_barcodes",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Total Missing Barcodes",
+   "non_negative": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_ikfp",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "starting_barcode_number",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Starting Barcode Number",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "ending_barcode_number",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Ending Barcode Number",
+   "non_negative": 1,
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "missing_barcode_log",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Missing Barcode Log",
+   "options": "Missing Barcode Log",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "column_break_dfns",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "grid_page_length": 50,
+ "hide_toolbar": 1,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-09 18:14:20.536600",
+ "modified_by": "Administrator",
+ "module": "Manufacturing",
+ "name": "Missing Barcode Label",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

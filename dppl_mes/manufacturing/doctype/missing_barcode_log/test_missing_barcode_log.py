@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestMissingBarcode(FrappeTestCase):
+class TestMissingBarcodeLog(FrappeTestCase):
 	pass

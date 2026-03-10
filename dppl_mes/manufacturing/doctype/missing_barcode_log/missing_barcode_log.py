@@ -183,10 +183,96 @@ def _parse_barcode_format(barcode):
 		"suffix": barcode[last_match_pos + len(last_sequence):]
 	}
 
+@frappe.whitelist()
+def generate_missing_barcode_labels(docname):
+    try:
+        parent_doc = frappe.get_doc("Missing Barcode Log", docname)
+
+        if parent_doc.labels_generated:
+            return {
+                "success": False,
+                "message": "Labels have already been generated for this document."
+            }
+
+        batch_size = int(parent_doc.batch_size or 0)
+        pack_size = int(parent_doc.pack_size or 0)
+        starting_barcode_number = int(parent_doc.starting_barcode_number or 0)
+        ending_barcode_number = int(parent_doc.ending_barcode_number or 0)
+        job_name = parent_doc.job_name
+
+        if not all([batch_size, pack_size, starting_barcode_number, ending_barcode_number]):
+            return {
+                "success": False,
+                "message": "Missing required fields: batch_size, pack_size, starting_barcode_number, ending_barcode_number"
+            }
+
+        total_packs = batch_size // pack_size
+        if total_packs == 0:
+            return {
+                "success": False,
+                "message": "Invalid pack size calculation. Total packs is 0."
+            }
+
+        # Extract missing barcode numbers from child table
+        missing_barcode_numbers = sorted([
+            int(row.barcode_number)
+            for row in parent_doc.missing_barcode_list
+            if row.barcode_number
+        ])
+
+        labels_created = 0
+        for serial_number in range(1, total_packs + 1):
+            pack_start = starting_barcode_number + ((serial_number - 1) * pack_size)
+            pack_end = pack_start + pack_size - 1
+
+            # Clamp last pack to actual ending barcode
+            if serial_number == total_packs:
+                pack_end = ending_barcode_number
+
+            pack_missing = [
+                {"doctype": "Barcode List", "barcode_number": bc}
+                for bc in missing_barcode_numbers
+                if pack_start <= bc <= pack_end
+            ]
+
+            total_missing_barcodes = len(pack_missing)
+            total_barcodes = (pack_end - pack_start + 1) - total_missing_barcodes
+
+            label_doc = frappe.get_doc({
+                "doctype": "Missing Barcode Label",
+                "date": frappe.utils.today(),
+                "job": job_name,
+                "pack_size": pack_size,
+                "missing_barcode_log": docname,
+                "serial_number": serial_number,
+                "starting_barcode_number": pack_start,
+                "ending_barcode_number": pack_end,
+                "total_barcodes": total_barcodes,
+                "total_missing_barcodes": total_missing_barcodes,
+                "missing_barcode_list": pack_missing
+            })
+            label_doc.insert(ignore_permissions=True)
+            labels_created += 1
+
+        parent_doc.labels_generated = 1
+        parent_doc.save(ignore_permissions=True)
+        frappe.db.commit()
+
+        return {
+            "success": True,
+            "message": f"Successfully created {labels_created} Missing Barcode Label documents.",
+            "labels_created": labels_created
+        }
+
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(), "Generate Missing Barcode Labels Error")
+        return {
+            "success": False,
+            "message": f"Error: {str(e)}"
+        }
 
 @frappe.whitelist()
-def generate_missing_barcode_labels(docname, batch_size, pack_size, starting_barcode_number,
-                                 ending_barcode_number, job_name, missing_barcode_list):
+def generate_missing_barcode_labels_old(docname, batch_size, pack_size, starting_barcode_number, ending_barcode_number, job_name, missing_barcode_list):
 	"""
 	Generate Missing Barcode Label documents for each pack in the production run.
 

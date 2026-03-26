@@ -1,7 +1,7 @@
 // Copyright (c) 2026, IndusWorks and contributors
 // For license information, please see license.txt
 
-frappe.ui.form.on("Missing Barcode Label", {
+frappe.ui.form.on("Missing Barcode Label Archive", {
 	onload: function(frm) {
 		// Clear empty child table if only one row exists with empty barcode_number
 		if (
@@ -19,7 +19,7 @@ frappe.ui.form.on("Missing Barcode Label", {
 	},
 
 	refresh: function(frm) {
-		// No "Create Missing Barcode Labels" button
+		// No "Create Missing Barcode Label Archives" button
 		// This functionality is handled by the parent Missing Barcode Log
 	},
 

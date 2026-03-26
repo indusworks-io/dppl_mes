@@ -6,7 +6,7 @@ from frappe.model.document import Document
 import re
 
 
-class MissingBarcodeLabel(Document):
+class MissingBarcodeLabelArchive(Document):
 	def validate(self):
 		"""
 		Validate that scanned barcodes are within the pack's range.
@@ -52,7 +52,7 @@ class MissingBarcodeLabel(Document):
 
 
 @frappe.whitelist()
-def bulk_add_missing_barcode_label_range(start_barcode, end_barcode, starting_barcode_number, ending_barcode_number, existing_barcodes):
+def bulk_add_missing_barcode_label_archive_range(start_barcode, end_barcode, starting_barcode_number, ending_barcode_number, existing_barcodes):
 	"""
 	Generate and validate missing barcodes in a range for Missing Barcode Label.
 

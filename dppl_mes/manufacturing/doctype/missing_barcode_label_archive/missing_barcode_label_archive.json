@@ -96,7 +96,7 @@
    "fieldname": "missing_barcode_list",
    "fieldtype": "Table",
    "label": "Missing Barcode List",
-   "options": "Barcode List"
+   "options": "Barcode List Archive"
   },
   {
    "default": "0",
@@ -142,7 +142,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Missing Barcode Log",
-   "options": "Missing Barcode Log",
+   "options": "Missing Barcode Log Archive",
    "read_only": 1,
    "search_index": 1
   },
@@ -155,10 +155,10 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-10 11:03:52.627920",
+ "modified": "2026-03-26 11:11:20.239770",
  "modified_by": "Administrator",
  "module": "Manufacturing",
- "name": "Missing Barcode Label",
+ "name": "Missing Barcode Label Archive",
  "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [

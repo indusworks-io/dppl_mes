@@ -1,0 +1,201 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "MB-.#####",
+ "creation": "2026-01-27 16:06:09.799443",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "basic_information_section",
+  "date",
+  "job_name",
+  "batch_size",
+  "column_break_rxwh",
+  "pack_size",
+  "total_packs",
+  "total_barcodes",
+  "total_missing_barcodes",
+  "labels_generated",
+  "starting_barcode_information_section",
+  "starting_barcode_number",
+  "column_break_txbd",
+  "ending_barcode_number",
+  "missing_barcode_information_section",
+  "scan_missing_barcode",
+  "bulk_add_missing_barcodes",
+  "message",
+  "missing_barcode_list",
+  "connections"
+ ],
+ "fields": [
+  {
+   "fieldname": "basic_information_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "Today",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Date",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "job_name",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Job Name",
+   "link_filters": "[[\"Job\",\"contains_barcode\",\"=\",1]]",
+   "options": "Job",
+   "reqd": 1
+  },
+  {
+   "fieldname": "starting_barcode_information_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "description": "Starting barcode number of this production run.",
+   "fieldname": "starting_barcode_number",
+   "fieldtype": "Int",
+   "label": "Starting Barcode Number",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "description": "Ending barcode number of this production run.",
+   "fieldname": "ending_barcode_number",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Ending Barcode Number",
+   "non_negative": 1,
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "missing_barcode_information_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "missing_barcode_list",
+   "fieldtype": "Table",
+   "label": "Missing Barcode List",
+   "options": "Barcode List"
+  },
+  {
+   "fieldname": "column_break_rxwh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "scan_missing_barcode",
+   "fieldtype": "Data",
+   "label": "Scan Missing Barcode",
+   "options": "Barcode"
+  },
+  {
+   "fieldname": "message",
+   "fieldtype": "HTML",
+   "label": "Message"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_barcodes",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Total Barcodes",
+   "read_only": 1
+  },
+  {
+   "fieldname": "bulk_add_missing_barcodes",
+   "fieldtype": "Button",
+   "label": "Bulk Add Missing Barcodes"
+  },
+  {
+   "fetch_from": "job_name.pack_size",
+   "fetch_if_empty": 1,
+   "fieldname": "pack_size",
+   "fieldtype": "Int",
+   "label": "Pack Size",
+   "non_negative": 1,
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "description": "Total number of bags/pouches in this production run.",
+   "fieldname": "batch_size",
+   "fieldtype": "Int",
+   "label": "Batch Size",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_txbd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "connections",
+   "fieldtype": "Tab Break",
+   "label": "Connections",
+   "show_dashboard": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_missing_barcodes",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Total Missing Barcodes",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_packs",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Total Packs",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "labels_generated",
+   "fieldtype": "Check",
+   "label": "Labels Generated?"
+  }
+ ],
+ "grid_page_length": 50,
+ "hide_toolbar": 1,
+ "index_web_pages_for_search": 1,
+ "links": [
+  {
+   "link_doctype": "Missing Barcode Label",
+   "link_fieldname": "missing_barcode_log"
+  }
+ ],
+ "modified": "2026-03-09 22:54:51.768913",
+ "modified_by": "Administrator",
+ "module": "Manufacturing",
+ "name": "Missing Barcode Log Archive",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

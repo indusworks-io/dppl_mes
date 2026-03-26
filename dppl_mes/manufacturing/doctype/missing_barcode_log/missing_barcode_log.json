@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "autoname": "BL-.#####",
  "creation": "2026-03-21 16:23:32.897222",
  "doctype": "DocType",
@@ -134,9 +135,10 @@
   }
  ],
  "grid_page_length": 50,
+ "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-26 11:17:03.564829",
+ "modified": "2026-03-26 11:34:50.067761",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Missing Barcode Log",

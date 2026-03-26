@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"2SSBJqhFv1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Missing Barcode</span>\",\"col\":12}},{\"id\":\"JUHtoT9prm\",\"type\":\"spacer\",\"data\":{\"col\":12}}]",
+ "content": "[{\"id\":\"2SSBJqhFv1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Missing Barcode</span>\",\"col\":12}},{\"id\":\"RofbY2P6o5\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Create New Missing Barcode Log\",\"col\":12}},{\"id\":\"JUHtoT9prm\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"wKAHaPuLlZ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Missing Barcode List\",\"col\":12}}]",
  "creation": "2026-01-27 16:03:34.241890",
  "custom_blocks": [],
  "docstatus": 0,
@@ -13,7 +13,7 @@
  "is_hidden": 0,
  "label": "Missing Barcode Tracker",
  "links": [],
- "modified": "2026-03-26 11:09:12.399486",
+ "modified": "2026-03-26 11:33:19.514165",
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Missing Barcode Tracker",
@@ -24,6 +24,23 @@
  "quick_lists": [],
  "roles": [],
  "sequence_id": 2.0,
- "shortcuts": [],
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "New",
+   "label": "Create New Missing Barcode Log",
+   "link_to": "Missing Barcode Log",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Missing Barcode List",
+   "link_to": "Missing Barcode Log",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
  "title": "Missing Barcode Tracker"
 }
